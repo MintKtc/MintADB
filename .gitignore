@@ -44,3 +44,12 @@ Desktop.ini
 *.zip
 *.7z
 !scripts/**
+
+# Android
+src/MintADB.Android/.gradle/
+src/MintADB.Android/**/build/
+src/MintADB.Android/local.properties
+src/MintADB.Android/.idea/
+*.apk
+*.aab
+!src/MintADB.Android/

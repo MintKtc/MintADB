@@ -70,6 +70,10 @@ powershell -ExecutionPolicy Bypass -File scripts\publish.ps1 -Profile installer
 | `%LOCALAPPDATA%\MintADB\` | Deployed ADB, `install-state.json` |
 | `Desktop\MintADB\` | Screenshots, Hz/spoof backups, recordings |
 
+### Android companion APK
+
+On-device app (Shizuku) with similar optimize/apps/display tabs — see [docs/MintADB-Android.md](docs/MintADB-Android.md).
+
 ### Contribute
 
 Fork → branch → PR. Report issues on [GitHub Issues](https://github.com/MintKtc/MintADB/issues).
@@ -104,9 +108,13 @@ Fork → branch → PR. Report issues on [GitHub Issues](https://github.com/Mint
 - `MintADB-Setup-v1.0.0-win-x64.exe` — installer (khuyến nghị)
 - `MintADB-v1.0.0-win-x64.zip` — portable
 
+### APK Android (companion)
+
+App chạy trên máy, cần Shizuku — xem [docs/MintADB-Android.md](docs/MintADB-Android.md). Build bằng Android Studio trong `src/MintADB.Android`.
+
 ### Phát triển
 
-**Yêu cầu:** .NET 8 SDK, Git. Tùy chọn: VS 2022, Inno Setup 6.
+**Yêu cầu:** .NET 8 SDK, Git. Tùy chọn: VS 2022, Inno Setup 6, Android Studio (APK).
 
 ```bash
 git clone https://github.com/MintKtc/MintADB.git
