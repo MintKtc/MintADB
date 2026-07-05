@@ -1,2 +1,4 @@
 -keep class rikka.shizuku.** { *; }
 -dontwarn rikka.shizuku.**
+-keep class com.minthd.mintadb.service.ShellUserService { *; }
+-keep class com.minthd.mintadb.IShellService { *; }
