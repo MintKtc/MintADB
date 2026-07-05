@@ -1,0 +1,436 @@
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+using Microsoft.Win32;
+using MintADB.Wpf.Helpers;
+using MintADB.Wpf.Models;
+using MintADB.Wpf.Services;
+
+namespace MintADB.Wpf;
+
+public partial class MainWindow
+{
+    private AdbToolsService? _tools;
+    private HardwareInfoService? _hardware;
+    private int _toolPage;
+    private int _systemPage;
+
+    private AdbToolsService Tools => _tools ??= new AdbToolsService(_adb);
+    private HardwareInfoService Hardware => _hardware ??= new HardwareInfoService(_adb);
+
+    private void NavOptimize_Click(object sender, RoutedEventArgs e) => ShowPage(optimize: true);
+
+    private void NavTools_Click(object sender, RoutedEventArgs e) => ShowPage(optimize: false);
+
+    private void ShowPage(bool optimize)
+    {
+        PanelOptimize.Visibility = optimize ? Visibility.Visible : Visibility.Collapsed;
+        PanelTools.Visibility = optimize ? Visibility.Collapsed : Visibility.Visible;
+
+        SetActiveTab(optimize ? 0 : 1, NavOptimize, NavTools);
+    }
+
+    private void ShowToolPage(int page)
+    {
+        _toolPage = page;
+        ToolPageBasic.Visibility = page == 0 ? Visibility.Visible : Visibility.Collapsed;
+        ToolPageApps.Visibility = page == 1 ? Visibility.Visible : Visibility.Collapsed;
+        ToolPageScreen.Visibility = page == 2 ? Visibility.Visible : Visibility.Collapsed;
+        ToolPageNetwork.Visibility = page == 3 ? Visibility.Visible : Visibility.Collapsed;
+        ToolPageSystem.Visibility = page == 4 ? Visibility.Visible : Visibility.Collapsed;
+        ToolPageAdvanced.Visibility = page == 5 ? Visibility.Visible : Visibility.Collapsed;
+        ToolPageFastboot.Visibility = page == 6 ? Visibility.Visible : Visibility.Collapsed;
+
+        SetActiveTab(page,
+            ToolNavBasic, ToolNavApps, ToolNavScreen, ToolNavNetwork,
+            ToolNavSystem, ToolNavAdvanced, ToolNavFastboot);
+
+        if (page == 4)
+            ShowSystemSubPage(_systemPage);
+
+        if (page == 6)
+            _ = RefreshFastbootDevicesAsync();
+    }
+
+    private void ShowSystemSubPage(int page)
+    {
+        _systemPage = page;
+        SysPageBattery.Visibility = page == 0 ? Visibility.Visible : Visibility.Collapsed;
+        SysPageDisplay.Visibility = page == 1 ? Visibility.Visible : Visibility.Collapsed;
+        SysPageDevice.Visibility = page == 2 ? Visibility.Visible : Visibility.Collapsed;
+
+        SetActiveTab(page, SysNavBattery, SysNavDisplay, SysNavDevice);
+    }
+
+    private static void SetActiveTab(int index, params Button[] tabs)
+    {
+        for (var i = 0; i < tabs.Length; i++)
+            tabs[i].Tag = i == index ? "active" : "";
+    }
+
+    private static string GetBoxText(TextBox box)
+    {
+        var text = box.Text.Trim();
+        if (box.Tag is string hint && text == hint) return "";
+        return text;
+    }
+
+    private List<string> GetSelectedPackages()
+    {
+        var pkgs = _apps.Where(a => a.Selected).Select(a => a.Package).ToList();
+        if (pkgs.Count > 0) return pkgs;
+
+        var custom = CustomPackageBox.Text.Trim();
+        if (CustomPackageBox.Tag is string hint && custom == hint) custom = "";
+        if (!string.IsNullOrEmpty(custom)) pkgs.Add(custom);
+        return pkgs;
+    }
+
+    private async Task RunToolAsync(string label, Func<Task> action)
+    {
+        if (RequireDevice() is null) return;
+        await RunWithBusyAsync(async () =>
+        {
+            AppendLog($"[{label}] Đang chạy...");
+            try { await action(); }
+            catch (Exception ex) { AppendLog($"[{label}] Lỗi: {ex.Message}"); }
+        });
+    }
+
+    private async void Reboot_Click(object sender, RoutedEventArgs e)
+        => await RebootWithMode(RebootMode.Normal);
+
+    private async void RebootRecovery_Click(object sender, RoutedEventArgs e)
+        => await RebootWithMode(RebootMode.Recovery);
+
+    private async void RebootBootloader_Click(object sender, RoutedEventArgs e)
+        => await RebootWithMode(RebootMode.Bootloader);
+
+    private async void RebootSideload_Click(object sender, RoutedEventArgs e)
+        => await RebootWithMode(RebootMode.Sideload);
+
+    private async void RebootEdl_Click(object sender, RoutedEventArgs e)
+        => await RebootWithMode(RebootMode.Edl);
+
+    private async Task RebootWithMode(RebootMode mode)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        if (mode != RebootMode.Normal)
+        {
+            var ok = MessageBox.Show(
+                $"Reboot {mode.Label()}?\nThiết bị sẽ khởi động lại chế độ đặc biệt.",
+                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (ok != MessageBoxResult.Yes) return;
+        }
+
+        await RunToolAsync($"Reboot {mode.Label()}", async () =>
+        {
+            var r = await Tools.RebootAsync(serial, mode);
+            AppendLog(r.Ok ? $"[OK] {mode.Label()}" : $"[FAIL] {r.Combined}");
+        });
+    }
+
+    private async void InstallApk_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var dlg = new OpenFileDialog
+        {
+            Title = "Chọn file APK",
+            Filter = "APK (*.apk)|*.apk|Tất cả (*.*)|*.*",
+        };
+        if (dlg.ShowDialog() != true) return;
+
+        await RunToolAsync("Cài APK", async () =>
+        {
+            AppendLog($"Cài {Path.GetFileName(dlg.FileName)}...");
+            var r = await Tools.InstallApkAsync(serial, dlg.FileName);
+            AppendLog(r.Ok ? "[OK] Cài APK thành công" : $"[FAIL] {r.Combined}");
+        });
+    }
+
+    private async void RemoveOrDisable_Click(object sender, RoutedEventArgs e)
+        => await RemovePackagesWithConfirm(GetSelectedPackages(), "Gỡ / tắt app đã chọn");
+
+    private async void UninstallAllBloat_Click(object sender, RoutedEventArgs e)
+    {
+        var bloat = _apps.Where(a => a.Category == AppCategory.RomBloat).Select(a => a.Package).ToList();
+        if (bloat.Count == 0)
+        {
+            MessageBox.Show("Không có app rác ROM — quét app trước.", "MintADB");
+            return;
+        }
+
+        await RemovePackagesWithConfirm(bloat, $"Gỡ tất cả {bloat.Count} app rác ROM");
+    }
+
+    private async void RemoveSingleApp_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: InstalledApp app }) return;
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        if (MessageBox.Show(
+                $"Gỡ / tắt {app.Name}?\n{app.Package}",
+                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+
+        if (DebloatBlacklist.IsProtected(app.Package))
+        {
+            MessageBox.Show(
+                $"Không thể gỡ {app.Package}.\n\n{DebloatBlacklist.GetReason(app.Package)}",
+                "MintADB", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        await RunWithBusyAsync(async () => await RemovePackageAsync(serial, app.Package));
+    }
+
+    private async Task RemovePackagesWithConfirm(IReadOnlyList<string> packages, string title)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        if (packages.Count == 0)
+        {
+            MessageBox.Show("Chọn ít nhất 1 app trong danh sách.", "MintADB");
+            return;
+        }
+
+        var blocked = DebloatBlacklist.FilterProtected(packages);
+        var allowed = packages.Where(p => !DebloatBlacklist.IsProtected(p)).ToList();
+
+        if (blocked.Count > 0)
+        {
+            var lines = string.Join("\n", blocked.Select(p => $"· {p} — {DebloatBlacklist.GetReason(p)}"));
+            AppendLog($"[SKIP] {blocked.Count} gói bảo vệ (bootloop):");
+            foreach (var pkg in blocked)
+                AppendLog($"  · {pkg} — {DebloatBlacklist.GetReason(pkg)}");
+
+            if (allowed.Count == 0)
+            {
+                MessageBox.Show(
+                    "Không có app nào an toàn để gỡ.\n\nCác gói sau bị chặn vì có thể bootloop:\n" + lines,
+                    "MintADB", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (MessageBox.Show(
+                    $"Bỏ qua {blocked.Count} gói hệ thống nguy hiểm, tiếp tục gỡ {allowed.Count} app còn lại?",
+                    "MintADB", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+                return;
+        }
+        else if (MessageBox.Show(
+                $"{title} ({allowed.Count} app)?\n\n"
+                + "App hệ thống: pm uninstall --user 0.\n"
+                + "App lõi không gỡ được sẽ tự disable/ẩn.\n"
+                + "Gói Security/Updater/Launcher không bao giờ bị gỡ tự động.",
+                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+
+        await RunWithBusyAsync(async () =>
+        {
+            foreach (var pkg in allowed)
+                await RemovePackageAsync(serial, pkg);
+        });
+    }
+
+    private async Task RemovePackageAsync(string serial, string package)
+    {
+        if (DebloatBlacklist.IsProtected(package))
+        {
+            AppendLog($"[SKIP] {package} — {DebloatBlacklist.GetReason(package)}");
+            return;
+        }
+
+        var r = await Tools.UninstallAsync(serial, package);
+        AppendLog(r.Outcome switch
+        {
+            PackageRemoveOutcome.Uninstalled => $"[OK] Đã gỡ {package}",
+            PackageRemoveOutcome.Disabled => $"[WARN] {package}: không gỡ được → đã vô hiệu hóa",
+            PackageRemoveOutcome.Hidden => $"[WARN] {package}: không gỡ được → đã ẩn",
+            _ => $"[FAIL] {package}: {r.Detail}",
+        });
+
+        if (r.Ok)
+            RemoveAppFromList(package);
+    }
+
+    private void RemoveAppFromList(string package)
+    {
+        var existing = _apps.FirstOrDefault(a => a.Package == package);
+        if (existing is null) return;
+        _apps.Remove(existing);
+        RefreshAppView();
+    }
+
+    private async void DisableApps_Click(object sender, RoutedEventArgs e)
+        => await RunOnSelectedPackages("Tắt app", async (serial, pkg) =>
+        {
+            var r = await Tools.DisablePackageAsync(serial, pkg);
+            if (r.Ok)
+            {
+                AppendLog($"[OK] Đã tắt {pkg}");
+                RemoveAppFromList(pkg);
+            }
+            else AppendLog($"[FAIL] {pkg}: {r.Combined}");
+        }, requireSelection: true);
+
+    private async void ClearAppData_Click(object sender, RoutedEventArgs e)
+        => await RunOnSelectedPackages("Xóa data", async (serial, pkg) =>
+        {
+            if (MessageBox.Show($"Xóa toàn bộ data của {pkg}?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+                return;
+            var r = await Tools.ClearAppDataAsync(serial, pkg);
+            AppendLog(r.Ok ? $"[OK] Clear data {pkg}" : $"[FAIL] {pkg}: {r.Combined}");
+        });
+
+    private async void ForceStopApps_Click(object sender, RoutedEventArgs e)
+        => await RunOnSelectedPackages("Force stop", async (serial, pkg) =>
+        {
+            var r = await Tools.ForceStopAsync(serial, pkg);
+            AppendLog(r.Ok ? $"[OK] Stop {pkg}" : $"[FAIL] {pkg}: {r.Combined}");
+        });
+
+    private async void LaunchApp_Click(object sender, RoutedEventArgs e)
+        => await RunOnSelectedPackages("Mở app", async (serial, pkg) =>
+        {
+            var r = await Tools.LaunchAppAsync(serial, pkg);
+            AppendLog(r.Ok ? $"[OK] Launch {pkg}" : $"[FAIL] {pkg}: {r.Combined}");
+        }, singleOnly: true);
+
+    private async Task RunOnSelectedPackages(
+        string label,
+        Func<string, string, Task> action,
+        bool requireSelection = false,
+        bool singleOnly = false)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var pkgs = GetSelectedPackages();
+        if (pkgs.Count == 0)
+        {
+            MessageBox.Show(requireSelection
+                ? "Chọn ít nhất 1 app trong danh sách."
+                : "Chọn app hoặc nhập package tùy chỉnh.",
+                "MintADB");
+            return;
+        }
+
+        if (singleOnly && pkgs.Count > 1)
+        {
+            MessageBox.Show("Chỉ chọn 1 app.", "MintADB");
+            return;
+        }
+
+        SetActionButtonsEnabled(false);
+        try
+        {
+            foreach (var pkg in pkgs)
+                await action(serial, pkg);
+        }
+        finally { SetActionButtonsEnabled(true); }
+    }
+
+    private string ResolveSaveDir(TextBox box, string defaultSubfolder)
+    {
+        var text = GetBoxText(box);
+        if (string.IsNullOrWhiteSpace(text))
+            return Path.Combine(AdbToolsService.MintAdbDir, defaultSubfolder);
+        return text.Trim().TrimEnd('\\', '/');
+    }
+
+    private static bool TryPickFolder(string? initialDir, out string? folder)
+    {
+        folder = null;
+        var dlg = new OpenFolderDialog
+        {
+            Title = "Chọn thư mục lưu",
+            InitialDirectory = !string.IsNullOrWhiteSpace(initialDir) && Directory.Exists(initialDir)
+                ? initialDir
+                : Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+        };
+        if (dlg.ShowDialog() != true) return false;
+        folder = dlg.FolderName;
+        return true;
+    }
+
+    private void BrowseScreenshotDir_Click(object sender, RoutedEventArgs e)
+    {
+        if (TryPickFolder(ResolveSaveDir(ScreenshotSaveBox, "Screenshots"), out var dir) && dir is not null)
+            ScreenshotSaveBox.Text = dir;
+    }
+
+    private void BrowseRecordDir_Click(object sender, RoutedEventArgs e)
+    {
+        if (TryPickFolder(ResolveSaveDir(RecordSaveBox, "Recordings"), out var dir) && dir is not null)
+            RecordSaveBox.Text = dir;
+    }
+
+    private async void Screenshot_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var saveDir = ResolveSaveDir(ScreenshotSaveBox, "Screenshots");
+
+        await RunToolAsync("Screenshot", async () =>
+        {
+            var path = await Tools.CaptureScreenshotAsync(serial, saveDir);
+            if (path is not null)
+            {
+                AppendLog($"[OK] Đã lưu: {path}");
+                MessageBox.Show($"Đã lưu ảnh màn hình:\n{path}", "Screenshot");
+            }
+            else AppendLog("[FAIL] Không chụp được màn hình");
+        });
+    }
+
+    private void Scrcpy_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var maxSize = ScrcpyMaxSize.SelectedIndex switch { 0 => 720, 2 => 1440, _ => 1080 };
+        var stayAwake = ScrcpyStayAwake.IsChecked == true;
+
+        if (Tools.TryLaunchScrcpy(serial, maxSize, stayAwake, out var msg))
+            AppendLog($"[OK] {msg}");
+        else
+        {
+            AppendLog($"[FAIL] {msg}");
+            MessageBox.Show(msg, "Scrcpy", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private async void Logcat_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        await RunToolAsync("Logcat", async () =>
+        {
+            var r = await Tools.GetLogcatAsync(serial, 200);
+            AppendLog("--- logcat (200 dòng) ---");
+            AppendLog(string.IsNullOrWhiteSpace(r.Combined) ? "(trống)" : r.Combined);
+        });
+    }
+
+    private async void DeviceInfo_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        await RunToolAsync("Device info", async () =>
+        {
+            var info = await Tools.GetDeviceInfoAsync(serial);
+            AppendLog("--- Thông tin thiết bị ---");
+            AppendLog(info);
+        });
+    }
+
+}
