@@ -4,7 +4,7 @@
 
 #define AppName "MintADB"
 #define AppVersion "1.0.0"
-#define AppPublisher "MintADB"
+#define AppPublisher "MINT_HD"
 #define AppExe "MintADB.exe"
 #define PublishDir "..\dist\MintADB"
 #define AppIcon "..\exe.ico"
@@ -14,6 +14,14 @@ AppId={{8F4E2A1B-9C3D-4E5F-A6B7-1C2D3E4F5A6B}}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}
+AppPublisherURL=https://github.com/MintKtc/MintADB
+AppSupportURL=https://github.com/MintKtc/MintADB/issues
+AppVerName={#AppName} {#AppVersion}
+VersionInfoCompany={#AppPublisher}
+VersionInfoDescription=MintADB — ADB tool for Xiaomi / HyperOS by MINT_HD
+VersionInfoCopyright=Copyright (C) 2026 MINT_HD
+VersionInfoProductName={#AppName}
+VersionInfoProductVersion={#AppVersion}
 DefaultDirName={autopf}\{#AppName}
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes
@@ -32,8 +40,8 @@ UninstallDisplayIcon={app}\{#AppExe}
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "Shortcut Desktop"; GroupDescription: "Shortcuts:"; Flags: unchecked
-Name: "installusbdriver"; Description: "Cai driver USB Google (android_winusb) sau khi cai app"; GroupDescription: "Tuy chon:"; Flags: checkedonce
+Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"; Flags: unchecked
+Name: "installusbdriver"; Description: "Install Google USB driver (android_winusb) after setup"; GroupDescription: "Optional:"; Flags: checkedonce
 
 [Files]
 Source: "{#PublishDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -44,7 +52,7 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopico
 
 [Run]
 ; Tu dong trien khai ADB/Fastboot + thu muc du lieu (khong hien UI chinh)
-Filename: "{app}\{#AppExe}"; Parameters: "--bootstrap-only"; StatusMsg: "Dang cau hinh ADB/Fastboot..."; Flags: waituntilterminated
+Filename: "{app}\{#AppExe}"; Parameters: "--bootstrap-only"; StatusMsg: "Configuring ADB/Fastboot..."; Flags: waituntilterminated
 
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);
@@ -55,8 +63,8 @@ begin
   begin
     if FileExists(ExpandConstant('{app}\Drivers\usb_driver\android_winusb.inf')) then
     begin
-      if MsgBox('Cai driver USB Google (can quyen Admin)?' + #13#10 +
-        'Neu huy, co the cai sau trong app: Công cụ > Cơ bản > Cài driver USB.',
+      if MsgBox('Install Google USB driver (requires Admin)?' + #13#10 + #13#10 +
+        'You can also install later in the app: Tools > Basic > Install USB driver.',
         mbConfirmation, MB_YESNO) = IDYES then
       begin
         Exec('pnputil.exe', '/add-driver "' + ExpandConstant('{app}\Drivers\usb_driver\android_winusb.inf') + '" /install',

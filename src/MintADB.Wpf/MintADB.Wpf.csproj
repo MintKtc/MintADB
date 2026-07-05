@@ -10,9 +10,12 @@
     <AssemblyName>MintADB</AssemblyName>
     <Product>MintADB</Product>
     <Version>1.0.0</Version>
-    <Company>MintADB</Company>
-    <Description>ADB tool for Xiaomi / HyperOS optimization</Description>
+    <Company>MINT_HD</Company>
+    <Authors>MINT_HD</Authors>
+    <Copyright>Copyright © 2026 MINT_HD</Copyright>
+    <Description>MintADB — ADB tool for Xiaomi / HyperOS by MINT_HD</Description>
     <ApplicationIcon>exe.ico</ApplicationIcon>
+    <ApplicationTitle>MintADB</ApplicationTitle>
   </PropertyGroup>
 
   <ItemGroup>

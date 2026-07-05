@@ -39,9 +39,14 @@
                         <Button x:Name="BtnMaximize" Style="{StaticResource TrafficLight}"
                                 Background="#28C840" Click="BtnMaximize_Click" ToolTip="Phóng to"/>
                     </StackPanel>
-                    <TextBlock Text="MintADB" FontSize="13" FontWeight="Bold"
-                               Foreground="{StaticResource MacSecondaryBrightBrush}"
-                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="MintADB" FontSize="13" FontWeight="Bold"
+                                   Foreground="{StaticResource MacSecondaryBrightBrush}"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="MINT_HD" FontSize="10" FontWeight="SemiBold"
+                                   Foreground="{StaticResource MacSecondaryBrush}"
+                                   HorizontalAlignment="Center" Opacity="0.85"/>
+                    </StackPanel>
                 </Grid>
             </Border>
 
@@ -66,13 +71,12 @@
                     <StackPanel Grid.Row="0" Margin="16,20,16,12">
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
                             <Border Width="36" Height="36" CornerRadius="{StaticResource MacRadiusCard}"
-                                    Background="{StaticResource MacBlueBrush}">
-                                <TextBlock Text="M" FontSize="18" FontWeight="Bold" Foreground="White"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    Background="Transparent" ClipToBounds="True">
+                                <Image Source="/exe.ico" Width="36" Height="36" RenderOptions.BitmapScalingMode="HighQuality"/>
                             </Border>
                             <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
                                 <TextBlock Text="MintADB" FontSize="15" FontWeight="Bold"/>
-                                <TextBlock Text="Xiaomi China" FontSize="12" FontWeight="SemiBold"
+                                <TextBlock Text="MINT_HD · Xiaomi Tools" FontSize="12" FontWeight="SemiBold"
                                            Foreground="{StaticResource MacSecondaryBrightBrush}"/>
                             </StackPanel>
                         </StackPanel>
