@@ -1,12 +1,27 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using MintADB.Wpf.Models;
 
 namespace MintADB.Wpf.Services;
 
-public sealed class AdbService
+public sealed partial class AdbService
 {
+    // Android package / component names only contain these characters. Values
+    // that don't match are rejected before being interpolated into an
+    // `adb shell` command line, preventing shell command injection.
+    [GeneratedRegex(@"^[A-Za-z][A-Za-z0-9_.]*(/[A-Za-z0-9_.$]+)?$")]
+    private static partial Regex PackageNameRegex();
+
+    public static bool IsValidPackage(string? package) =>
+        !string.IsNullOrEmpty(package) && PackageNameRegex().IsMatch(package);
+
+    // Wrap an arbitrary value in single quotes for safe use inside an
+    // `adb shell` command string (device shell is POSIX sh).
+    public static string ShellSingleQuote(string value) =>
+        "'" + value.Replace("'", "'\\''") + "'";
+
     private readonly HashSet<string> _settingsElevatedSerials = new(StringComparer.Ordinal);
 
     public string AdbPath { get; private set; } = "adb";
