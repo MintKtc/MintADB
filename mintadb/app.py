@@ -12,7 +12,7 @@ from typing import Optional
 
 import customtkinter as ctk
 
-from mintadb.adb_engine import AdbEngine, Device, DeviceInfo
+from mintadb.adb_engine import AdbEngine, Device, DeviceInfo, is_valid_package
 from mintadb.xiaomi_cn import APP_PRESETS, AppPreset, XiaomiCnOptimizer
 
 ctk.set_appearance_mode("dark")
@@ -224,8 +224,13 @@ class MintAdbApp(ctk.CTk):
                 selected.append(preset)
         custom = self.custom_pkg.get().strip()
         if custom:
-            name = custom.rsplit(".", 1)[-1]
-            selected.append(AppPreset(name=name, package=custom))
+            if not is_valid_package(custom):
+                messagebox.showwarning(
+                    "MintADB", f"Package không hợp lệ: {custom}"
+                )
+            else:
+                name = custom.rsplit(".", 1)[-1]
+                selected.append(AppPreset(name=name, package=custom))
         return selected
 
     def _scan_rom(self) -> None:

@@ -272,7 +272,12 @@ public partial class MainWindow : Window
         var custom = CustomPackageBox.Text.Trim();
         if (CustomPackageBox.Tag is string hint && custom == hint) custom = "";
         if (!string.IsNullOrEmpty(custom))
-            yield return new AppPreset { Name = custom.Split('.')[^1], Package = custom, Selected = true };
+        {
+            if (AdbService.IsValidPackage(custom))
+                yield return new AppPreset { Name = custom.Split('.')[^1], Package = custom, Selected = true };
+            else
+                AppendLog($"[WARN] Bỏ qua package không hợp lệ: {custom}");
+        }
     }
 
     private void OnAppFilter(object sender, FilterEventArgs e)

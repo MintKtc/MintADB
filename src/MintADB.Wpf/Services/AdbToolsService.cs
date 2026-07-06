@@ -399,7 +399,7 @@ public sealed class AdbToolsService(AdbService adb)
 
     // ── Input ──
     public Task<ProcessResult> InputTextAsync(string serial, string text, CancellationToken ct = default)
-        => adb.ShellAsync($"input text \"{text.Replace("\"", "\\\"")}\"", serial, ct);
+        => adb.ShellAsync($"input text {AdbService.ShellSingleQuote(text.Replace(" ", "%s"))}", serial, ct);
 
     public Task<ProcessResult> InputKeyeventAsync(string serial, int keyCode, CancellationToken ct = default)
         => adb.ShellAsync($"input keyevent {keyCode}", serial, ct);

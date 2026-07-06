@@ -175,11 +175,12 @@ public sealed class AdBlockService(AdbService adb, AdbToolsService tools)
 
     private async Task<string> GetPackageStateAsync(string serial, string package, CancellationToken ct)
     {
-        var r = await adb.ShellAsync($"pm list packages -d | grep {package}", serial, ct);
+        var q = AdbService.ShellSingleQuote(package);
+        var r = await adb.ShellAsync($"pm list packages -d | grep -F {q}", serial, ct);
         if (r.Combined.Contains(package, StringComparison.Ordinal))
             return "đã tắt";
 
-        r = await adb.ShellAsync($"pm list packages -e | grep {package}", serial, ct);
+        r = await adb.ShellAsync($"pm list packages -e | grep -F {q}", serial, ct);
         if (r.Combined.Contains(package, StringComparison.Ordinal))
             return "đang bật";
 

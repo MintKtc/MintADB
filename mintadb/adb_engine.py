@@ -4,11 +4,22 @@ from __future__ import annotations
 
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import threading
 from dataclasses import dataclass, field
 from typing import Callable, Iterator, Optional
+
+# Android package/component names only ever contain these characters.
+# Anything else is rejected to prevent shell command injection when values
+# are interpolated into `adb shell` command strings.
+_PACKAGE_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_.]*(/[A-Za-z0-9_.$]+)?$")  # pkg or pkg/component
+
+
+def is_valid_package(package: str) -> bool:
+    """Return True if *package* is a safe Android package/component name."""
+    return bool(_PACKAGE_RE.match(package))
 
 
 @dataclass
@@ -256,14 +267,14 @@ class AdbEngine:
         return entries
 
     def list_packages(self, serial: str, filter_text: str = "") -> list[str]:
-        cmd = "pm list packages"
-        if filter_text:
-            cmd += f" | grep -i {filter_text}"
-        _, out, _ = self.run_shell(cmd, serial=serial, timeout=60)
+        _, out, _ = self.run_shell("pm list packages", serial=serial, timeout=60)
         packages = []
         for line in out.splitlines():
             if line.startswith("package:"):
                 packages.append(line.split(":", 1)[1].strip())
+        needle = filter_text.strip().lower()
+        if needle:
+            packages = [p for p in packages if needle in p.lower()]
         return sorted(packages)
 
     def screencap(self, serial: str, local_path: str) -> tuple[bool, str]:
@@ -315,12 +326,18 @@ class AdbEngine:
         return "Error" not in msg, msg
 
     def input_text(self, serial: str, text: str) -> tuple[bool, str]:
-        escaped = text.replace(" ", "%s").replace("'", "\\'")
-        _, out, err = self.run_shell(f"input text '{escaped}'", serial=serial, timeout=15)
+        # `input text` interprets %s as a space; shlex.quote then makes the
+        # argument safe against shell metacharacters.
+        arg = shlex.quote(text.replace(" ", "%s"))
+        _, out, err = self.run_shell(f"input text {arg}", serial=serial, timeout=15)
         return True, (out + err).strip()
 
     def input_keyevent(self, serial: str, keycode: str) -> tuple[bool, str]:
-        _, out, err = self.run_shell(f"input keyevent {keycode}", serial=serial, timeout=15)
+        if not re.fullmatch(r"\d+|KEYCODE_[A-Z0-9_]+", keycode.strip()):
+            return False, f"invalid keycode: {keycode}"
+        _, out, err = self.run_shell(
+            f"input keyevent {keycode.strip()}", serial=serial, timeout=15
+        )
         return True, (out + err).strip()
 
     def get_logcat(self, serial: str, args: str = "") -> str:
