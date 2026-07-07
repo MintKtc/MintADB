@@ -45,11 +45,11 @@ Desktop.ini
 *.7z
 !scripts/**
 
-# Android
-src/MintADB.Android/.gradle/
-src/MintADB.Android/**/build/
-src/MintADB.Android/local.properties
-src/MintADB.Android/.idea/
+# Android (MintADB-Android/ — project APK riêng)
+MintADB-Android/.gradle/
+MintADB-Android/**/build/
+MintADB-Android/local.properties
+MintADB-Android/.idea/
+MintADB-Android/dist/
 *.apk
 *.aab
-!src/MintADB.Android/

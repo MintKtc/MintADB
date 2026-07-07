@@ -71,7 +71,6 @@ public partial class MainWindow : Window
         ShowSystemSubPage(0);
         InitBundledApkList();
         InitDeviceSpoofPanel();
-
         InitLogDocument();
 
         _adb.Shizuku = Shizuku;

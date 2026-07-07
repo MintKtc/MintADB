@@ -14,6 +14,7 @@ public partial class MainWindow
         BatteryFill.Background = (Brush)FindResource("MacGreenBrush");
         BatteryTechText.Text = "Công nghệ pin";
         BatteryCapacityLine.Text = "Dung lượng: —";
+        BatteryMaxCapacityLine.Text = "Dung lượng tối đa: —";
         BatteryStatusLine.Text = "Trạng thái: —";
     }
 
@@ -46,6 +47,16 @@ public partial class MainWindow
                 ? $"Dung lượng tối đa: {info.MaxMah:N0} mAh"
                 : "Dung lượng: —";
 
+        BatteryMaxCapacityLine.Text = info.MaxMah is > 0
+            ? $"Dung lượng tối đa: {info.MaxMah:N0} mAh"
+            : "Dung lượng tối đa: —";
+
+        if (info.CurrentMah is > 0 && info.MaxMah is > 0)
+        {
+            var healthPct = (int)Math.Round(info.CurrentMah.Value * 100.0 / info.MaxMah.Value);
+            BatteryMaxCapacityLine.Text += $" ({healthPct}% so với thiết kế)";
+        }
+
         var statusParts = new List<string>();
         if (!string.IsNullOrWhiteSpace(info.Status))
             statusParts.Add(info.Status);
@@ -63,6 +74,7 @@ public partial class MainWindow
         DisplayPanelText.Text = "Tấm nền";
         DisplayPanelBadge.Background = new SolidColorBrush(Color.FromRgb(0x1A, 0x25, 0x40));
         DisplayPanelText.Foreground = new SolidColorBrush(Color.FromRgb(0xB3, 0x88, 0xFF));
+        DisplayPanelDetailLine.Text = "Tấm nền: —";
         DisplayDpiLine.Text = "DPI: —";
         DisplayHzLine.Text = "Tần số quét: —";
     }
@@ -80,6 +92,10 @@ public partial class MainWindow
         var panel = info.PanelTech ?? "—";
         DisplayPanelText.Text = panel;
         ApplyPanelBadgeStyle(panel);
+
+        DisplayPanelDetailLine.Text = !string.IsNullOrWhiteSpace(info.PanelName)
+            ? $"Tấm nền: {info.PanelName}"
+            : "Tấm nền: —";
 
         DisplayDpiLine.Text = string.IsNullOrWhiteSpace(info.Dpi)
             ? "DPI: —"

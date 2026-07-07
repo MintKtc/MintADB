@@ -38,17 +38,19 @@ public partial class MainWindow
         ToolPageScreen.Visibility = page == 2 ? Visibility.Visible : Visibility.Collapsed;
         ToolPageNetwork.Visibility = page == 3 ? Visibility.Visible : Visibility.Collapsed;
         ToolPageSystem.Visibility = page == 4 ? Visibility.Visible : Visibility.Collapsed;
-        ToolPageAdvanced.Visibility = page == 5 ? Visibility.Visible : Visibility.Collapsed;
-        ToolPageFastboot.Visibility = page == 6 ? Visibility.Visible : Visibility.Collapsed;
+        ToolPageTweaks.Visibility = page == 5 ? Visibility.Visible : Visibility.Collapsed;
+        ToolPageAdvanced.Visibility = page == 6 ? Visibility.Visible : Visibility.Collapsed;
+        ToolPageFastboot.Visibility = page == 7 ? Visibility.Visible : Visibility.Collapsed;
+        ToolPageMtk.Visibility = page == 8 ? Visibility.Visible : Visibility.Collapsed;
 
         SetActiveTab(page,
             ToolNavBasic, ToolNavApps, ToolNavScreen, ToolNavNetwork,
-            ToolNavSystem, ToolNavAdvanced, ToolNavFastboot);
+            ToolNavSystem, ToolNavTweaks, ToolNavAdvanced, ToolNavFastboot, ToolNavMtk);
 
         if (page == 4)
             ShowSystemSubPage(_systemPage);
 
-        if (page == 6)
+        if (page == 7)
             _ = RefreshFastbootDevicesAsync();
     }
 

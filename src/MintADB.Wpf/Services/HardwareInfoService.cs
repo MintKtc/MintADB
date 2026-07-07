@@ -178,6 +178,9 @@ public sealed class HardwareInfoService(AdbService adb)
         if ((currentUah is null or <= 0) && maxUah is > 0 && levelPercent is > 0)
             currentUah = maxUah.Value * levelPercent.Value / 100;
 
+        if ((maxUah is null or <= 0) && currentUah is > 0 && levelPercent is > 0)
+            maxUah = currentUah.Value * 100 / levelPercent.Value;
+
         return (UahToMah(currentUah), UahToMah(maxUah));
     }
 
@@ -208,9 +211,15 @@ public sealed class HardwareInfoService(AdbService adb)
         if (size.Ok)
             resolution = ParseWmSize(size.Output);
 
-        var density = await adb.ShellAsync("wm density", serial, ct);
-        if (density.Ok)
-            dpi = ParseWmDensity(density.Output);
+        var densityResult = await adb.ShellAsync("wm density", serial, ct);
+        if (densityResult.Ok)
+            dpi = ParseWmDensity(densityResult.Output);
+
+        if (string.IsNullOrWhiteSpace(dpi))
+        {
+            var dpiProp = await adb.GetPropAsync(serial, "ro.sf.lcd_density", ct);
+            if (!string.IsNullOrWhiteSpace(dpiProp)) dpi = $"{dpiProp} dpi";
+        }
 
         float? currentHz = null;
         float? peakHz = null;
@@ -248,7 +257,7 @@ public sealed class HardwareInfoService(AdbService adb)
                 resolution = fromDumpsys.Resolution;
         }
 
-        var panelTech = await DetectPanelTechnologyAsync(serial, display.Ok ? display.Output : null, ct);
+        var (panelTech, panelName) = await DetectPanelTechnologyAsync(serial, display.Ok ? display.Output : null, ct);
 
         var refresh = currentHz ?? peakHz;
         var refreshText = refresh is not null ? $"{refresh:0.#} Hz" : null;
@@ -263,6 +272,7 @@ public sealed class HardwareInfoService(AdbService adb)
             PeakHz = peakHz,
             MinHz = minHz,
             PanelTech = panelTech,
+            PanelName = panelName,
             MetricsText = FormatMetrics(
             [
                 ("Độ phân giải", resolution),
@@ -271,11 +281,12 @@ public sealed class HardwareInfoService(AdbService adb)
                 ("Hz tối đa", peakText),
                 ("Hz tối thiểu", minText),
                 ("Công nghệ tấm nền", panelTech),
+                ("Panel", panelName),
             ]),
         };
     }
 
-    private async Task<string?> DetectPanelTechnologyAsync(
+    private async Task<(string? Normalized, string? Raw)> DetectPanelTechnologyAsync(
         string serial, string? displayDumpsys, CancellationToken ct)
     {
         var candidates = new List<string>();
@@ -309,7 +320,8 @@ public sealed class HardwareInfoService(AdbService adb)
             }
         }
 
-        string? best = null;
+        string? bestNormalized = null;
+        string? bestRaw = null;
         var bestScore = -1;
         foreach (var raw in candidates)
         {
@@ -319,11 +331,14 @@ public sealed class HardwareInfoService(AdbService adb)
             if (score > bestScore)
             {
                 bestScore = score;
-                best = normalized;
+                bestNormalized = normalized;
+                bestRaw = raw;
             }
         }
 
-        return best;
+        bestRaw = SanitizePanelRaw(bestRaw, bestNormalized);
+
+        return (bestNormalized, bestRaw);
     }
 
     private static bool ContainsPanelKeyword(string text) =>
@@ -349,6 +364,27 @@ public sealed class HardwareInfoService(AdbService adb)
         if (u.Contains("TFT") || u.Contains("LCD")) return "LCD";
 
         return null;
+    }
+
+    private static string? SanitizePanelRaw(string? raw, string? normalized)
+    {
+        if (string.IsNullOrWhiteSpace(raw)) return normalized;
+
+        if (Regex.IsMatch(raw, @"\bm[A-Z]"))
+            return normalized;
+
+        if (raw.Length <= 80) return raw;
+
+        var m = Regex.Match(raw, @"(?:panel|display)\s*(?:type|technology|name|model)?\s*[=:]\s*(\w[\w\s.\-/]*)", RegexOptions.IgnoreCase);
+        if (m.Success) return m.Groups[1].Value;
+
+        foreach (var part in raw.Split([',', ';', '\t'], StringSplitOptions.TrimEntries))
+        {
+            if (ContainsPanelKeyword(part))
+                return part;
+        }
+
+        return normalized;
     }
 
     private static int ScorePanelTech(string tech) => tech switch

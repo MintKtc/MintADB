@@ -1,0 +1,5 @@
+[SoundQuality]
++CVars=SoundQualityType=2
+
+[ArtQuality]
++CVars=WaterReflectionSetting=0

@@ -22,6 +22,7 @@ public sealed class DisplayInfoResult
     public float? PeakHz { get; init; }
     public float? MinHz { get; init; }
     public string? PanelTech { get; init; }
+    public string? PanelName { get; init; }
     public string MetricsText { get; init; } = "";
 }
 

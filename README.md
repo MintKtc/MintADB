@@ -70,9 +70,9 @@ powershell -ExecutionPolicy Bypass -File scripts\publish.ps1 -Profile installer
 | `%LOCALAPPDATA%\MintADB\` | Deployed ADB, `install-state.json` |
 | `Desktop\MintADB\` | Screenshots, Hz/spoof backups, recordings |
 
-### Android companion APK
+### MintADB Mobile (APK) — separate project
 
-On-device app (Shizuku) with similar optimize/apps/display tabs — see [docs/MintADB-Android.md](docs/MintADB-Android.md).
+On-device app via **Shizuku** — lives in **`MintADB-Android/`** (not mixed with PC). See [MintADB-Android/README.md](MintADB-Android/README.md).
 
 ### Contribute
 
@@ -108,9 +108,9 @@ Fork → branch → PR. Report issues on [GitHub Issues](https://github.com/Mint
 - `MintADB-Setup-v1.0.0-win-x64.exe` — installer (khuyến nghị)
 - `MintADB-v1.0.0-win-x64.zip` — portable
 
-### APK Android (companion)
+### MintADB Mobile (APK) — project riêng
 
-App chạy trên máy, cần Shizuku — xem [docs/MintADB-Android.md](docs/MintADB-Android.md). Build bằng Android Studio trong `src/MintADB.Android`.
+App chạy trên máy, cần Shizuku — mở thư mục **`MintADB-Android/`** trong Android Studio. Xem [MintADB-Android/README.md](MintADB-Android/README.md).
 
 ### Phát triển
 
@@ -136,8 +136,9 @@ powershell -ExecutionPolicy Bypass -File scripts\publish.ps1 -Profile installer
 
 ```
 MintADB/
-├── src/MintADB.Wpf/       # WPF app
-├── scripts/               # publish.ps1, MintADB.iss
+├── src/MintADB.Wpf/       # Bản PC (Windows)
+├── MintADB-Android/       # Bản APK (mở folder này trong Android Studio)
+├── scripts/               # publish.ps1, MintADB.iss (PC)
 ├── docs/
 └── exe.ico
 ```

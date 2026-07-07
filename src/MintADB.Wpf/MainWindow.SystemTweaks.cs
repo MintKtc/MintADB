@@ -1,0 +1,365 @@
+using System.Windows;
+using System.Windows.Controls;
+using MintADB.Wpf.Services;
+
+namespace MintADB.Wpf;
+
+public partial class MainWindow
+{
+    private SystemTweaksService? _systemTweaks;
+
+    private SystemTweaksService SystemTweaks => _systemTweaks ??= new SystemTweaksService(_adb);
+
+    private void ToolNavTweaks_Click(object sender, RoutedEventArgs e) => ShowToolPage(5);
+
+    // ── DPI ──
+
+    private async void ReadDensity_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        DensityStatusText.Text = "Đang đọc...";
+        try
+        {
+            var status = await SystemTweaks.GetDensityStatusAsync(serial);
+            DensityStatusText.Text = status;
+            AppendLog("--- DPI ---");
+            AppendLog(status);
+        }
+        catch (Exception ex)
+        {
+            DensityStatusText.Text = $"Lỗi: {ex.Message}";
+        }
+    }
+
+    private async void ApplyDensity_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        if (!int.TryParse(DensityCustomBox.Text.Trim(), out var dpi) || dpi < 120 || dpi > 800)
+        {
+            MessageBox.Show("Nhập DPI hợp lệ (120–800).\nVí dụ: 320, 360, 400, 440, 480", "MintADB");
+            return;
+        }
+
+        if (MessageBox.Show($"Đặt DPI → {dpi}?\n\nGiao diện sẽ thay đổi ngay. Có thể reset sau.",
+                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            return;
+
+        await RunToolAsync("DPI", async () =>
+        {
+            var r = await SystemTweaks.SetDensityAsync(serial, dpi);
+            AppendLog(r.Ok ? $"[OK] DPI → {dpi}" : $"[FAIL] {r.Combined}");
+            DensityStatusText.Text = await SystemTweaks.GetDensityStatusAsync(serial);
+        });
+    }
+
+    private void DensityPreset_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: string dpi })
+            DensityCustomBox.Text = dpi;
+    }
+
+    private async void ResetDensity_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        await RunToolAsync("DPI reset", async () =>
+        {
+            var r = await SystemTweaks.ResetDensityAsync(serial);
+            AppendLog(r.Ok ? "[OK] Đã reset DPI" : $"[FAIL] {r.Combined}");
+            DensityStatusText.Text = await SystemTweaks.GetDensityStatusAsync(serial);
+        });
+    }
+
+    // ── Animation ──
+
+    private async void ReadAnimationStatus_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        AnimationStatusText.Text = "Đang đọc...";
+        try
+        {
+            var status = await SystemTweaks.GetAnimationStatusAsync(serial);
+            AnimationStatusText.Text = status;
+            AppendLog("--- Animation ---");
+            AppendLog(status);
+        }
+        catch (Exception ex)
+        {
+            AnimationStatusText.Text = $"Lỗi: {ex.Message}";
+        }
+    }
+
+    private async void ApplyAnimationSpeed_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var scale = AnimationSpeedCombo.SelectedItem switch
+        {
+            ComboBoxItem { Tag: string t } => t,
+            _ => "1.0",
+        };
+
+        var label = AnimationSpeedCombo.SelectedItem switch
+        {
+            ComboBoxItem { Content: string c } => c,
+            _ => "1x",
+        };
+
+        if (MessageBox.Show($"Đặt tốc độ animation → {label}?",
+                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            return;
+
+        await RunToolAsync($"Animation {label}", async () =>
+        {
+            var (ok, fail) = await SystemTweaks.SetAnimationSpeedAsync(serial, scale, AppendLog);
+            AppendLog($"[Animation] {ok} OK · {fail} WARN");
+            AnimationStatusText.Text = await SystemTweaks.GetAnimationStatusAsync(serial);
+        });
+    }
+
+    // ── Navigation ──
+
+    private async void ReadNavigationStatus_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        NavStatusText.Text = "Đang đọc...";
+        try
+        {
+            var status = await SystemTweaks.GetNavigationStatusAsync(serial);
+            NavStatusText.Text = status;
+            AppendLog("--- Điều hướng ---");
+            AppendLog(status);
+        }
+        catch (Exception ex)
+        {
+            NavStatusText.Text = $"Lỗi: {ex.Message}";
+        }
+    }
+
+    private async void SetGestureNav_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        if (MessageBox.Show("Chuyển sang điều hướng cử chỉ?\n\nCó thể đổi lại 3 nút sau.",
+                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            return;
+
+        await RunToolAsync("Cử chỉ", async () =>
+        {
+            var r = await SystemTweaks.SetGestureNavigationAsync(serial);
+            AppendLog(r.Ok ? "[OK] Đã chuyển sang cử chỉ" : $"[FAIL] {r.Combined}");
+            NavStatusText.Text = await SystemTweaks.GetNavigationStatusAsync(serial);
+        });
+    }
+
+    private async void SetThreeButtonNav_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        if (MessageBox.Show("Chuyển sang điều hướng 3 nút?",
+                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            return;
+
+        await RunToolAsync("3 nút", async () =>
+        {
+            var r = await SystemTweaks.SetThreeButtonNavigationAsync(serial);
+            AppendLog(r.Ok ? "[OK] Đã chuyển sang 3 nút" : $"[FAIL] {r.Combined}");
+            NavStatusText.Text = await SystemTweaks.GetNavigationStatusAsync(serial);
+        });
+    }
+
+    private async void ToggleImmersiveMode_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var enable = ImmersiveToggle.IsChecked == true;
+        if (MessageBox.Show(enable
+                ? "Bật chế độ immersive (ẩn thanh điều hướng toàn màn hình)?"
+                : "Tắt chế độ immersive?",
+                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            return;
+
+        await RunToolAsync("Immersive", async () =>
+        {
+            var r = await SystemTweaks.SetImmersiveModeAsync(serial, enable);
+            AppendLog(r.Ok
+                ? $"[OK] Immersive {(enable ? "bật" : "tắt")}"
+                : $"[FAIL] {r.Combined}");
+        });
+    }
+
+    // ── OTA Blocker ──
+
+    private async void ReadOtaStatus_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        OtaStatusText.Text = "Đang kiểm tra...";
+        try
+        {
+            var status = await SystemTweaks.GetOtaBlockStatusAsync(serial);
+            OtaStatusText.Text = status;
+            AppendLog("--- OTA ---");
+            AppendLog(status);
+        }
+        catch (Exception ex)
+        {
+            OtaStatusText.Text = $"Lỗi: {ex.Message}";
+        }
+    }
+
+    private async void BlockOta_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        if (MessageBox.Show(
+                "Chặn cập nhật OTA?\n\n"
+                + "· Tắt gói cập nhật hệ thống\n"
+                + "· Private DNS → dns.adguard.com\n"
+                + "· Có thể khôi phục sau.",
+                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+
+        await RunToolAsync("Chặn OTA", async () =>
+        {
+            var (ok, fail) = await SystemTweaks.BlockOtaUpdatesAsync(serial, AppendLog);
+            AppendLog($"[OTA] {ok} OK · {fail} WARN");
+            OtaStatusText.Text = await SystemTweaks.GetOtaBlockStatusAsync(serial);
+        });
+    }
+
+    private async void UnblockOta_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        await RunToolAsync("Khôi phục OTA", async () =>
+        {
+            var (ok, fail) = await SystemTweaks.UnblockOtaUpdatesAsync(serial, AppendLog);
+            AppendLog($"[OTA] {ok} OK · {fail} WARN");
+            OtaStatusText.Text = await SystemTweaks.GetOtaBlockStatusAsync(serial);
+        });
+    }
+
+    // ── Audio ──
+
+    private async void ReadAudioStatus_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        AudioStatusText.Text = "Đang đọc...";
+        try
+        {
+            var status = await SystemTweaks.GetAudioStatusAsync(serial);
+            AudioStatusText.Text = status;
+            AppendLog("--- Audio ---");
+            AppendLog(status);
+        }
+        catch (Exception ex)
+        {
+            AudioStatusText.Text = $"Lỗi: {ex.Message}";
+        }
+    }
+
+    private async void ApplyBluetoothCodec_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var codecValue = AudioCodecCombo.SelectedItem switch
+        {
+            ComboBoxItem { Tag: string t } => t,
+            _ => "",
+        };
+        var codecLabel = AudioCodecCombo.SelectedItem switch
+        {
+            ComboBoxItem { Content: string c } => c,
+            _ => "Mặc định",
+        };
+
+        if (MessageBox.Show($"Đặt codec Bluetooth → {codecLabel}?\nCần kết nối lại tai nghe.",
+                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            return;
+
+        await RunToolAsync($"Codec {codecLabel}", async () =>
+        {
+            var r = await SystemTweaks.SetBluetoothCodecAsync(serial, codecValue);
+            AppendLog(r.Ok
+                ? $"[OK] Codec → {codecLabel}"
+                : $"[FAIL] {r.Combined}");
+            AudioStatusText.Text = await SystemTweaks.GetAudioStatusAsync(serial);
+        });
+    }
+
+    private async void ToggleAbsoluteVolume_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var enable = AbsVolumeToggle.IsChecked == true;
+        await RunToolAsync($"Âm lượng tuyệt đối {(enable ? "bật" : "tắt")}", async () =>
+        {
+            var r = await SystemTweaks.ToggleAbsoluteVolumeAsync(serial, enable);
+            AppendLog(r.Ok
+                ? $"[OK] Absolute volume → {(enable ? "bật" : "tắt")}"
+                : $"[FAIL] {r.Combined}");
+            AudioStatusText.Text = await SystemTweaks.GetAudioStatusAsync(serial);
+        });
+    }
+
+    private async void GoogleServicesStatus_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        GoogleServicesText.Text = "Đang kiểm tra...";
+        try
+        {
+            var status = await SystemTweaks.GetGoogleServicesStatusAsync(serial);
+            GoogleServicesText.Text = status;
+            AppendLog("--- Google Services ---");
+            AppendLog(status);
+        }
+        catch (Exception ex)
+        {
+            GoogleServicesText.Text = $"Lỗi: {ex.Message}";
+        }
+    }
+
+    private async void EnableGoogleServices_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        if (MessageBox.Show(
+                "Bật dịch vụ Google (GMS)?\n\n"
+                + "· Bật các package Google có sẵn\n"
+                + "· Cấp quyền cần thiết\n"
+                + "· Chỉ áp dụng nếu đã có Google Services",
+                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+            return;
+
+        await RunToolAsync("Google Services", async () =>
+        {
+            var (ok, fail) = await SystemTweaks.EnableGoogleServicesAsync(serial, AppendLog);
+            AppendLog($"[Google] {ok} OK · {fail} WARN");
+            GoogleServicesText.Text = await SystemTweaks.GetGoogleServicesStatusAsync(serial);
+        });
+    }
+}

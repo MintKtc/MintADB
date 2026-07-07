@@ -1,4 +1,4 @@
-# One-time setup for MintADB test environment (PC + Android).
+# One-time setup: PC (.NET) + Android SDK (cho MintADB-Android/).
 # Usage: powershell -ExecutionPolicy Bypass -File scripts\setup-test-env.ps1
 
 param(
@@ -19,7 +19,8 @@ if (-not (Test-CommandExists 'java')) {
     winget install --id Microsoft.OpenJDK.17 -e --source winget --accept-package-agreements --accept-source-agreements --silent
 }
 
-. (Join-Path $PSScriptRoot 'dev-env.ps1')
+$script:MintAdbRoot = Split-Path $PSScriptRoot -Parent
+. (Join-Path $script:MintAdbRoot 'MintADB-Android\scripts\dev-env.ps1')
 
 # --- Android SDK packages ---
 $sdkmanager = Join-Path $env:ANDROID_HOME 'cmdline-tools\latest\bin\sdkmanager.bat'
@@ -57,7 +58,7 @@ Write-Host 'Installing SDK packages...' -ForegroundColor Cyan
 & $sdkmanager --sdk_root=$env:ANDROID_HOME @packages
 
 # --- Gradle wrapper ---
-$androidDir = Join-Path $script:MintAdbRoot 'src\MintADB.Android'
+$androidDir = Join-Path $script:MintAdbRoot 'MintADB-Android'
 if (-not (Test-Path (Join-Path $androidDir 'gradlew.bat'))) {
     Write-Host 'Generating Gradle wrapper...' -ForegroundColor Cyan
     $gradleZip = Join-Path $env:TEMP 'gradle-8.9-bin.zip'
@@ -91,7 +92,7 @@ Write-Host '[OK] Test environment ready' -ForegroundColor Green
 Write-Host ''
 Write-Host 'Quick start:' -ForegroundColor Yellow
 Write-Host '  PC app   : powershell -ExecutionPolicy Bypass -File scripts\run-pc.ps1'
-Write-Host '  Android  : powershell -ExecutionPolicy Bypass -File scripts\run-android.ps1'
+Write-Host '  APK      : cd MintADB-Android; powershell -ExecutionPolicy Bypass -File scripts\run.ps1'
 if ($WithEmulator) {
     Write-Host "  Emulator : emulator -avd MintADB_Test"
 }
