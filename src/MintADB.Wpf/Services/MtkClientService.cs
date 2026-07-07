@@ -549,10 +549,11 @@ public sealed class MtkClientService
         if (parts.Count == 0)
             return new MtkResult(1, "", "Lệnh rỗng");
 
+        var args = string.Join(" ", parts.Skip(1).Select(p => p.Contains(' ') ? $"\"{p}\"" : p));
         var psi = new ProcessStartInfo
         {
             FileName = parts[0],
-            Arguments = string.Join(" ", parts.Skip(1)),
+            Arguments = args,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,

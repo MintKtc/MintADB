@@ -236,6 +236,100 @@ public static class UsbDriverService
         });
     }
 
+    public static async Task<string> CheckMtkDriverInstalledAsync()
+    {
+        var output = await RunPnputilAsync("/enum-drivers", CancellationToken.None);
+        var lines = output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+
+        var sb = new StringBuilder();
+        var mtkFound = false;
+        var medtekFound = false;
+        var libusbFound = false;
+
+        foreach (var line in lines)
+        {
+            var lower = line.Trim().ToLowerInvariant();
+            if (lower.Contains("0e8d"))
+            {
+                mtkFound = true;
+                sb.AppendLine($"  · {line.Trim()}");
+            }
+            if (lower.Contains("mediatek"))
+            {
+                medtekFound = true;
+                sb.AppendLine($"  · {line.Trim()}");
+            }
+            if (lower.Contains("libusb-win32") || lower.Contains("libusb0"))
+            {
+                libusbFound = true;
+                if (!lower.Contains("0e8d") && !lower.Contains("mediatek"))
+                    sb.AppendLine($"  · {line.Trim()}");
+            }
+        }
+
+        if (!mtkFound && !medtekFound && !libusbFound)
+            return "CHƯA CÀI: Không tìm thấy driver MTK hoặc libusb nào trong hệ thống.";
+
+        var summary = mtkFound || medtekFound ? "Driver MTK (VID_0E8D)" : "";
+        if (libusbFound) summary += (summary.Length > 0 ? " + " : "") + "libusb-win32";
+
+        var result = $"ĐÃ CÀI: {summary}\n{string.Join("", lines.Where(l =>
+        {
+            var lower = l.Trim().ToLowerInvariant();
+            return lower.Contains("0e8d") || lower.Contains("mediatek")
+                || lower.Contains("libusb-win32") || lower.Contains("libusb0");
+        }).Select(l => $"  · {l.Trim()}\n"))}";
+
+        return result.TrimEnd();
+    }
+
+    public static (bool Started, string Message) InstallMtkDriverElevated()
+    {
+        var inf = PlatformToolsLocator.BundledDriverInf;
+        if (!File.Exists(inf))
+            return (false, "Không tìm thấy android_winusb.inf trong thư mục Drivers.");
+
+        var mtkVcomInf = Path.Combine(
+            AppContext.BaseDirectory, "Drivers", "mtk_vcom", "mediatek_usb_port.inf");
+
+        try
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = "pnputil",
+                Arguments = $"/add-driver \"{inf}\" /install",
+                Verb = "runas",
+                UseShellExecute = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+            };
+            Process.Start(psi);
+
+            if (File.Exists(mtkVcomInf))
+            {
+                var psi2 = new ProcessStartInfo
+                {
+                    FileName = "pnputil",
+                    Arguments = $"/add-driver \"{mtkVcomInf}\" /install",
+                    Verb = "runas",
+                    UseShellExecute = true,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                };
+                Process.Start(psi2);
+            }
+
+            return (true,
+                "Đã mở cài driver MTK (UAC).\nChấp nhận quyền Administrator.\n\n"
+                + "Sau khi cài: rút/cắm USB MTK ở chế độ BROM (tắt nguồn, giữ Vol+/- và cắm USB).\n"
+                + "Kiểm tra trong Device Manager:\n"
+                + "  · 'Android ADB Interface' (WinUSB) hoặc\n"
+                + "  · 'MediaTek USB Port' (libusb-win32)\nlà được.");
+        }
+        catch (Exception ex)
+        {
+            return (false, ex.Message);
+        }
+    }
+
     public static string ManualInstallHint() =>
         "Cài tay (Xiaomi / máy không nhận):\n"
         + "1. Mở Device Manager (devmgmt.msc)\n"

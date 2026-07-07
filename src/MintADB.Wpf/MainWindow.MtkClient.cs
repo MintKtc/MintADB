@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +19,59 @@ public partial class MainWindow
     }
 
     // ── Setup ──
+
+    private async void CheckMtkDriver_Click(object sender, RoutedEventArgs e)
+    {
+        MtkUsbStatusText.Text = "Đang kiểm tra driver...";
+        SetActionButtonsEnabled(false);
+        try
+        {
+            var result = await UsbDriverService.CheckMtkDriverInstalledAsync();
+            MtkUsbStatusText.Text = result.StartsWith("ĐÃ CÀI") ? "Driver MTK: OK" : "Driver MTK: chưa cài";
+            AppendLog($"[MTK] === Kiểm tra driver ===\n{result}");
+            MtkLogText.Text = result;
+        }
+        finally
+        {
+            SetActionButtonsEnabled(true);
+        }
+    }
+
+    private void InstallMtkDriver_Click(object sender, RoutedEventArgs e)
+    {
+        var (started, message) = UsbDriverService.InstallMtkDriverElevated();
+        AppendLog(started
+            ? "[MTK] Đang cài driver MTK (UAC)..."
+            : $"[MTK] Driver: {message}");
+        if (!started)
+            MessageBox.Show(message, "Lỗi cài driver MTK",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+    }
+
+    private void Zadig_Click(object sender, RoutedEventArgs e)
+    {
+        var zadig = Path.Combine(AppContext.BaseDirectory, "PlatformTools", "zadig.exe");
+        if (!File.Exists(zadig))
+        {
+            MessageBox.Show("Không tìm thấy zadig.exe trong thư mục PlatformTools.",
+                "Zadig", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = zadig,
+                UseShellExecute = true,
+            });
+            AppendLog("[MTK] Đã mở Zadig. Chọn device MTK (VID_0E8D) → Install Driver (WinUSB / libusb-win32).");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"[MTK] Lỗi mở Zadig: {ex.Message}");
+        }
+    }
 
     private async void MtkUsbScan_Click(object sender, RoutedEventArgs e)
     {
