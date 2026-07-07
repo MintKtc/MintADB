@@ -1,9 +1,0 @@
-[SystemSettings]
-r.AllowHDR
-r.Vsync=0
-r.PUBGMaxSupportQualityLevel=3
-r.PUBGDeviceFPSLow=60
-r.PUBGDeviceFPSMid=60
-r.PUBGDeviceFPSHigh=60
-r.PUBGDeviceFPSHDR=60
-r.PUBGDeviceFPSUltraHDR=60

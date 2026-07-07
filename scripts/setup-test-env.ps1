@@ -20,9 +20,11 @@ if (-not (Test-CommandExists 'java')) {
 }
 
 $script:MintAdbRoot = Split-Path $PSScriptRoot -Parent
-. (Join-Path $script:MintAdbRoot 'MintADB-Android\scripts\dev-env.ps1')
 
-# --- Android SDK packages ---
+# Android SDK (chỉ cần nếu build APK — dự án MintADB-Android đã tách sang repo riêng)
+# Clone tại: https://github.com/MintKtc/MintADB-Android.git
+$env:ANDROID_HOME = Join-Path $env:USERPROFILE 'Android\Sdk'
+
 $sdkmanager = Join-Path $env:ANDROID_HOME 'cmdline-tools\latest\bin\sdkmanager.bat'
 if (-not (Test-Path $sdkmanager)) {
     Write-Host 'Downloading Android cmdline-tools...' -ForegroundColor Cyan
@@ -57,20 +59,6 @@ if ($WithEmulator) {
 Write-Host 'Installing SDK packages...' -ForegroundColor Cyan
 & $sdkmanager --sdk_root=$env:ANDROID_HOME @packages
 
-# --- Gradle wrapper ---
-$androidDir = Join-Path $script:MintAdbRoot 'MintADB-Android'
-if (-not (Test-Path (Join-Path $androidDir 'gradlew.bat'))) {
-    Write-Host 'Generating Gradle wrapper...' -ForegroundColor Cyan
-    $gradleZip = Join-Path $env:TEMP 'gradle-8.9-bin.zip'
-    if (-not (Test-Path (Join-Path $env:TEMP 'gradle-8.9'))) {
-        Invoke-WebRequest -Uri 'https://services.gradle.org/distributions/gradle-8.9-bin.zip' -OutFile $gradleZip -UseBasicParsing
-        Expand-Archive -Path $gradleZip -DestinationPath $env:TEMP -Force
-    }
-    Push-Location $androidDir
-    & (Join-Path $env:TEMP 'gradle-8.9\bin\gradle.bat') wrapper --gradle-version 8.9
-    Pop-Location
-}
-
 if ($WithEmulator) {
     $avdName = 'MintADB_Test'
     $avdManager = Join-Path $env:ANDROID_HOME 'cmdline-tools\latest\bin\avdmanager.bat'
@@ -92,7 +80,7 @@ Write-Host '[OK] Test environment ready' -ForegroundColor Green
 Write-Host ''
 Write-Host 'Quick start:' -ForegroundColor Yellow
 Write-Host '  PC app   : powershell -ExecutionPolicy Bypass -File scripts\run-pc.ps1'
-Write-Host '  APK      : cd MintADB-Android; powershell -ExecutionPolicy Bypass -File scripts\run.ps1'
+Write-Host '  APK      : git clone https://github.com/MintKtc/MintADB-Android.git; cd MintADB-Android; powershell -ExecutionPolicy Bypass -File scripts\run.ps1'
 if ($WithEmulator) {
     Write-Host "  Emulator : emulator -avd MintADB_Test"
 }
