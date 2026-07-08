@@ -20,13 +20,60 @@ Công cụ ADB desktop cho **Xiaomi / HyperOS** — tối ưu, debloat, khóa Hz
 
 ### Features
 
-- ADB device management (`unauthorized` / `offline` hints included)
-- HyperOS / MIUI optimization (safe debloat blacklist)
-- Lock display refresh rate (Hz) + per-serial backup
-- Device spoof, ad-block hosts, app permissions
-- Fastboot, bundled APK install (Shizuku, Settings…)
-- macOS-style WPF UI
-- Auto setup: deploy ADB/Fastboot, USB driver, headless bootstrap
+**Optimize (Xiaomi China → Global):**
+- Fix notifications with 7-phase approach (unfreeze, enable, permissions, whitelists, deviceidle, appops, autostart)
+- Safe debloat — remove bloatware while keeping system apps
+- Change region CN → Global
+- Disable MIUI analytics & tracking
+- Backup/Restore app lists
+- Undo system for batch operations
+
+**Tools:**
+- ADB/Fastboot/Driver management
+- Screenshot & Screen record
+- Push/Pull files
+- File explorer
+- WiFi, Bluetooth, Airplane mode, Hotspot
+- Network status display
+- Locale change (9 languages)
+- Ad blocking (MIUI + Google + DNS)
+
+**System Info:**
+- Battery (level, health, capacity, temperature)
+- Display (resolution, Hz, panel type, DPI)
+- Storage (internal + SD card)
+- RAM (total, used, available, swap)
+- CPU (SoC model, cores, frequency)
+- GPU (renderer, frequency)
+- Touch (sampling rate)
+
+**Tweaks:**
+- DPI adjustment (preset + custom)
+- Animation speed
+- Refresh rate lock (60/90/120/144 Hz)
+- Font size
+- Screen timeout
+- Developer options (Stay awake, Show taps, Pointer location)
+- Status bar customization
+- Battery percentage display
+
+**Fastboot:**
+- Flash image (boot, recovery, vbmeta, etc.)
+- Flash ROM (MiFlash-style) with auto-detect
+- Flash current slot (A/B devices)
+- Flash + Lock bootloader
+- Cancel flash operation
+- Factory reset (wipe)
+- Set active slot (A/B)
+- Boot temporary (no flash)
+- OEM EDL (Xiaomi)
+
+**Advanced:**
+- Device spoof (fake ro.product.*)
+- Unlock FPS / refresh rate
+- Shizuku integration
+- AppOps management
+- 87 permissions supported
 
 ### Requirements
 
@@ -70,10 +117,6 @@ powershell -ExecutionPolicy Bypass -File scripts\publish.ps1 -Profile installer
 | `%LOCALAPPDATA%\MintADB\` | Deployed ADB, `install-state.json` |
 | `Desktop\MintADB\` | Screenshots, Hz/spoof backups, recordings |
 
-### MintADB Mobile (APK) — separate project
-
-On-device app via **Shizuku** — lives in **`MintADB-Android/`** (not mixed with PC). See [MintADB-Android/README.md](MintADB-Android/README.md).
-
 ### Contribute
 
 Fork → branch → PR. Report issues on [GitHub Issues](https://github.com/MintKtc/MintADB/issues).
@@ -84,13 +127,60 @@ Fork → branch → PR. Report issues on [GitHub Issues](https://github.com/Mint
 
 ### Tính năng
 
-- Quản lý thiết bị ADB (kể cả `unauthorized` / `offline` + gợi ý xử lý)
-- Tối ưu HyperOS / MIUI (debloat có blacklist an toàn)
-- Khóa tần số quét (Hz) + backup theo serial
-- Device spoof, ad-block hosts, app permissions
-- Fastboot, cài APK đi kèm (Shizuku, Settings…)
-- Giao diện macOS-style (WPF)
-- Cài đặt tự động: triển khai ADB/Fastboot, driver USB, bootstrap headless
+**Tối ưu (Xiaomi China → Global):**
+- Fix thông báo 7 giai đoạn (unfreeze, enable, permissions, whitelists, deviceidle, appops, autostart)
+- Debloat an toàn — gỡ rác ROM giữ app hệ thống
+- Đổi region CN → Global
+- Tắt MIUI analytics & theo dõi
+- Backup/Restore danh sách app
+- Hệ thống hoàn tác (Undo)
+
+**Công cụ:**
+- Quản lý ADB/Fastboot/Driver
+- Chụp ảnh & Quay màn hình
+- Push/Pull file
+- File explorer
+- WiFi, Bluetooth, Chế độ máy bay, Hotspot
+- Hiển thị trạng thái mạng
+- Đổi ngôn ngữ (9 ngôn ngữ)
+- Chặn quảng cáo (MIUI + Google + DNS)
+
+**Thông tin hệ thống:**
+- Pin (mức, sức khỏe, dung lượng, nhiệt độ)
+- Màn hình (độ phân giải, Hz, tấm nền, DPI)
+- Bộ nhớ trong (internal + SD card)
+- RAM (tổng, đã dùng, khả dụng, swap)
+- CPU (SoC, nhân, xung nhịp)
+- GPU (renderer, xung nhịp)
+- Touch (tốc độ quét)
+
+**Tinh chỉnh:**
+- Điều chỉnh DPI (preset + tùy chỉnh)
+- Tốc độ animation
+- Khóa tần số quét (60/90/120/144 Hz)
+- Kích thước font
+- Thời gian tắt màn hình
+- Tùy chọn Nhà phát triển (Stay awake, Show taps, Pointer location)
+- Tùy chỉnh thanh trạng thái
+- Hiển thị phần trăm pin
+
+**Fastboot:**
+- Flash image (boot, recovery, vbmeta, v.v.)
+- Flash ROM (kiểu MiFlash) với tự động tìm
+- Flash slot hiện tại (thiết bị A/B)
+- Flash + Lock bootloader
+- Hủy flash
+- Factory reset (wipe)
+- Đặt slot active (A/B)
+- Boot tạm thời (không flash)
+- OEM EDL (Xiaomi)
+
+**Nâng cao:**
+- Giả mạo thiết bị (fake ro.product.*)
+- Unlock FPS / tần số quét
+- Tích hợp Shizuku
+- Quản lý AppOps
+- Hỗ trợ 87 quyền
 
 ### Yêu cầu
 
@@ -108,13 +198,9 @@ Fork → branch → PR. Report issues on [GitHub Issues](https://github.com/Mint
 - `MintADB-Setup-v1.0.0-win-x64.exe` — installer (khuyến nghị)
 - `MintADB-v1.0.0-win-x64.zip` — portable
 
-### MintADB Mobile (APK) — project riêng
-
-App chạy trên máy, cần Shizuku — mở thư mục **`MintADB-Android/`** trong Android Studio. Xem [MintADB-Android/README.md](MintADB-Android/README.md).
-
 ### Phát triển
 
-**Yêu cầu:** .NET 8 SDK, Git. Tùy chọn: VS 2022, Inno Setup 6, Android Studio (APK).
+**Yêu cầu:** .NET 8 SDK, Git. Tùy chọn: VS 2022, Inno Setup 6.
 
 ```bash
 git clone https://github.com/MintKtc/MintADB.git
@@ -136,9 +222,13 @@ powershell -ExecutionPolicy Bypass -File scripts\publish.ps1 -Profile installer
 
 ```
 MintADB/
-├── src/MintADB.Wpf/       # Bản PC (Windows)
-├── MintADB-Android/       # Bản APK (mở folder này trong Android Studio)
-├── scripts/               # publish.ps1, MintADB.iss (PC)
+├── src/MintADB.Wpf/           # Bản PC (Windows) — bản chính
+│   ├── MainWindow.xaml        # Giao diện chính
+│   ├── Services/              # ADB, Hardware, Network, System, Fastboot
+│   ├── Models/                # Data models
+│   ├── Windows/               # Welcome popup
+│   └── Helpers/               # Utility classes
+├── scripts/                   # publish.ps1, MintADB.iss (installer)
 ├── docs/
 └── exe.ico
 ```
