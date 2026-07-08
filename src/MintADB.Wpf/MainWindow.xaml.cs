@@ -49,6 +49,16 @@ public partial class MainWindow : Window
         InitCategoryFilter();
         InitInactiveAppList();
 
+        // Hiển thị Welcome popup lần đầu
+        Loaded += (_, _) =>
+        {
+            if (Windows.WelcomeWindow.ShouldShow())
+            {
+                var welcome = new Windows.WelcomeWindow();
+                welcome.ShowDialog();
+            }
+        };
+
         InitToolAppsPanel();
         InitHintBox(CustomPackageBox);
         InitHintBox(AppSearchBox);
@@ -684,6 +694,14 @@ public partial class MainWindow : Window
             if (confirm != MessageBoxResult.Yes) return;
         }
 
+        if (OptRegion.IsChecked == true)
+        {
+            var confirm = MessageBox.Show(
+                "Đổi region CN → Global sẽ thay đổi-region hệ thống.\nCần reboot sau khi chạy.\nTiếp tục?",
+                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (confirm != MessageBoxResult.Yes) return;
+        }
+
         ClearLog();
         await RunWithBusyAsync(async () =>
         {
@@ -693,9 +711,199 @@ public partial class MainWindow : Window
                 OptChina.IsChecked == true,
                 OptMiuiOpt.IsChecked == true,
                 OptGrant.IsChecked == true,
+                OptRegion.IsChecked == true,
+                OptAnalytics.IsChecked == true,
                 AppendLog);
             MessageBox.Show("Tối ưu hoàn tất! Xem log để biết chi tiết.", "MintADB");
         });
+    }
+
+    // ── Backup App List ──
+
+    private async void BackupAppList_Click(object sender, RoutedEventArgs e)
+    {
+        var apps = GetSelectedApps().ToList();
+        if (apps.Count == 0)
+        {
+            MessageBox.Show("Chọn ít nhất 1 app để backup.", "MintADB");
+            return;
+        }
+
+        var dlg = new Microsoft.Win32.SaveFileDialog
+        {
+            Title = "Lưu danh sách app",
+            Filter = "Text file (*.txt)|*.txt|CSV (*.csv)|*.csv",
+            FileName = $"app_backup_{DateTime.Now:yyyyMMdd_HHmmss}.txt",
+        };
+
+        if (dlg.ShowDialog() != true) return;
+
+        try
+        {
+            var lines = apps.Select(a => $"{a.Package}\t{a.Name}");
+            await File.WriteAllLinesAsync(dlg.FileName, lines);
+            AppendLog($"[Backup] Đã lưu {apps.Count} app vào {dlg.FileName}");
+            MessageBox.Show($"Đã lưu danh sách {apps.Count} app:\n{dlg.FileName}", "Backup");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"[FAIL] Backup: {ex.Message}");
+        }
+    }
+
+    // ── Restore App List ──
+
+    private async void RestoreAppList_Click(object sender, RoutedEventArgs e)
+    {
+        var dlg = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = "Chọn file backup",
+            Filter = "Text file (*.txt)|*.txt|CSV (*.csv)|*.csv",
+        };
+
+        if (dlg.ShowDialog() != true) return;
+
+        try
+        {
+            var lines = await File.ReadAllLinesAsync(dlg.FileName);
+            var packages = lines
+                .Where(l => !string.IsNullOrWhiteSpace(l))
+                .Select(l => l.Split('\t')[0].Trim())
+                .Where(p => !string.IsNullOrEmpty(p))
+                .ToList();
+
+            if (packages.Count == 0)
+            {
+                MessageBox.Show("File không có package hợp lệ.", "MintADB");
+                return;
+            }
+
+            // Select matching apps
+            var count = 0;
+            foreach (var app in _apps)
+            {
+                app.Selected = packages.Contains(app.Package);
+                if (app.Selected) count++;
+            }
+
+            AppendLog($"[Restore] Đã chọn {count}/{packages.Count} app từ file backup");
+            MessageBox.Show($"Đã chọn {count} app từ file backup.", "Restore");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"[FAIL] Restore: {ex.Message}");
+        }
+    }
+
+    // ── Debloat Safe Mode ──
+
+    private async void DebloatSafe_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var bloat = _apps.Where(a => a.Category == AppCategory.RomBloat).ToList();
+        if (bloat.Count == 0)
+        {
+            MessageBox.Show("Không tìm thấy app rác ROM.\nQuét app trước.", "MintADB");
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            $"Debloat an toàn: gỡ {bloat.Count} app rác ROM?\n\n"
+            + "• Chỉ gỡ app được đánh dấu là \"Rác ROM\"\n"
+            + "• Không gỡ app hệ thống quan trọng\n"
+            + "• Có thể khôi phục sau",
+            "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+        if (confirm != MessageBoxResult.Yes) return;
+
+        ClearLog();
+        await RunWithBusyAsync(async () =>
+        {
+            foreach (var app in bloat)
+            {
+                var r = await Tools.UninstallAsync(serial, app.Package);
+                AppendLog(r.Outcome switch
+                {
+                    PackageRemoveOutcome.Uninstalled => $"[OK] Đã gỡ {app.Name}",
+                    PackageRemoveOutcome.Disabled => $"[WARN] {app.Name}: disable",
+                    PackageRemoveOutcome.Hidden => $"[WARN] {app.Name}: ẩn",
+                    _ => $"[FAIL] {app.Name}: {r.Detail}",
+                });
+            }
+            AppendLog($"[Debloat] Hoàn tất: gỡ {bloat.Count} app rác ROM");
+        });
+    }
+
+    // ── Undo ──
+
+    private readonly List<(string Action, List<string> Packages)> _undoHistory = new();
+    private List<string> _lastRemovedPackages = new();
+
+    private void RecordRemoveAction(List<string> packages)
+    {
+        _undoHistory.Add(("remove", new List<string>(packages)));
+        _lastRemovedPackages = packages;
+        UpdateUndoUI();
+    }
+
+    private void RecordDisableAction(List<string> packages)
+    {
+        _undoHistory.Add(("disable", new List<string>(packages)));
+        _lastRemovedPackages = packages;
+        UpdateUndoUI();
+    }
+
+    private void UpdateUndoUI()
+    {
+        if (_undoHistory.Count > 0)
+        {
+            var last = _undoHistory[^1];
+            UndoInfoText.Text = $"{last.Action}: {last.Packages.Count} app ({string.Join(", ", last.Packages.Take(3))}...)";
+            UndoBorder.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            UndoBorder.Visibility = Visibility.Collapsed;
+        }
+    }
+
+    private async void Undo_Click(object sender, RoutedEventArgs e)
+    {
+        if (_undoHistory.Count == 0) return;
+
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var last = _undoHistory[^1];
+        _undoHistory.RemoveAt(_undoHistory.Count - 1);
+
+        await RunWithBusyAsync(async () =>
+        {
+            foreach (var pkg in last.Packages)
+            {
+                if (last.Action == "remove")
+                {
+                    var r = await Tools.EnablePackageAsync(serial, pkg);
+                    AppendLog(r.Ok ? $"[OK] Khôi phục {pkg}" : $"[FAIL] {pkg}: {r.Combined}");
+                }
+                else if (last.Action == "disable")
+                {
+                    var r = await Tools.EnablePackageAsync(serial, pkg);
+                    AppendLog(r.Ok ? $"[OK] Bật lại {pkg}" : $"[FAIL] {pkg}: {r.Combined}");
+                }
+            }
+        });
+
+        UpdateUndoUI();
+    }
+
+    private void ClearUndo_Click(object sender, RoutedEventArgs e)
+    {
+        _undoHistory.Clear();
+        _lastRemovedPackages.Clear();
+        UpdateUndoUI();
     }
 
     private void SetActionButtonsEnabled(bool enabled)

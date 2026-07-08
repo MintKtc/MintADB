@@ -9,6 +9,9 @@ namespace MintADB.Wpf;
 
 public partial class MainWindow
 {
+    private NetworkService? _networkService;
+    private NetworkService Network => _networkService ??= new NetworkService(_adb);
+
     private void ToolNavBasic_Click(object sender, RoutedEventArgs e) => ShowToolPage(0);
     private void ToolNavScreen_Click(object sender, RoutedEventArgs e) => ShowToolPage(2);
     private void ToolNavNetwork_Click(object sender, RoutedEventArgs e) => ShowToolPage(3);
@@ -95,6 +98,127 @@ public partial class MainWindow
             ResetDeviceVisual();
             SysDeviceInfoText.Text = $"Lỗi: {ex.Message}";
             AppendLog($"[Máy] Lỗi: {ex.Message}");
+        }
+        finally { SetActionButtonsEnabled(true); }
+    }
+
+    // ── Storage Info ──
+
+    private async void LoadStorageInfo_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        SetActionButtonsEnabled(false);
+        StorageInfoText.Text = "Đang đọc...";
+        try
+        {
+            var info = await Hardware.GetStorageInfoAsync(serial);
+            StorageInfoText.Text = $"Bộ nhớ trong: {info.InternalUsedText} / {info.InternalTotalText} ({info.InternalPercent:F0}%)\n"
+                                + $"Trống: {info.InternalAvailText}";
+            if (info.SdTotal > 0)
+                StorageInfoText.Text += $"\nSD Card: {info.SdUsedText} / {info.SdTotalText}";
+            AppendLog("--- Thông tin bộ nhớ ---");
+            AppendLog(StorageInfoText.Text);
+        }
+        catch (Exception ex)
+        {
+            StorageInfoText.Text = $"Lỗi: {ex.Message}";
+        }
+        finally { SetActionButtonsEnabled(true); }
+    }
+
+    // ── RAM Info ──
+
+    private async void LoadRamInfo_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        SetActionButtonsEnabled(false);
+        RamInfoText.Text = "Đang đọc...";
+        try
+        {
+            var info = await Hardware.GetRamInfoAsync(serial);
+            RamInfoText.Text = $"RAM: {info.UsedText} / {info.TotalText} ({info.Percent:F0}%)\n"
+                            + $"Available: {info.AvailableText} · Cached: {info.CachedText}";
+            if (info.SwapTotalKb > 0)
+                RamInfoText.Text += $"\nSwap: {info.SwapText}";
+            AppendLog("--- Thông tin RAM ---");
+            AppendLog(RamInfoText.Text);
+        }
+        catch (Exception ex)
+        {
+            RamInfoText.Text = $"Lỗi: {ex.Message}";
+        }
+        finally { SetActionButtonsEnabled(true); }
+    }
+
+    // ── CPU Info ──
+
+    private async void LoadCpuInfo_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        SetActionButtonsEnabled(false);
+        CpuInfoText.Text = "Đang đọc...";
+        try
+        {
+            var info = await Hardware.GetCpuInfoAsync(serial);
+            CpuInfoText.Text = info.Summary;
+            AppendLog("--- Thông tin CPU ---");
+            AppendLog(info.Summary);
+        }
+        catch (Exception ex)
+        {
+            CpuInfoText.Text = $"Lỗi: {ex.Message}";
+        }
+        finally { SetActionButtonsEnabled(true); }
+    }
+
+    // ── GPU Info ──
+
+    private async void LoadGpuInfo_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        SetActionButtonsEnabled(false);
+        GpuInfoText.Text = "Đang đọc...";
+        try
+        {
+            var info = await Hardware.GetGpuInfoAsync(serial);
+            GpuInfoText.Text = info.Summary;
+            AppendLog("--- Thông tin GPU ---");
+            AppendLog(info.Summary);
+        }
+        catch (Exception ex)
+        {
+            GpuInfoText.Text = $"Lỗi: {ex.Message}";
+        }
+        finally { SetActionButtonsEnabled(true); }
+    }
+
+    // ── Touch Info ──
+
+    private async void LoadTouchInfo_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        SetActionButtonsEnabled(false);
+        TouchInfoText.Text = "Đang đọc...";
+        try
+        {
+            var info = await Hardware.GetTouchInfoAsync(serial);
+            TouchInfoText.Text = $"Touch sampling: {info.SamplingRateText}";
+            AppendLog("--- Thông tin Touch ---");
+            AppendLog(TouchInfoText.Text);
+        }
+        catch (Exception ex)
+        {
+            TouchInfoText.Text = $"Lỗi: {ex.Message}";
         }
         finally { SetActionButtonsEnabled(true); }
     }
@@ -367,4 +491,162 @@ public partial class MainWindow
         });
     }
 
+    // ── WiFi ──
+
+    private async void CheckNetworkStatus_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        NetworkStatusText.Text = "Đang đọc...";
+        try
+        {
+            var status = await Network.GetFullNetworkStatusAsync(serial);
+            NetworkStatusText.Text = status;
+            AppendLog("--- Trạng thái mạng ---");
+            AppendLog(status);
+        }
+        catch (Exception ex)
+        {
+            NetworkStatusText.Text = $"Lỗi: {ex.Message}";
+        }
+    }
+
+    private async void ToggleWifi_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var enable = WifiToggle.IsChecked == true;
+        await RunToolAsync($"WiFi {(enable ? "bật" : "tắt")}", async () =>
+        {
+            var r = await Network.SetWifiEnabledAsync(serial, enable);
+            AppendLog(r.Ok ? $"[OK] WiFi → {(enable ? "ON" : "OFF")}" : $"[FAIL] {r.Combined}");
+        });
+    }
+
+    private async void ScanWifi_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        await RunToolAsync("Scan WiFi", async () =>
+        {
+            var result = await Network.ScanWifiAsync(serial);
+            AppendLog($"[WiFi Scan]\n{result}");
+        });
+    }
+
+    private async void ConnectWifi_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var ssid = GetBoxText(WifiSsidBox);
+        var password = GetBoxText(WifiPasswordBox);
+        if (string.IsNullOrEmpty(ssid))
+        {
+            MessageBox.Show("Nhập tên WiFi (SSID).", "MintADB");
+            return;
+        }
+
+        await RunToolAsync($"WiFi connect → {ssid}", async () =>
+        {
+            var r = await Network.ConnectWifiAsync(serial, ssid, string.IsNullOrEmpty(password) ? null : password);
+            AppendLog(r.Ok ? $"[OK] Đang kết nối {ssid}" : $"[FAIL] {r.Combined}");
+        });
+    }
+
+    private async void DisconnectWifi_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        await RunToolAsync("WiFi disconnect", async () =>
+        {
+            var r = await Network.DisconnectWifiAsync(serial);
+            AppendLog(r.Ok ? "[OK] Đã ngắt WiFi" : $"[FAIL] {r.Combined}");
+        });
+    }
+
+    // ── Bluetooth ──
+
+    private async void ToggleBluetooth_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var enable = BluetoothToggle.IsChecked == true;
+        await RunToolAsync($"Bluetooth {(enable ? "bật" : "tắt")}", async () =>
+        {
+            var r = await Network.SetBluetoothEnabledAsync(serial, enable);
+            AppendLog(r.Ok ? $"[OK] Bluetooth → {(enable ? "ON" : "OFF")}" : $"[FAIL] {r.Combined}");
+        });
+    }
+
+    private async void ScanBluetooth_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        await RunToolAsync("Scan Bluetooth", async () =>
+        {
+            var result = await Network.ScanBluetoothAsync(serial);
+            AppendLog($"[BT Scan]\n{result}");
+        });
+    }
+
+    // ── Airplane Mode ──
+
+    private async void ToggleAirplane_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var enable = AirplaneToggle.IsChecked == true;
+        await RunToolAsync($"Airplane {(enable ? "bật" : "tắt")}", async () =>
+        {
+            var r = await Network.SetAirplaneModeAsync(serial, enable);
+            AppendLog(r.Ok ? $"[OK] Airplane → {(enable ? "ON" : "OFF")}" : $"[FAIL] {r.Combined}");
+        });
+    }
+
+    // ── Hotspot ──
+
+    private async void ToggleHotspot_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var enable = HotspotToggle.IsChecked == true;
+        await RunToolAsync($"Hotspot {(enable ? "bật" : "tắt")}", async () =>
+        {
+            var r = await Network.SetHotspotEnabledAsync(serial, enable);
+            AppendLog(r.Ok ? $"[OK] Hotspot → {(enable ? "ON" : "OFF")}" : $"[FAIL] {r.Combined}");
+        });
+    }
+
+    private async void ReadNetworkStatus_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        NetworkStatusText.Text = "Đang đọc...";
+        try
+        {
+            var wifi = await Network.GetWifiStatusAsync(serial);
+            var bt = await Network.GetBluetoothStatusAsync(serial);
+            var airplane = await Network.GetAirplaneModeStatusAsync(serial);
+            var hotspot = await Network.GetHotspotStatusAsync(serial);
+
+            var status = $"{wifi}\n{bt}\n{airplane}\n{hotspot}";
+            NetworkStatusText.Text = status;
+            AppendLog("--- Trạng thái mạng ---");
+            AppendLog(status);
+        }
+        catch (Exception ex)
+        {
+            NetworkStatusText.Text = $"Lỗi: {ex.Message}";
+        }
+    }
 }

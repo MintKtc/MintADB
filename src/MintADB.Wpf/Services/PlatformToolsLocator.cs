@@ -24,6 +24,19 @@ public static class PlatformToolsLocator
 
     public static string BundledDriverInf => Path.Combine(BundledDriverDir, "android_winusb.inf");
 
+    public static string BundledQualcommDriverDir => Path.Combine(AppContext.BaseDirectory, "Drivers", "qualcomm");
+
+    public static string BundledQualcommDriverInf => Path.Combine(BundledQualcommDriverDir, "qdloadUSB.inf");
+
+    public static string BundledAllInOneDir => Path.Combine(AppContext.BaseDirectory, "Drivers", "all_in_one");
+
+    public static string[] AllDriverInfs =>
+    [
+        BundledDriverInf,
+        BundledQualcommDriverInf,
+        Path.Combine(BundledAllInOneDir, "qcser.inf"),
+    ];
+
     public static string ResolveAdbPath()
     {
         foreach (var dir in EnumerateToolDirs())

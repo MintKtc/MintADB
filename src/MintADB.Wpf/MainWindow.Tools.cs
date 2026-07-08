@@ -41,11 +41,10 @@ public partial class MainWindow
         ToolPageTweaks.Visibility = page == 5 ? Visibility.Visible : Visibility.Collapsed;
         ToolPageAdvanced.Visibility = page == 6 ? Visibility.Visible : Visibility.Collapsed;
         ToolPageFastboot.Visibility = page == 7 ? Visibility.Visible : Visibility.Collapsed;
-        ToolPageMtk.Visibility = page == 8 ? Visibility.Visible : Visibility.Collapsed;
 
         SetActiveTab(page,
             ToolNavBasic, ToolNavApps, ToolNavScreen, ToolNavNetwork,
-            ToolNavSystem, ToolNavTweaks, ToolNavAdvanced, ToolNavFastboot, ToolNavMtk);
+            ToolNavSystem, ToolNavTweaks, ToolNavAdvanced, ToolNavFastboot);
 
         if (page == 4)
             ShowSystemSubPage(_systemPage);
@@ -188,7 +187,11 @@ public partial class MainWindow
             return;
         }
 
-        await RunWithBusyAsync(async () => await RemovePackageAsync(serial, app.Package));
+        await RunWithBusyAsync(async () =>
+        {
+            await RemovePackageAsync(serial, app.Package);
+            RecordRemoveAction(new List<string> { app.Package });
+        });
     }
 
     private async Task RemovePackagesWithConfirm(IReadOnlyList<string> packages, string title)
@@ -237,6 +240,7 @@ public partial class MainWindow
         {
             foreach (var pkg in allowed)
                 await RemovePackageAsync(serial, pkg);
+            RecordRemoveAction(allowed);
         });
     }
 
@@ -270,7 +274,9 @@ public partial class MainWindow
     }
 
     private async void DisableApps_Click(object sender, RoutedEventArgs e)
-        => await RunOnSelectedPackages("Tắt app", async (serial, pkg) =>
+    {
+        var pkgs = GetSelectedPackages();
+        await RunOnSelectedPackages("Tắt app", async (serial, pkg) =>
         {
             var r = await Tools.DisablePackageAsync(serial, pkg);
             if (r.Ok)
@@ -280,6 +286,9 @@ public partial class MainWindow
             }
             else AppendLog($"[FAIL] {pkg}: {r.Combined}");
         }, requireSelection: true);
+        if (pkgs.Count > 0)
+            RecordDisableAction(pkgs);
+    }
 
     private async void ClearAppData_Click(object sender, RoutedEventArgs e)
         => await RunOnSelectedPackages("Xóa data", async (serial, pkg) =>
@@ -409,30 +418,61 @@ public partial class MainWindow
         }
     }
 
-    private async void Logcat_Click(object sender, RoutedEventArgs e)
+    // ── File Explorer ──
+
+    private async void ListRemoteDir_Click(object sender, RoutedEventArgs e)
     {
         var serial = RequireDevice();
         if (serial is null) return;
 
-        await RunToolAsync("Logcat", async () =>
+        var path = GetBoxText(ListRemoteBox);
+        if (string.IsNullOrEmpty(path)) path = "/sdcard";
+
+        await RunToolAsync("File Explorer", async () =>
         {
-            var r = await Tools.GetLogcatAsync(serial, 200);
-            AppendLog("--- logcat (200 dòng) ---");
-            AppendLog(string.IsNullOrWhiteSpace(r.Combined) ? "(trống)" : r.Combined);
+            var content = await Tools.ListDirectoryAsync(serial, path);
+            AppendLog($"--- {path} ---");
+            AppendLog(content);
         });
     }
 
-    private async void DeviceInfo_Click(object sender, RoutedEventArgs e)
+    // ── ADB Version ──
+
+    private async void CheckAdbVersion_Click(object sender, RoutedEventArgs e)
+    {
+        await RunToolAsync("ADB Version", async () =>
+        {
+            var adbVer = await Tools.GetAdbVersionAsync();
+            var fbVer = await Tools.GetFastbootVersionAsync();
+            AdbVersionText.Text = $"ADB: {adbVer}\nFastboot: {fbVer}";
+            AppendLog($"[ADB] {adbVer}");
+            AppendLog($"[Fastboot] {fbVer}");
+        });
+    }
+
+    // ── Batch Operations ──
+
+    private async void BatchClearData_Click(object sender, RoutedEventArgs e)
     {
         var serial = RequireDevice();
         if (serial is null) return;
 
-        await RunToolAsync("Device info", async () =>
+        var pkgs = GetSelectedPackages();
+        if (pkgs.Count == 0)
         {
-            var info = await Tools.GetDeviceInfoAsync(serial);
-            AppendLog("--- Thông tin thiết bị ---");
-            AppendLog(info);
+            MessageBox.Show("Chọn ít nhất 1 app.", "MintADB");
+            return;
+        }
+
+        if (MessageBox.Show(
+                $"Xóa data {pkgs.Count} app đã chọn?",
+                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+
+        await RunToolAsync("Batch Clear Data", async () =>
+        {
+            var r = await Tools.ClearAppDataBatchAsync(serial, pkgs);
+            AppendLog(r.Output);
         });
     }
-
 }

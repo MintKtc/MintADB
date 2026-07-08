@@ -175,11 +175,78 @@ public sealed class HardwareInfoService(AdbService adb)
                 maxUah = design;
         }
 
+        if (maxUah is null or <= 0)
+        {
+            var model = await adb.GetPropAsync(serial, "ro.product.model", ct);
+            var device = await adb.GetPropAsync(serial, "ro.product.device", ct);
+            var market = await adb.GetPropAsync(serial, "ro.product.marketname", ct);
+            var combined = $"{model} {device} {market}".ToUpperInvariant();
+
+            // Known battery capacities (uAh)
+            maxUah = combined switch
+            {
+                // Xiaomi 2025 flagships
+                var m when m.Contains("DASH") || m.Contains("2602BRT") => 9_000_000,  // Redmi Turbo 5 series - 9000mAh
+                var m when m.Contains("SHENG") || m.Contains("25010PN") => 6_000_000, // Xiaomi 15 series
+                var m when m.Contains("XUANYUAN") || m.Contains("25030F") => 5_800_000, // Xiaomi 15 Ultra
+
+                // Xiaomi 2024 flagships
+                var m when m.Contains("AURORA") || m.Contains("24031PN") => 5_300_000, // Xiaomi 14 Ultra
+                var m when m.Contains("SHENNONG") || m.Contains("23116PN") => 4_880_000, // Xiaomi 14 Pro
+                var m when m.Contains("HOUJI") || m.Contains("24015RN") => 4_610_000, // Xiaomi 14
+
+                // Redmi K series
+                var m when m.Contains("VERMEER") || m.Contains("23013RK") => 5_000_000, // Redmi K70
+                var m when m.Contains("MANET") || m.Contains("2304FPN") => 5_000_000, // Redmi K70 Pro
+                var m when m.Contains("SOCRATES") || m.Contains("2210132") => 5_000_000, // Redmi K60
+                var m when m.Contains("MARBLE") || m.Contains("2210131") => 5_000_000, // Redmi Note 12 Turbo
+
+                // Redmi Note series
+                var m when m.Contains("PHOENIX") || m.Contains("2211131") => 5_000_000, // Redmi Note 12
+                var m when m.Contains("SAGITarius") || m.Contains("23021RA98") => 5_000_000, // Redmi Note 13
+                var m when m.Contains("MONDRIAN") || m.Contains("23116PN") => 5_000_000, // Redmi Note 13 Pro
+
+                // POCO
+                var m when m.Contains("MONDRIAN") => 5_000_000, // POCO X6 Pro
+                var m when m.Contains("VERMEER") => 5_000_000, // POCO F6
+
+                // Samsung
+                var m when m.Contains("SM-S928") => 5_000_000, // S24 Ultra
+                var m when m.Contains("SM-S938") => 5_000_000, // S25 Ultra
+                var m when m.Contains("SM-A55") || m.Contains("SM-A54") => 5_000_000, // A55/A54
+
+                // OnePlus
+                var m when m.Contains("CPH265") => 6_000_000, // OnePlus 13
+                var m when m.Contains("CPH258") => 5_400_000, // OnePlus 12
+
+                // Pixel
+                var m when m.Contains("KOMODO") || m.Contains("PIXEL 9") => 5_060_000, // Pixel 9
+                var m when m.Contains("CACTUS") || m.Contains("PIXEL 8") => 4_575_000, // Pixel 8
+
+                _ => null
+            };
+        }
+
+        // If still no max, estimate from charge_counter and level
+        if (maxUah is null or <= 0 && currentUah is > 0 && levelPercent is > 0 && levelPercent < 95)
+        {
+            var estimated = currentUah.Value * 100 / levelPercent.Value;
+            if (estimated is > 2_000_000 and <= 15_000_000)
+                maxUah = estimated;
+        }
+
+        if (currentUah is > 0 && maxUah is > 0 && currentUah > maxUah * 1.5)
+            currentUah = null;
+
         if ((currentUah is null or <= 0) && maxUah is > 0 && levelPercent is > 0)
             currentUah = maxUah.Value * levelPercent.Value / 100;
 
-        if ((maxUah is null or <= 0) && currentUah is > 0 && levelPercent is > 0)
-            maxUah = currentUah.Value * 100 / levelPercent.Value;
+        if (maxUah is null or <= 0 && currentUah is > 0 && levelPercent is > 0)
+        {
+            var estimated = currentUah.Value * 100 / levelPercent.Value;
+            if (estimated is > 2000000 and <= 10000000)
+                maxUah = estimated;
+        }
 
         return (UahToMah(currentUah), UahToMah(maxUah));
     }
@@ -289,41 +356,39 @@ public sealed class HardwareInfoService(AdbService adb)
     private async Task<(string? Normalized, string? Raw)> DetectPanelTechnologyAsync(
         string serial, string? displayDumpsys, CancellationToken ct)
     {
-        var candidates = new List<string>();
+        var fromProps = new List<string>();
+
+        // Kiểm tra các prop đặc trưng OLED
+        var oledWp = await adb.GetPropAsync(serial, "ro.boot.oled_wp", ct);
+        var screenType = await adb.GetPropAsync(serial, "ro.display.screen_type", ct);
+        if (!string.IsNullOrWhiteSpace(oledWp) || screenType == "1")
+            fromProps.Add("OLED (system)");
 
         foreach (var prop in PanelTechProps)
         {
             var val = await adb.GetPropAsync(serial, prop, ct);
             if (!string.IsNullOrWhiteSpace(val))
-                candidates.Add(val);
+                fromProps.Add(val);
         }
 
         var props = await adb.ShellAsync(
-            "getprop | grep -iE 'display|panel|oled|lcd|amoled'", serial, ct);
+            "getprop | grep -iE 'display|panel|oled|lcd|amoled|screen_type'", serial, ct);
         if (props.Ok)
         {
             foreach (var line in props.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
             {
                 var m = Regex.Match(line, @"\[.*?\]:\s*\[(.*?)\]");
                 if (m.Success && !string.IsNullOrWhiteSpace(m.Groups[1].Value))
-                    candidates.Add(m.Groups[1].Value);
+                    fromProps.Add(m.Groups[1].Value);
             }
         }
 
-        if (!string.IsNullOrWhiteSpace(displayDumpsys))
-        {
-            foreach (var line in displayDumpsys.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
-            {
-                var t = line.Trim();
-                if (ContainsPanelKeyword(t))
-                    candidates.Add(t);
-            }
-        }
-
+        // Ưu tiên getprop, fallback dumpsys
         string? bestNormalized = null;
         string? bestRaw = null;
         var bestScore = -1;
-        foreach (var raw in candidates)
+
+        foreach (var raw in fromProps)
         {
             var normalized = NormalizePanelTech(raw);
             if (normalized is null) continue;
@@ -333,6 +398,26 @@ public sealed class HardwareInfoService(AdbService adb)
                 bestScore = score;
                 bestNormalized = normalized;
                 bestRaw = raw;
+            }
+        }
+
+        if (bestNormalized is null && !string.IsNullOrWhiteSpace(displayDumpsys))
+        {
+            foreach (var line in displayDumpsys.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
+            {
+                var t = line.Trim();
+                if (ContainsPanelKeyword(t))
+                {
+                    var normalized = NormalizePanelTech(t);
+                    if (normalized is null) continue;
+                    var score = ScorePanelTech(normalized);
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        bestNormalized = normalized;
+                        bestRaw = t;
+                    }
+                }
             }
         }
 
@@ -402,12 +487,17 @@ public sealed class HardwareInfoService(AdbService adb)
 
     private static void ParseBatteryDumpsys(string output, Dictionary<string, string> map)
     {
-        foreach (var line in output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
+        // Handle both single-line and multi-line formats
+        var normalized = output.Replace("  ", "\n");
+        foreach (var line in normalized.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
         {
             var t = line.Trim();
             var idx = t.IndexOf(':');
             if (idx <= 0) continue;
-            map[t[..idx].Trim()] = t[(idx + 1)..].Trim();
+            var key = t[..idx].Trim();
+            var value = t[(idx + 1)..].Trim();
+            if (!string.IsNullOrEmpty(key))
+                map[key] = value;
         }
     }
 
@@ -534,6 +624,9 @@ public sealed class HardwareInfoService(AdbService adb)
         var colorOs = await P("ro.build.version.oplusrom");
         var region = await P("ro.miui.region") ?? await P("ro.product.locale.region");
         var serialNo = await P("ro.serialno");
+        var socModel = await P("ro.soc.model");
+        var socMfr = await P("ro.soc.manufacturer");
+        var chipset = socModel is not null ? (socMfr is not null ? $"{socMfr} {socModel}" : socModel) : null;
 
         string? osName;
         string? osVersion;
@@ -588,6 +681,7 @@ public sealed class HardwareInfoService(AdbService adb)
                 ("Hãng", FormatBrand(manufacturer, brand)),
                 ("Model", displayName),
                 ("Mã máy", deviceCodename),
+                ("Chipset", chipset),
                 ("Phiên bản Android", androidLabel),
                 ("Bản vá bảo mật", securityPatch),
                 ("Hệ điều hành", FormatOs(osName, osVersion)),
@@ -653,5 +747,248 @@ public sealed class HardwareInfoService(AdbService adb)
         }
 
         return "ROM stock";
+    }
+
+    // ── Storage Info ──
+
+    public async Task<StorageInfoResult> GetStorageInfoAsync(string serial, CancellationToken ct = default)
+    {
+        var result = new StorageInfoResult();
+
+        // Internal storage
+        var df = await adb.ShellAsync("df /data | tail -1", serial, ct);
+        if (df.Ok)
+        {
+            var parts = df.Output.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length >= 4)
+            {
+                if (long.TryParse(parts[1], out var totalKb)) result.InternalTotal = totalKb * 1024;
+                if (long.TryParse(parts[2], out var usedKb)) result.InternalUsed = usedKb * 1024;
+                if (long.TryParse(parts[3], out var availKb)) result.InternalAvail = availKb * 1024;
+            }
+        }
+
+        // SD card
+        var sd = await adb.ShellAsync("df /storage/sdcard1 2>/dev/null | tail -1", serial, ct);
+        if (sd.Ok && !sd.Output.Contains("No such file"))
+        {
+            var parts = sd.Output.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length >= 4)
+            {
+                if (long.TryParse(parts[1], out var totalKb)) result.SdTotal = totalKb * 1024;
+                if (long.TryParse(parts[2], out var usedKb)) result.SdUsed = usedKb * 1024;
+                if (long.TryParse(parts[3], out var availKb)) result.SdAvail = availKb * 1024;
+            }
+        }
+
+        // Storage type
+        var emulated = await adb.ShellAsync("ls /storage/emulated/0/ 2>/dev/null | head -5", serial, ct);
+        result.HasEmulatedStorage = emulated.Ok && !string.IsNullOrWhiteSpace(emulated.Output);
+
+        return result;
+    }
+
+    // ── RAM Info ──
+
+    public async Task<RamInfoResult> GetRamInfoAsync(string serial, CancellationToken ct = default)
+    {
+        var result = new RamInfoResult();
+
+        var meminfo = await adb.ShellAsync("cat /proc/meminfo", serial, ct);
+        if (meminfo.Ok)
+        {
+            foreach (var line in meminfo.Output.Split('\n', '\r'))
+            {
+                var trimmed = line.Trim();
+                if (trimmed.StartsWith("MemTotal:"))
+                    result.TotalKb = ParseMemInfoValue(trimmed);
+                else if (trimmed.StartsWith("MemFree:"))
+                    result.FreeKb = ParseMemInfoValue(trimmed);
+                else if (trimmed.StartsWith("MemAvailable:"))
+                    result.AvailableKb = ParseMemInfoValue(trimmed);
+                else if (trimmed.StartsWith("Buffers:"))
+                    result.BuffersKb = ParseMemInfoValue(trimmed);
+                else if (trimmed.StartsWith("Cached:"))
+                    result.CachedKb = ParseMemInfoValue(trimmed);
+                else if (trimmed.StartsWith("SwapTotal:"))
+                    result.SwapTotalKb = ParseMemInfoValue(trimmed);
+                else if (trimmed.StartsWith("SwapFree:"))
+                    result.SwapFreeKb = ParseMemInfoValue(trimmed);
+            }
+        }
+
+        // Used = Total - Available
+        if (result.TotalKb > 0 && result.AvailableKb > 0)
+            result.UsedKb = result.TotalKb - result.AvailableKb;
+
+        return result;
+    }
+
+    private static long ParseMemInfoValue(string line)
+    {
+        var parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2 && long.TryParse(parts[1], out var kb))
+            return kb * 1024; // Convert KB to bytes
+        return 0;
+    }
+
+    // ── CPU Info ──
+
+    public async Task<CpuInfoResult> GetCpuInfoAsync(string serial, CancellationToken ct = default)
+    {
+        var result = new CpuInfoResult();
+
+        // CPU info from /proc/cpuinfo
+        var cpuinfo = await adb.ShellAsync("cat /proc/cpuinfo", serial, ct);
+        if (cpuinfo.Ok)
+        {
+            var cores = 0;
+            foreach (var line in cpuinfo.Output.Split('\n', '\r'))
+            {
+                var trimmed = line.Trim();
+                if (trimmed.StartsWith("processor:"))
+                    cores++;
+            }
+            result.CoreCount = cores;
+        }
+
+        // CPU frequencies
+        var freqs = await adb.ShellAsync("cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_max_freq 2>/dev/null", serial, ct);
+        if (freqs.Ok)
+        {
+            var maxFreqs = new List<long>();
+            foreach (var line in freqs.Output.Split('\n', '\r'))
+            {
+                var trimmed = line.Trim();
+                if (long.TryParse(trimmed, out var freq) && freq > 0)
+                    maxFreqs.Add(freq);
+            }
+            if (maxFreqs.Count > 0)
+                result.MaxFreqKhz = maxFreqs.Max();
+        }
+
+        // CPU model from props - try multiple sources
+        result.SocModel = await adb.GetPropAsync(serial, "ro.soc.model", ct);
+        result.SocManufacturer = await adb.GetPropAsync(serial, "ro.soc.manufacturer", ct);
+
+        if (string.IsNullOrWhiteSpace(result.SocModel))
+            result.SocModel = await adb.GetPropAsync(serial, "ro.hardware", ct);
+
+        if (string.IsNullOrWhiteSpace(result.SocModel))
+            result.SocModel = await adb.GetPropAsync(serial, "ro.board.platform", ct);
+
+        // Try to get a human-readable SoC name
+        if (!string.IsNullOrWhiteSpace(result.SocModel))
+        {
+            var socUpper = result.SocModel.ToUpperInvariant();
+            result.SocModel = socUpper switch
+            {
+                "MT6991" => "MediaTek Dimensity 9400",
+                "MT6989" => "MediaTek Dimensity 9300",
+                "MT6985" => "MediaTek Dimensity 9200",
+                "SM8750" => "Snapdragon 8 Elite",
+                "SM8650" => "Snapdragon 8 Gen 3",
+                "SM8550" => "Snapdragon 8 Gen 2",
+                "SM8450" => "Snapdragon 8 Gen 1",
+                "SM8350" => "Snapdragon 888",
+                "SM8250" => "Snapdragon 865",
+                _ => result.SocModel
+            };
+        }
+
+        return result;
+    }
+
+    // ── GPU Info ──
+
+    public async Task<GpuInfoResult> GetGpuInfoAsync(string serial, CancellationToken ct = default)
+    {
+        var result = new GpuInfoResult();
+
+        // GPU renderer from SurfaceFlinger
+        var renderer = await adb.ShellAsync("dumpsys SurfaceFlinger | grep -i 'GLES' | head -1", serial, ct);
+        if (renderer.Ok)
+        {
+            var match = Regex.Match(renderer.Output, @"GLES:\s*(.+?)(?:,\s*OpenGL|$)", RegexOptions.IgnoreCase);
+            if (match.Success)
+            {
+                var gpuName = match.Groups[1].Value.Trim();
+                // Clean up - remove "ARM," prefix if present
+                gpuName = Regex.Replace(gpuName, @"^ARM,\s*", "", RegexOptions.IgnoreCase);
+                result.Renderer = gpuName;
+            }
+            else
+            {
+                // Try simpler match
+                var match2 = Regex.Match(renderer.Output, @"GLES:\s*(.+)", RegexOptions.IgnoreCase);
+                if (match2.Success)
+                    result.Renderer = match2.Groups[1].Value.Trim().Split(',')[0].Trim();
+            }
+        }
+
+        // GPU frequency from various paths
+        var gpuFreqPaths = new[]
+        {
+            "/sys/class/kgsl/kgsl-3d0/max_gpuclk",
+            "/sys/kernel/gpu/gpu_clock",
+            "/sys/devices/platform/gpu/max_freq",
+            "/sys/class/devfreq/gpufreq/max_freq",
+        };
+
+        foreach (var path in gpuFreqPaths)
+        {
+            var gpuFreq = await adb.ShellAsync($"cat {path} 2>/dev/null", serial, ct);
+            if (gpuFreq.Ok && long.TryParse(gpuFreq.Output.Trim(), out var freq) && freq > 0)
+            {
+                result.MaxFreqHz = freq;
+                break;
+            }
+        }
+
+        // GPU model from props
+        result.GpuModel = await adb.GetPropAsync(serial, "ro.hardware.gpu", ct);
+        if (string.IsNullOrWhiteSpace(result.GpuModel))
+            result.GpuModel = await adb.GetPropAsync(serial, "ro.board.platform", ct);
+
+        // Try to get a human-readable GPU name from renderer
+        if (!string.IsNullOrWhiteSpace(result.Renderer))
+        {
+            var gpuLower = result.Renderer.ToLowerInvariant();
+            if (gpuLower.Contains("mali") && gpuLower.Contains("g925"))
+                result.Renderer = "Mali-G925 Immortalis";
+            else if (gpuLower.Contains("mali") && gpuLower.Contains("g720"))
+                result.Renderer = "Mali-G720";
+            else if (gpuLower.Contains("adreno") && gpuLower.Contains("750"))
+                result.Renderer = "Adreno 750";
+            else if (gpuLower.Contains("adreno") && gpuLower.Contains("740"))
+                result.Renderer = "Adreno 740";
+            else if (gpuLower.Contains("adreno") && gpuLower.Contains("730"))
+                result.Renderer = "Adreno 730";
+        }
+
+        return result;
+    }
+
+    // ── Touch Info ──
+
+    public async Task<TouchInfoResult> GetTouchInfoAsync(string serial, CancellationToken ct = default)
+    {
+        var result = new TouchInfoResult();
+
+        // Touch screen info
+        var touch = await adb.ShellAsync("dumpsys input | grep -A5 'Touch Input' | head -10", serial, ct);
+        if (touch.Ok)
+        {
+            var match = Regex.Match(touch.Output, @"Touch Input.*?size\s*[:=]\s*(\d+)", RegexOptions.Singleline);
+            if (match.Success)
+                result.TouchScreenSize = match.Groups[1].Value;
+        }
+
+        // Touch sampling rate
+        var sampling = await adb.ShellAsync("cat /sys/class/touch/touch_dev/report_rate 2>/dev/null || cat /sys/class/input/input*/report_rate 2>/dev/null", serial, ct);
+        if (sampling.Ok && int.TryParse(sampling.Output.Trim(), out var rate))
+            result.SamplingRateHz = rate;
+
+        return result;
     }
 }

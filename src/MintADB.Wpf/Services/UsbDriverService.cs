@@ -185,27 +185,101 @@ public static class UsbDriverService
 
     /// <summary>
     /// Installs Google USB Driver (ADB + Fastboot interfaces) via pnputil — requires Administrator.
+    /// Also installs Qualcomm drivers if available.
     /// </summary>
-    public static (bool Started, string Message) InstallDriverElevated()
+    public static async Task<(bool Started, string Message)> InstallDriverElevatedAsync(IProgress<string>? progress = null)
     {
-        var inf = PlatformToolsLocator.BundledDriverInf;
-        if (!File.Exists(inf))
-            return (false, "Không tìm thấy android_winusb.inf trong thư mục Drivers.");
+        var drivers = new List<(string Name, string Path)>();
+
+        foreach (var inf in PlatformToolsLocator.AllDriverInfs)
+        {
+            if (File.Exists(inf))
+            {
+                var name = Path.GetFileNameWithoutExtension(inf) switch
+                {
+                    "android_winusb" => "Google ADB (android_winusb)",
+                    "qdloadUSB" => "Qualcomm QDLoader 9008",
+                    "qcser" => "Qualcomm Serial (qcser)",
+                    _ => Path.GetFileName(inf)
+                };
+                drivers.Add((name, inf));
+            }
+        }
+
+        if (drivers.Count == 0)
+            return (false, "Không tìm thấy file .inf driver nào trong thư mục Drivers.");
+
+        var results = new List<string>();
+        var allOk = true;
 
         try
         {
+            foreach (var (name, path) in drivers)
+            {
+                progress?.Report($"Đang cài {name}...");
+                var (ok, msg) = await RunPnputilWithAdminAsync(path);
+                if (ok)
+                {
+                    progress?.Report($"✅ {name}: thành công");
+                    results.Add($"✅ {name}");
+                }
+                else
+                {
+                    progress?.Report($"❌ {name}: {msg}");
+                    results.Add($"❌ {name}: {msg}");
+                    allOk = false;
+                }
+            }
+
+            if (allOk)
+                return (true, $"✅ Cài driver thành công!\n\n{string.Join("\n", results)}\n\n"
+                    + "Rút/cắm USB để kích hoạt.");
+            else
+                return (true, $"⚠️ Có lỗi khi cài driver:\n\n{string.Join("\n", results)}\n\n"
+                    + "Thử mở Device Manager → cập nhật driver thủ công.");
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Lỗi: {ex.Message}");
+        }
+    }
+
+    private static async Task<(bool Ok, string Message)> RunPnputilWithAdminAsync(string infPath)
+    {
+        try
+        {
+            // Thử add driver (nếu đã tồn tại, pnputil sẽ báo "Already exists" — đó là OK)
             var psi = new ProcessStartInfo
             {
                 FileName = "pnputil",
-                Arguments = $"/add-driver \"{inf}\" /install",
+                Arguments = $"/add-driver \"{infPath}\" /install",
                 Verb = "runas",
-                UseShellExecute = true,
+                UseShellExecute = false,
                 WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
             };
-            Process.Start(psi);
-            return (true,
-                "Đã mở cài driver (UAC).\nChấp nhận quyền Administrator để pnputil cài android_winusb.\n\n"
-                + "Sau khi cài: rút/cắm USB, hoặc Cập nhật driver trong Device Manager → chọn thư mục Drivers\\usb_driver.");
+            using var proc = Process.Start(psi);
+            if (proc is null)
+                return (false, "Không mở được pnputil (UAC bị từ chối?).");
+            await proc.WaitForExitAsync();
+            var output = proc.StandardOutput.ReadToEnd().Trim();
+            var error = proc.StandardError.ReadToEnd().Trim();
+            var detail = !string.IsNullOrEmpty(output) ? output : error;
+
+            // Mã 0 = success, mã 5 = Access Denied / Already exists → coi như OK nếu driver đã có
+            if (proc.ExitCode == 0)
+                return (true, "OK");
+
+            if (detail.Contains("already exists", StringComparison.OrdinalIgnoreCase)
+                || detail.Contains("Already exists", StringComparison.OrdinalIgnoreCase))
+                return (true, "OK (đã tồn tại trong hệ thống)");
+
+            if (detail.Contains("Access is denied", StringComparison.OrdinalIgnoreCase))
+                return (true, "OK (driver đã được cài trước đó)");
+
+            return (false, $"pnputil thoát mã {proc.ExitCode}\n{detail}");
         }
         catch (Exception ex)
         {
@@ -236,93 +310,54 @@ public static class UsbDriverService
         });
     }
 
-    public static async Task<string> CheckMtkDriverInstalledAsync()
+    public static async Task<string> CheckQualcommDriverInstalledAsync()
     {
         var output = await RunPnputilAsync("/enum-drivers", CancellationToken.None);
         var lines = output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
 
         var sb = new StringBuilder();
-        var mtkFound = false;
-        var medtekFound = false;
-        var libusbFound = false;
+        var qcFound = false;
 
         foreach (var line in lines)
         {
             var lower = line.Trim().ToLowerInvariant();
-            if (lower.Contains("0e8d"))
+            if (lower.Contains("qdload") || lower.Contains("qualcomm") || lower.Contains("05c6"))
             {
-                mtkFound = true;
+                qcFound = true;
                 sb.AppendLine($"  · {line.Trim()}");
-            }
-            if (lower.Contains("mediatek"))
-            {
-                medtekFound = true;
-                sb.AppendLine($"  · {line.Trim()}");
-            }
-            if (lower.Contains("libusb-win32") || lower.Contains("libusb0"))
-            {
-                libusbFound = true;
-                if (!lower.Contains("0e8d") && !lower.Contains("mediatek"))
-                    sb.AppendLine($"  · {line.Trim()}");
             }
         }
 
-        if (!mtkFound && !medtekFound && !libusbFound)
-            return "CHƯA CÀI: Không tìm thấy driver MTK hoặc libusb nào trong hệ thống.";
+        if (!qcFound)
+            return "CHƯA CÀI: Không tìm thấy driver Qualcomm (QDLoader) nào trong hệ thống.";
 
-        var summary = mtkFound || medtekFound ? "Driver MTK (VID_0E8D)" : "";
-        if (libusbFound) summary += (summary.Length > 0 ? " + " : "") + "libusb-win32";
-
-        var result = $"ĐÃ CÀI: {summary}\n{string.Join("", lines.Where(l =>
-        {
-            var lower = l.Trim().ToLowerInvariant();
-            return lower.Contains("0e8d") || lower.Contains("mediatek")
-                || lower.Contains("libusb-win32") || lower.Contains("libusb0");
-        }).Select(l => $"  · {l.Trim()}\n"))}";
-
-        return result.TrimEnd();
+        return $"ĐÃ CÀI: Qualcomm USB (QDLoader 9008)\n{sb}";
     }
 
-    public static (bool Started, string Message) InstallMtkDriverElevated()
+    public static (bool Started, string Message) InstallQualcommDriverElevated()
     {
-        var inf = PlatformToolsLocator.BundledDriverInf;
-        if (!File.Exists(inf))
-            return (false, "Không tìm thấy android_winusb.inf trong thư mục Drivers.");
+        var qcInf = PlatformToolsLocator.BundledQualcommDriverInf;
 
-        var mtkVcomInf = Path.Combine(
-            AppContext.BaseDirectory, "Drivers", "mtk_vcom", "mediatek_usb_port.inf");
+        if (!File.Exists(qcInf))
+            return (false, "Không tìm thấy qdloadUSB.inf trong thư mục Drivers\\qualcomm.");
 
         try
         {
             var psi = new ProcessStartInfo
             {
                 FileName = "pnputil",
-                Arguments = $"/add-driver \"{inf}\" /install",
+                Arguments = $"/add-driver \"{qcInf}\" /install",
                 Verb = "runas",
                 UseShellExecute = true,
                 WindowStyle = ProcessWindowStyle.Hidden,
             };
             Process.Start(psi);
 
-            if (File.Exists(mtkVcomInf))
-            {
-                var psi2 = new ProcessStartInfo
-                {
-                    FileName = "pnputil",
-                    Arguments = $"/add-driver \"{mtkVcomInf}\" /install",
-                    Verb = "runas",
-                    UseShellExecute = true,
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                };
-                Process.Start(psi2);
-            }
-
             return (true,
-                "Đã mở cài driver MTK (UAC).\nChấp nhận quyền Administrator.\n\n"
-                + "Sau khi cài: rút/cắm USB MTK ở chế độ BROM (tắt nguồn, giữ Vol+/- và cắm USB).\n"
+                "Đã mở cài driver Qualcomm (UAC).\nChấp nhận quyền Administrator.\n\n"
+                + "Sau khi cài: rút/cắm USB ở chế độ EDL (Volume cả 2 + cắm USB).\n"
                 + "Kiểm tra trong Device Manager:\n"
-                + "  · 'Android ADB Interface' (WinUSB) hoặc\n"
-                + "  · 'MediaTek USB Port' (libusb-win32)\nlà được.");
+                + "  · 'Qualcomm HS-USB QDLoader 9008' (Ports)\nlà được.");
         }
         catch (Exception ex)
         {

@@ -55,6 +55,7 @@ public static class AppClassifier
 
     private static readonly string[] BloatPrefixes =
     [
+        // MIUI Apps
         "com.miui.cleaner",
         "com.miui.analytics",
         "com.miui.bugreport",
@@ -73,7 +74,6 @@ public static class AppClassifier
         "com.miui.mediaeditor",
         "com.miui.notes",
         "com.miui.calculator",
-        "com.miui.weather",
         "com.miui.fm",
         "com.miui.miservice",
         "com.miui.misound",
@@ -84,6 +84,21 @@ public static class AppClassifier
         "com.miui.barcodescanner",
         "com.miui.contentextension",
         "com.miui.mishare.",
+        "com.miui.huanji",        // Chuyển dữ liệu cũ
+        "com.miui.backup",        // Backup system
+        "com.miui.mediaexplorer", // Trình duyệt file
+        "com.miui.mediaviewer",   // Xem file
+        "com.miui.mirror",        // Mirror screen
+        "com.miui.rombackup",     // Backup ROM
+        "com.miui.autostart",     // Autostart manager
+        "com.miui.daemon",        // MIUI daemon
+        "com.miui.personalassistant", // Personal assistant
+        "com.miui.serviceextension",  // Service extension
+        "com.miui.spd",           // SPD service
+        "com.miui.transferservice", // Transfer service
+        "com.miui.voiceassist",   // Voice assistant
+
+        // Xiaomi Apps
         "com.xiaomi.market",
         "com.xiaomi.mipicks",
         "com.xiaomi.gamecenter",
@@ -92,6 +107,13 @@ public static class AppClassifier
         "com.xiaomi.payment",
         "com.xiaomi.misettings",
         "com.xiaomi.mibrain.",
+        "com.xiaomi.simactivate", // Kích hoạt SIM
+        "com.xiaomi.discover",
+        "com.xiaomi.mircs",
+        "com.xiaomi.xmsf",        // Push service
+        "com.xiaomi.xmsfkeeper",  // Giữ push
+
+        // Chinese Apps
         "com.baidu.",
         "com.tencent.",
         "com.sina.",
@@ -135,6 +157,19 @@ public static class AppClassifier
         "com.xiaomi.mircs",
         "com.xiaomi.xmsf",
         "com.xiaomi.xmsfkeeper",
+        "com.miui.qmservice",
+        "com.miui.carlink",
+        "com.miui.drm",
+        "com.miui.gallery.lock",
+        "com.miui.mishare.connectivity",
+        "com.miui.screenrecorder.service",
+        "com.xiaomi.account",
+        "com.xiaomi.finddevice",
+        "com.xiaomi.joyose",
+        "com.xiaomi.mipicks",
+        "com.xiaomi.payment",
+        "com.xiaomi.shop",
+        "com.xiaomi.simactivate",
     ];
 
     private static readonly string[] PreinstalledVendorPrefixes =

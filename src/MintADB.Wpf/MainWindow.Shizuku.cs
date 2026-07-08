@@ -118,6 +118,32 @@ public partial class MainWindow
     private async void GrantShizukuRunBackground_Click(object sender, RoutedEventArgs e)
         => await RunShizukuAppOpAction("RUN_IN_BACKGROUND", "Chạy nền");
 
+    private async void GrantShizukuNfc_Click(object sender, RoutedEventArgs e)
+        => await RunShizukuAppOpAction("NFC", "NFC");
+
+    private async void GrantShizukuLocation_Click(object sender, RoutedEventArgs e)
+        => await RunShizukuAppOpAction("COARSE_LOCATION", "Vị trí gần đúng");
+
+    private async void GrantShizukuFineLocation_Click(object sender, RoutedEventArgs e)
+        => await RunShizukuAppOpAction("FINE_LOCATION", "Vị trí chính xác");
+
+    private async void GrantShizukuCamera_Click(object sender, RoutedEventArgs e)
+        => await RunShizukuAppOpAction("CAMERA", "Camera");
+
+    private async void GrantShizukuContacts_Click(object sender, RoutedEventArgs e)
+        => await RunShizukuAppOpAction("READ_CONTACTS", "Đọc danh bạ");
+
+    private async void GrantShizukuCustomAppOp_Click(object sender, RoutedEventArgs e)
+    {
+        var customOp = GetBoxText(ShizukuCustomAppOpBox);
+        if (string.IsNullOrWhiteSpace(customOp))
+        {
+            MessageBox.Show("Nhập tên AppOps tùy chỉnh.", "MintADB");
+            return;
+        }
+        await RunShizukuAppOpAction(customOp, customOp);
+    }
+
     private string GetSelectedShizukuPermission()
     {
         var custom = GetBoxText(ShizukuPermCustomBox);

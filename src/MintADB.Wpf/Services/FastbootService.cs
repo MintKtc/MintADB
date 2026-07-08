@@ -50,6 +50,54 @@ public sealed class FastbootService
     public Task<ProcessResult> OemEdlAsync(string serial, CancellationToken ct = default)
         => RunAsync(["oem", "edl"], serial, ct);
 
+    // ── Boot temporary (không flash) ──
+    public Task<ProcessResult> BootImageAsync(string serial, string imagePath, CancellationToken ct = default)
+        => RunAsync(["boot", imagePath], serial, ct);
+
+    // ── Bootloader lock/unlock ──
+    public Task<ProcessResult> FlashingUnlockAsync(string serial, CancellationToken ct = default)
+        => RunAsync(["flashing", "unlock"], serial, ct);
+
+    public Task<ProcessResult> FlashingLockAsync(string serial, CancellationToken ct = default)
+        => RunAsync(["flashing", "lock"], serial, ct);
+
+    public Task<ProcessResult> OemUnlockAsync(string serial, CancellationToken ct = default)
+        => RunAsync(["oem", "unlock"], serial, ct);
+
+    public Task<ProcessResult> OemLockAsync(string serial, CancellationToken ct = default)
+        => RunAsync(["oem", "lock"], serial, ct);
+
+    // ── Xiaomi unlock ──
+    public Task<ProcessResult> OemUnlockGoAsync(string serial, CancellationToken ct = default)
+        => RunAsync(["oem", "unlock-go"], serial, ct);
+
+    public Task<ProcessResult> OemLockGoAsync(string serial, CancellationToken ct = default)
+        => RunAsync(["oem", "lock-go"], serial, ct);
+
+    // ── Factory reset ──
+    public Task<ProcessResult> WipeAsync(string serial, CancellationToken ct = default)
+        => RunAsync(["-w"], serial, ct);
+
+    // ── Set active slot (A/B) ──
+    public Task<ProcessResult> SetActiveSlotAsync(string serial, string slot, CancellationToken ct = default)
+        => RunAsync(["set_active", slot], serial, ct);
+
+    // ── Flash vbmeta with disable verity ──
+    public Task<ProcessResult> FlashVbmetaDisableVerityAsync(string serial, string imagePath, CancellationToken ct = default)
+        => RunAsync(["flash", "vbmeta", imagePath, "--disable-verity", "--disable-verification"], serial, ct);
+
+    // ── Get all variables ──
+    public Task<ProcessResult> GetVarAllAsync(string serial, CancellationToken ct = default)
+        => RunAsync(["getvar", "all"], serial, ct);
+
+    // ── OEM device info ──
+    public Task<ProcessResult> OemDeviceInfoAsync(string serial, CancellationToken ct = default)
+        => RunAsync(["oem", "device-info"], serial, ct);
+
+    // ── Format partition ──
+    public Task<ProcessResult> FormatAsync(string serial, string partition, CancellationToken ct = default)
+        => RunAsync(["format", partition], serial, ct);
+
     public async Task<ProcessResult> RunAsync(
         string[] args,
         string? serial = null,

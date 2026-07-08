@@ -300,4 +300,150 @@ public sealed class SystemTweaksService(AdbService adb)
             await adb.ShellAsync($"pm grant {pkg} {perm}", serial, ct);
         }
     }
+
+    // ===== Screen Refresh Rate (Hz) =====
+    public async Task<string> GetRefreshRateStatusAsync(string serial, CancellationToken ct = default)
+    {
+        var r = await adb.ShellAsync("dumpsys display | grep -E 'mActiveMode|refreshRate'", serial, ct);
+        var modes = await adb.ShellAsync("dumpsys display | grep -E 'modeId|refreshRate' | head -20", serial, ct);
+        var current = await adb.SettingsGetAsync(serial, "system", "peak_refresh_rate", ct);
+        var min = await adb.SettingsGetAsync(serial, "system", "min_refresh_rate", ct);
+
+        var result = $"peak={(current ?? "?")} · min={(min ?? "?")}";
+        if (!string.IsNullOrWhiteSpace(modes.Output))
+        {
+            var match = Regex.Match(modes.Output, @"refreshRate[=:]\s*([\d.]+)");
+            if (match.Success) result += $" · current={match.Groups[1].Value}Hz";
+        }
+        return result;
+    }
+
+    public async Task<ProcessResult> SetRefreshRateAsync(string serial, int hz, CancellationToken ct = default)
+    {
+        await adb.SettingsPutAsync(serial, "system", "peak_refresh_rate", hz.ToString(), ct);
+        await adb.SettingsPutAsync(serial, "system", "min_refresh_rate", hz.ToString(), ct);
+        return await adb.ShellAsync($"settings put system user_refresh_rate {hz}", serial, ct);
+    }
+
+    public async Task<ProcessResult> SetRefreshRateRangeAsync(string serial, int minHz, int maxHz, CancellationToken ct = default)
+    {
+        await adb.SettingsPutAsync(serial, "system", "min_refresh_rate", minHz.ToString(), ct);
+        await adb.SettingsPutAsync(serial, "system", "peak_refresh_rate", maxHz.ToString(), ct);
+        return await adb.ShellAsync($"settings put system user_refresh_rate {maxHz}", serial, ct);
+    }
+
+    // ===== Font Scale =====
+    public async Task<string> GetFontScaleStatusAsync(string serial, CancellationToken ct = default)
+    {
+        var scale = await adb.SettingsGetAsync(serial, "system", "font_scale", ct);
+        var display = await adb.SettingsGetAsync(serial, "secure", "accessibility_display_magnification_scale", ct);
+        return $"font_scale={(scale ?? "1.0")} · magnification={(display ?? "1.0")}";
+    }
+
+    public Task<ProcessResult> SetFontScaleAsync(string serial, float scale, CancellationToken ct = default)
+        => adb.SettingsPutAsync(serial, "system", "font_scale", scale.ToString("F2", CultureInfo.InvariantCulture), ct);
+
+    // ===== Stay Awake (Developer Option) =====
+    public async Task<string> GetStayAwakeStatusAsync(string serial, CancellationToken ct = default)
+    {
+        var val = await adb.SettingsGetAsync(serial, "global", "stay_on_while_plugged_in", ct);
+        var flags = val != "" ? int.TryParse(val, out var f) ? f : 0 : 0;
+        var charging = (flags & 2) != 0;   // USB
+        var ac = (flags & 1) != 0;         // AC
+        var wireless = (flags & 4) != 0;   // Wireless
+        return $"USB={charging} · AC={ac} · Wireless={wireless} (raw={val})";
+    }
+
+    public Task<ProcessResult> SetStayAwakeAsync(string serial, bool enable, CancellationToken ct = default)
+    {
+        var val = enable ? "3" : "0"; // USB + AC
+        return adb.SettingsPutAsync(serial, "global", "stay_on_while_plugged_in", val, ct);
+    }
+
+    // ===== Show Taps (Developer Option) =====
+    public async Task<string> GetShowTapsStatusAsync(string serial, CancellationToken ct = default)
+    {
+        var val = await adb.SettingsGetAsync(serial, "system", "show_touches", ct);
+        return $"show_touches={(val ?? "0")} ({(val == "1" ? "bật" : "tắt")})";
+    }
+
+    public Task<ProcessResult> SetShowTapsAsync(string serial, bool enable, CancellationToken ct = default)
+        => adb.SettingsPutAsync(serial, "system", "show_touches", enable ? "1" : "0", ct);
+
+    // ===== Pointer Location (Developer Option) =====
+    public async Task<string> GetPointerLocationStatusAsync(string serial, CancellationToken ct = default)
+    {
+        var val = await adb.SettingsGetAsync(serial, "system", "pointer_location", ct);
+        return $"pointer_location={(val ?? "0")} ({(val == "1" ? "bật" : "tắt")})";
+    }
+
+    public Task<ProcessResult> SetPointerLocationAsync(string serial, bool enable, CancellationToken ct = default)
+        => adb.SettingsPutAsync(serial, "system", "pointer_location", enable ? "1" : "0", ct);
+
+    // ===== Battery Percentage =====
+    public async Task<string> GetBatteryPercentStatusAsync(string serial, CancellationToken ct = default)
+    {
+        var val = await adb.SettingsGetAsync(serial, "system", "battery_percentage", ct);
+        var show = await adb.SettingsGetAsync(serial, "global", "battery_status_show", ct);
+        return $"battery_percentage={(val ?? "?")} · show={(show ?? "?")}";
+    }
+
+    public Task<ProcessResult> SetBatteryPercentAsync(string serial, bool show, CancellationToken ct = default)
+        => adb.SettingsPutAsync(serial, "system", "battery_percentage", show ? "1" : "0", ct);
+
+    // ===== Status Bar Customization =====
+    public async Task<string> GetStatusBarStatusAsync(string serial, CancellationToken ct = default)
+    {
+        var clock = await adb.SettingsGetAsync(serial, "system", "status_bar_show_clock", ct);
+        var battery = await adb.SettingsGetAsync(serial, "system", "status_bar_show_battery", ct);
+        var signal = await adb.SettingsGetAsync(serial, "system", "status_bar_show_signal", ct);
+        return $"clock={(clock ?? "?")} · battery={(battery ?? "?")} · signal={(signal ?? "?")}";
+    }
+
+    public async Task<(int Ok, int Fail)> SetStatusBarAsync(
+        string serial, bool showClock, bool showBattery, bool showSignal,
+        Action<string>? log = null, CancellationToken ct = default)
+    {
+        var ok = 0;
+        var fail = 0;
+
+        var r1 = await adb.SettingsPutAsync(serial, "system", "status_bar_show_clock", showClock ? "1" : "0", ct);
+        if (r1.Ok) { log?.Invoke($"[OK] Clock → {(showClock ? "hiện" : "ẩn")}"); ok++; } else fail++;
+
+        var r2 = await adb.SettingsPutAsync(serial, "system", "status_bar_show_battery", showBattery ? "1" : "0", ct);
+        if (r2.Ok) { log?.Invoke($"[OK] Battery → {(showBattery ? "hiện" : "ẩn")}"); ok++; } else fail++;
+
+        var r3 = await adb.SettingsPutAsync(serial, "system", "status_bar_show_signal", showSignal ? "1" : "0", ct);
+        if (r3.Ok) { log?.Invoke($"[OK] Signal → {(showSignal ? "hiện" : "ẩn")}"); ok++; } else fail++;
+
+        return (ok, fail);
+    }
+
+    // ===== Screen Off Timeout =====
+    public async Task<string> GetScreenTimeoutStatusAsync(string serial, CancellationToken ct = default)
+    {
+        var val = await adb.SettingsGetAsync(serial, "system", "screen_off_timeout", ct);
+        var ms = long.TryParse(val, out var v) ? v : 30000;
+        var sec = ms / 1000;
+        var label = sec switch
+        {
+            < 60 => $"{sec}s",
+            < 3600 => $"{sec / 60} phút",
+            _ => $"{sec / 3600} giờ"
+        };
+        return $"timeout={label} ({ms}ms)";
+    }
+
+    public Task<ProcessResult> SetScreenTimeoutAsync(string serial, int milliseconds, CancellationToken ct = default)
+        => adb.SettingsPutAsync(serial, "system", "screen_off_timeout", milliseconds.ToString(), ct);
+
+    // ===== Volume Panel Style (MIUI) =====
+    public async Task<string> GetVolumePanelStyleAsync(string serial, CancellationToken ct = default)
+    {
+        var style = await adb.SettingsGetAsync(serial, "system", "volume_panel_style", ct);
+        return $"volume_panel_style={(style ?? "?")}";
+    }
+
+    public Task<ProcessResult> SetVolumePanelStyleAsync(string serial, string style, CancellationToken ct = default)
+        => adb.SettingsPutAsync(serial, "system", "volume_panel_style", style, ct);
 }

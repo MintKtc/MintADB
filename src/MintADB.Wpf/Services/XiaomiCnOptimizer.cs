@@ -43,6 +43,10 @@ public sealed class XiaomiCnOptimizer(AdbService adb)
     [
         "RUN_IN_BACKGROUND", "RUN_ANY_IN_BACKGROUND", "WAKE_LOCK", "START_FOREGROUND",
         "POST_NOTIFICATION", "IGNORE_BATTERY_OPTIMIZATIONS",
+        "SYSTEM_ALERT_WINDOW", "COARSE_LOCATION", "FINE_LOCATION",
+        "CAMERA", "RECORD_AUDIO", "READ_CONTACTS", "WRITE_CONTACTS",
+        "READ_SMS", "SEND_SMS", "READ_PHONE_STATE",
+        "READ_MEDIA_IMAGES", "READ_MEDIA_VIDEO", "READ_MEDIA_AUDIO",
     ];
 
     private static readonly string[] GrantPermissions =
@@ -52,10 +56,43 @@ public sealed class XiaomiCnOptimizer(AdbService adb)
         "android.permission.VIBRATE",
         "android.permission.ACCESS_NETWORK_STATE",
         "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_CONTACTS",
+        "android.permission.WRITE_CONTACTS",
+        "android.permission.READ_PHONE_STATE",
+        "android.permission.READ_PHONE_NUMBERS",
+        "android.permission.CALL_PHONE",
+        "android.permission.ANSWER_PHONE_CALLS",
+        "android.permission.READ_CALL_LOG",
+        "android.permission.SEND_SMS",
+        "android.permission.READ_SMS",
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_AUDIO",
+        "android.permission.MANAGE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_MEDIA_LOCATION",
+        "android.permission.RECORD_AUDIO",
         "android.permission.FOREGROUND_SERVICE",
         "android.permission.FOREGROUND_SERVICE_DATA_SYNC",
         "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+        "android.permission.FOREGROUND_SERVICE_LOCATION",
+        "android.permission.FOREGROUND_SERVICE_CAMERA",
+        "android.permission.FOREGROUND_SERVICE_MICROPHONE",
+        "android.permission.SYSTEM_ALERT_WINDOW",
         "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.NFC",
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT",
     ];
 
     public async Task<RomInfo> DetectRomAsync(string serial, CancellationToken ct = default)
@@ -117,36 +154,78 @@ public sealed class XiaomiCnOptimizer(AdbService adb)
         }
 
         log?.Invoke($"--- Fix thông báo: {app.Name} ({app.Package}) ---");
+        var pkg = app.Package;
 
+        // ── PHASE 1: Reset state ──
+        log?.Invoke("[Phase 1] Reset state...");
+
+        var freeze = await adb.ShellAsync($"pm unsuspend {pkg}", serial, ct);
+        log?.Invoke($"  [{(freeze.Ok ? "OK" : "SKIP")}] unfreeze");
+
+        var enable = await adb.ShellAsync($"pm enable {pkg}", serial, ct);
+        log?.Invoke($"  [{(enable.Ok ? "OK" : "SKIP")}] enable");
+
+        var stopped = await adb.ShellAsync($"monkey -p {pkg} -c android.intent.category.LAUNCHER 1", serial, ct);
+        log?.Invoke($"  [{(stopped.Ok ? "OK" : "SKIP")}] clear stopped");
+
+        // ── PHASE 2: Grant permissions ──
+        log?.Invoke("[Phase 2] Grant permissions...");
+        foreach (var perm in GrantPermissions)
+        {
+            var r = await adb.ShellAsync($"pm grant {pkg} {perm}", serial, ct);
+            if (r.Ok || r.Combined.Contains("already", StringComparison.OrdinalIgnoreCase))
+                log?.Invoke($"  [OK] {perm.Split('.')[^1]}");
+        }
+
+        // ── PHASE 3: MIUI whitelists ──
+        log?.Invoke("[Phase 3] MIUI whitelists...");
         foreach (var key in MiuiPkgWhitelists)
-            await AppendWhitelistAsync(serial, key, [app.Package], log, ct);
+            await AppendWhitelistAsync(serial, key, [pkg], log, ct);
 
         if (app.Processes.Length > 0)
             await AppendWhitelistAsync(serial, "power_proc_white_list", app.Processes, log, ct);
-
         if (app.Services.Length > 0)
             await AppendWhitelistAsync(serial, "power_service_white_list", app.Services, log, ct);
 
-        var idle = await adb.ShellAsync($"dumpsys deviceidle whitelist +{app.Package}", serial, ct);
-        log?.Invoke($"[{(idle.Ok ? "OK" : "FAIL")}] deviceidle whitelist");
+        // ── PHASE 4: DeviceIdle + Standby ──
+        log?.Invoke("[Phase 4] DeviceIdle + Standby...");
+        var idle = await adb.ShellAsync($"cmd deviceidle whitelist +{pkg}", serial, ct);
+        log?.Invoke($"  [{(idle.Ok ? "OK" : "FAIL")}] deviceidle whitelist");
 
-        var idleCmd = await adb.ShellAsync($"cmd deviceidle whitelist +{app.Package}", serial, ct);
-        log?.Invoke($"[{(idleCmd.Ok ? "OK" : "WARN")}] cmd deviceidle whitelist");
+        var bucket = await adb.ShellAsync($"am set-standby-bucket {pkg} active", serial, ct);
+        log?.Invoke($"  [{(bucket.Ok ? "OK" : "FAIL")}] standby-bucket active");
 
-        var bucket = await adb.ShellAsync($"am set-standby-bucket {app.Package} active", serial, ct);
-        log?.Invoke($"[{(bucket.Ok ? "OK" : "FAIL")}] standby-bucket active");
-
+        // ── PHASE 5: AppOps ──
+        log?.Invoke("[Phase 5] AppOps...");
         foreach (var mode in AppOpsModes)
         {
-            var r = await adb.ShellAsync($"cmd appops set {app.Package} {mode} allow", serial, ct);
-            log?.Invoke($"[{(r.Ok ? "OK" : "WARN")}] appops {mode}");
+            var r = await adb.ShellAsync($"cmd appops set {pkg} {mode} allow", serial, ct);
+            log?.Invoke($"  [{(r.Ok ? "OK" : "WARN")}] {mode}");
         }
 
-        // MIUI autostart intent (best-effort, forums/HyperOS)
-        var autostart = await adb.ShellAsync(
-            $"am broadcast -a miui.intent.action.POWER_HIDE_MODE_APP_LIST " +
-            $"--es package_name {app.Package} --ez enable true", serial, ct);
-        log?.Invoke($"[{(autostart.Ok ? "OK" : "WARN")}] MIUI autostart broadcast");
+        // ── PHASE 6: MIUI Autostart ──
+        log?.Invoke("[Phase 6] MIUI autostart...");
+        var broadcasts = new (string Label, string Cmd)[]
+        {
+            ("POWER_HIDE_MODE", $"am broadcast -a miui.intent.action.POWER_HIDE_MODE_APP_LIST --es package_name {pkg} --ez enable true"),
+            ("OP_AUTO_START allow", $"am broadcast -a miui.intent.action.OP_AUTO_START --es auto_start_service_pkg {pkg} --ez allow true"),
+            ("OP_AUTO_START enable", $"am broadcast -a miui.intent.action.OP_AUTO_START --es auto_start_service_pkg {pkg} --ez enable true"),
+        };
+        foreach (var (label, cmd) in broadcasts)
+        {
+            var r = await adb.ShellAsync(cmd, serial, ct);
+            log?.Invoke($"  [{(r.Ok ? "OK" : "WARN")}] {label}");
+        }
+
+        // ── PHASE 7: Tắt MIUI restrictions ──
+        log?.Invoke("[Phase 7] Tắt MIUI restrictions...");
+        foreach (var (ns, key, val) in GlobalRelax)
+        {
+            var r = await adb.SettingsPutAsync(serial, ns, key, val, ct);
+            log?.Invoke($"  [{(r.Ok ? "OK" : "FAIL")}] {key}={val}");
+        }
+
+        log?.Invoke($"--- Done: {app.Name} ---");
     }
 
     public async Task EnableMiuiAutoStartAsync(
@@ -247,8 +326,11 @@ public sealed class XiaomiCnOptimizer(AdbService adb)
                 log?.Invoke($"[OK] {perm.Split('.')[^1]}");
         }
 
-        await adb.ShellAsync($"cmd appops set {package} SYSTEM_ALERT_WINDOW allow", serial, ct);
-        log?.Invoke("[OK] SYSTEM_ALERT_WINDOW");
+        foreach (var mode in AppOpsModes)
+        {
+            await adb.ShellAsync($"cmd appops set {package} {mode} allow", serial, ct);
+            log?.Invoke($"[OK] appops {mode}");
+        }
     }
 
     public async Task FullOptimizeAsync(
@@ -258,6 +340,8 @@ public sealed class XiaomiCnOptimizer(AdbService adb)
         bool chinaUnlock,
         bool disableMiuiOpt,
         bool grantPerms,
+        bool changeRegion = false,
+        bool disableAnalytics = false,
         Action<string>? log = null,
         CancellationToken ct = default)
     {
@@ -284,6 +368,18 @@ public sealed class XiaomiCnOptimizer(AdbService adb)
         {
             var r = await adb.SettingsPutAsync(serial, "global", "miui_optimization", "false", ct);
             log?.Invoke($"[{(r.Ok ? "OK" : "FAIL")}] Tắt MIUI optimization (cần reboot)");
+            log?.Invoke("");
+        }
+
+        if (changeRegion)
+        {
+            await ChangeRegionToGlobalAsync(serial, log, ct);
+            log?.Invoke("");
+        }
+
+        if (disableAnalytics)
+        {
+            await DisableMiuiAnalyticsAsync(serial, log, ct);
             log?.Invoke("");
         }
 
@@ -320,5 +416,75 @@ public sealed class XiaomiCnOptimizer(AdbService adb)
         var merged = string.Join(",", set.Order());
         var r = await adb.SettingsPutAsync(serial, "system", key, merged, ct);
         log?.Invoke($"[{(r.Ok ? "OK" : "WARN")}] whitelist {key} (+{added})");
+    }
+
+    // ── Đổi region CN → Global ──
+
+    public async Task ChangeRegionToGlobalAsync(string serial, Action<string>? log = null, CancellationToken ct = default)
+    {
+        log?.Invoke("== Đổi region CN → Global ==");
+
+        var region = await adb.GetPropAsync(serial, "ro.miui.region", ct);
+        log?.Invoke($"Region hiện tại: {region ?? "N/A"}");
+
+        var r1 = await adb.SettingsPutAsync(serial, "system", "miui_region", "global", ct);
+        log?.Invoke($"[{(r1.Ok ? "OK" : "FAIL")}] settings system miui_region = global");
+
+        var r2 = await adb.SettingsPutAsync(serial, "global", "device_provisioned", "1", ct);
+        log?.Invoke($"[{(r2.Ok ? "OK" : "FAIL")}] settings global device_provisioned = 1");
+
+        var locale = await adb.GetPropAsync(serial, "ro.product.locale", ct);
+        if (!string.IsNullOrEmpty(locale) && locale.Contains("zh"))
+        {
+            log?.Invoke($"Locale hiện tại: {locale} → en-US");
+        }
+
+        log?.Invoke("[INFO] Cần REBOOT để region có hiệu lực");
+    }
+
+    // ── Tắt MIUI Analytics ──
+
+    public async Task DisableMiuiAnalyticsAsync(string serial, Action<string>? log = null, CancellationToken ct = default)
+    {
+        log?.Invoke("== Tắt MIUI Analytics & theo dõi ==");
+
+        var analyticsPackages = new[]
+        {
+            "com.miui.analytics",
+            "com.xiaomi.mipicks",
+            "com.xiaomi.joyose",
+            "com.miui.msa.global",
+            "com.miui.systemAdSolution",
+        };
+
+        foreach (var pkg in analyticsPackages)
+        {
+            var installed = await adb.PackageInstalledAsync(serial, pkg, ct);
+            if (!installed) continue;
+
+            var r = await adb.ShellAsync($"pm disable-user --user 0 {pkg}", serial, ct);
+            log?.Invoke($"[{(r.Ok ? "OK" : "FAIL")}] Tắt {pkg}");
+        }
+
+        var trackingSettings = new (string Ns, string Key, string Value)[]
+        {
+            ("global", "usage_stats_enabled", "0"),
+            ("secure", "usage_stats_enabled", "0"),
+            ("global", "advertising_id_opt_out", "1"),
+            ("secure", "limited_ad_tracking", "1"),
+            ("global", "miui_analytics_enabled", "0"),
+            ("global", "miui_optimization_analytics", "0"),
+            ("global", "power_usage_analytics", "0"),
+            ("global", "battery_stats_analytics", "0"),
+            ("system", "miui_analytics_upload", "0"),
+        };
+
+        foreach (var (ns, key, val) in trackingSettings)
+        {
+            var r = await adb.SettingsPutAsync(serial, ns, key, val, ct);
+            log?.Invoke($"[{(r.Ok ? "OK" : "FAIL")}] {key}={val}");
+        }
+
+        log?.Invoke("[OK] Đã tắt MIUI analytics");
     }
 }

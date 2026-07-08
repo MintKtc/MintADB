@@ -222,18 +222,31 @@ public partial class MainWindow
         }
     }
 
-    private void InstallUsbDriver_Click(object sender, RoutedEventArgs e)
+    private async void InstallUsbDriver_Click(object sender, RoutedEventArgs e)
     {
-        var (started, message) = UsbDriverService.InstallDriverElevated();
-        AppendLog(started ? "[Setup] Đang cài driver USB (UAC)..." : $"[Setup] Driver: {message}");
-
-        MessageBox.Show(
-            started
-                ? message + "\n\n" + UsbDriverService.ManualInstallHint()
-                : message,
-            "Cài driver USB",
-            MessageBoxButton.OK,
-            started ? MessageBoxImage.Information : MessageBoxImage.Warning);
+        AppendLog("[Setup] Đang cài driver USB...");
+        SetActionButtonsEnabled(false);
+        try
+        {
+            var progress = new Progress<string>(msg =>
+            {
+                AppendLog($"[Setup] {msg}");
+            });
+            var (started, message) = await UsbDriverService.InstallDriverElevatedAsync(progress);
+            if (started)
+            {
+                AppendLog($"[Setup] ✅ Cài driver thành công!");
+                AppendLog(message);
+            }
+            else
+            {
+                AppendLog($"[Setup] ❌ Lỗi: {message}");
+            }
+        }
+        finally
+        {
+            SetActionButtonsEnabled(true);
+        }
     }
 
     private void OpenDriverFolder_Click(object sender, RoutedEventArgs e)

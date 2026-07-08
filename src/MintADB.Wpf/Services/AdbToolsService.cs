@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using MintADB.Wpf.Models;
 
@@ -334,14 +334,19 @@ public sealed class AdbToolsService(AdbService adb)
     {
         var key = MobileNetworkMode.SettingsKey(simSlot);
         var raw = (await adb.ShellAsync($"settings get global {key}", serial, ct)).Output.Trim();
-        if (raw is "null" or "" && simSlot != 0)
+        if (raw is "null" or "")
+        {
+            raw = (await adb.ShellAsync("settings get global preferred_network_mode1", serial, ct)).Output.Trim();
+            key = "preferred_network_mode1";
+        }
+        if (raw is "null" or "")
         {
             raw = (await adb.ShellAsync("settings get global preferred_network_mode", serial, ct)).Output.Trim();
             key = "preferred_network_mode";
         }
 
         if (raw is "null" or "" || !int.TryParse(raw, out var mode))
-            return $"{key}=không đọc được";
+            return $"{key}=không đọc được (thiết bị không hỗ trợ key này)";
 
         return $"{key}={mode} · {MobileNetworkMode.Describe(mode)}";
     }
@@ -370,15 +375,17 @@ public sealed class AdbToolsService(AdbService adb)
     {
         var systemLocales = (await adb.ShellAsync("settings get system system_locales", serial, ct)).Output.Trim();
         var persistLocale = await adb.GetPropAsync(serial, "persist.sys.locale", ct);
-        var language = await adb.GetPropAsync(serial, "persist.sys.language", ct);
-        var country = await adb.GetPropAsync(serial, "persist.sys.country", ct);
 
         if (systemLocales is "null" or "") systemLocales = "—";
         if (persistLocale is "null" or "") persistLocale = "—";
-        if (language is "null" or "") language = "—";
-        if (country is "null" or "") country = "—";
 
-        return $"system_locales={systemLocales} · persist.sys.locale={persistLocale} · lang={language} · country={country}";
+        if (systemLocales != "—" || persistLocale != "—")
+        {
+            var display = systemLocales != "—" ? systemLocales : persistLocale;
+            return $"Locale={display}";
+        }
+
+        return "Locale=— (không đọc được)";
     }
 
     public static bool TryNormalizeLocale(string raw, out string locale)
@@ -527,6 +534,138 @@ public sealed class AdbToolsService(AdbService adb)
 
     public bool TryLaunchScrcpy(string serial, out string message)
         => TryLaunchScrcpy(serial, 1080, stayAwake: true, out message);
+
+    // ── ADB Version ──
+    public async Task<string> GetAdbVersionAsync(CancellationToken ct = default)
+    {
+        try
+        {
+            var r = await adb.RunGlobalAsync(["version"], ct);
+            var firstLine = r.Output.Split('\n', '\r', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+            return firstLine ?? "Unknown";
+        }
+        catch
+        {
+            return "N/A";
+        }
+    }
+
+    public async Task<string> GetFastbootVersionAsync(CancellationToken ct = default)
+    {
+        try
+        {
+            var path = PlatformToolsLocator.ResolveFastbootPath(AdbPath);
+            var psi = new ProcessStartInfo
+            {
+                FileName = path,
+                Arguments = "--version",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            };
+            using var proc = Process.Start(psi);
+            if (proc is null) return "N/A";
+            var output = await proc.StandardOutput.ReadToEndAsync(ct);
+            var firstLine = output.Split('\n', '\r', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+            return firstLine ?? "Unknown";
+        }
+        catch
+        {
+            return "N/A";
+        }
+    }
+
+    // ── Quick Device Info ──
+    public async Task<string> GetQuickDeviceInfoAsync(string serial, CancellationToken ct = default)
+    {
+        var lines = new List<string>();
+
+        var model = await adb.GetPropAsync(serial, "ro.product.model", ct);
+        var brand = await adb.GetPropAsync(serial, "ro.product.brand", ct);
+        var android = await adb.GetPropAsync(serial, "ro.build.version.release", ct);
+        var sdk = await adb.GetPropAsync(serial, "ro.build.version.sdk", ct);
+        var build = await adb.GetPropAsync(serial, "ro.build.display.id", ct);
+
+        lines.Add($"Model: {brand} {model}");
+        lines.Add($"Android: {android} (SDK {sdk})");
+        lines.Add($"Build: {build}");
+
+        // Battery
+        var battery = await adb.ShellAsync("dumpsys battery | grep -E 'level:|status:'", serial, ct);
+        foreach (var line in battery.Output.Split('\n', '\r'))
+        {
+            var trimmed = line.Trim();
+            if (trimmed.StartsWith("level:"))
+                lines.Add($"Battery: {trimmed.Split(':')[1].Trim()}%");
+            else if (trimmed.StartsWith("status:"))
+            {
+                var code = trimmed.Split(':')[1].Trim();
+                var status = code switch { "2" => "Charging", "3" => "Discharging", "5" => "Full", _ => code };
+                lines.Add($"Status: {status}");
+            }
+        }
+
+        // IP
+        var ip = await adb.ShellAsync("ip -f inet addr show wlan0 2>/dev/null | grep inet | awk '{print $2}' | cut -d/ -f1", serial, ct);
+        if (!string.IsNullOrWhiteSpace(ip.Output))
+            lines.Add($"IP: {ip.Output.Trim()}");
+
+        return string.Join("\n", lines);
+    }
+
+    // ── Screenshot ──
+    public async Task<ProcessResult> ScreenshotAsync(string serial, string localPath, CancellationToken ct = default)
+    {
+        var remotePath = "/sdcard/mintadb_screenshot.png";
+        var capture = await adb.ShellAsync($"screencap -p {remotePath}", serial, ct);
+        if (!capture.Ok) return capture;
+
+        var pull = await PullAsync(serial, remotePath, localPath, ct);
+        await adb.ShellAsync($"rm {remotePath}", serial, ct);
+        return pull;
+    }
+
+    // ── Screen Record ──
+    public async Task<ProcessResult> ScreenRecordAsync(string serial, string localPath, int seconds = 30, CancellationToken ct = default)
+    {
+        var remotePath = "/sdcard/mintadb_record.mp4";
+        var record = await adb.ShellAsync($"screenrecord --time-limit {seconds} {remotePath}", serial, ct);
+        if (!record.Ok) return record;
+
+        var pull = await PullAsync(serial, remotePath, localPath, ct);
+        await adb.ShellAsync($"rm {remotePath}", serial, ct);
+        return pull;
+    }
+
+    // ── File Explorer ──
+    public async Task<string> ListDirectoryAsync(string serial, string path, CancellationToken ct = default)
+    {
+        var r = await adb.ShellAsync($"ls -la \"{path}\"", serial, ct);
+        return r.Output;
+    }
+
+    // ── Batch Operations ──
+    public async Task<ProcessResult> ClearAppDataBatchAsync(string serial, IEnumerable<string> packages, CancellationToken ct = default)
+    {
+        var results = new List<string>();
+        foreach (var pkg in packages)
+        {
+            var r = await adb.ShellAsync($"pm clear {pkg}", serial, ct);
+            results.Add($"{pkg}: {(r.Ok ? "OK" : "FAIL")}");
+        }
+        return new ProcessResult(0, string.Join("\n", results), "");
+    }
+
+    public async Task<ProcessResult> ForceStopBatchAsync(string serial, IEnumerable<string> packages, CancellationToken ct = default)
+    {
+        var results = new List<string>();
+        foreach (var pkg in packages)
+        {
+            var r = await adb.ShellAsync($"am force-stop {pkg}", serial, ct);
+            results.Add($"{pkg}: {(r.Ok ? "OK" : "FAIL")}");
+        }
+        return new ProcessResult(0, string.Join("\n", results), "");
+    }
 }
 
 public enum PackageRemoveOutcome { Uninstalled, Disabled, Hidden, Failed }
@@ -535,3 +674,15 @@ public readonly record struct PackageRemoveResult(PackageRemoveOutcome Outcome, 
 {
     public bool Ok => Outcome != PackageRemoveOutcome.Failed;
 }
+
+
+    // ── Quick Device Info ──
+
+    // ── Screenshot ──
+
+    // ── Screen Record ──
+
+    // ── File Explorer ──
+
+    // ── Batch Operations ──
+

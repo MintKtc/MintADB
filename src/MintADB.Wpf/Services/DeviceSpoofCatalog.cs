@@ -165,6 +165,46 @@ public static class DeviceSpoofCatalog
             "samsung/dm3qxxx/dm3q:14/UP1A.231005.007/S918BXXU3AWM9:user/release-keys",
             "dm3qxxx-user 14 UP1A.231005.007 S918BXXU3AWM9 release-keys",
             socModel: "SM8550"),
+
+        // ── Game-Specific Profiles ──
+        GameProfile(
+            "genshin_120",
+            "Genshin Impact 120 FPS",
+            "Genshin Impact — unlock 120 FPS trên thiết bị hỗ trợ",
+            "ro.genshin.fps_cap=120",
+            "ro.genshin.render_quality=2"),
+
+        GameProfile(
+            "pubg_120",
+            "PUBG Mobile 120 FPS",
+            "PUBG Mobile — unlock 90/120 FPS + HDR",
+            "ro.pubg.fps=120",
+            "ro.pubg.graphics=hdr"),
+
+        GameProfile(
+            "codm_120",
+            "Call of Duty Mobile 120 FPS",
+            "COD Mobile — unlock max FPS + Ultra graphics",
+            "ro.codm.fps=120",
+            "ro.codm.quality=ultra"),
+
+        GameProfile(
+            "mlbb_120",
+            "Mobile Legends 120 FPS",
+            "MLBB — unlock 120 FPS mode",
+            "ro.mlbb.fps=120"),
+
+        GameProfile(
+            "apex_90",
+            "Apex Legends Mobile 90 FPS",
+            "Apex Legends — unlock 90 FPS + HDR",
+            "ro.apex.fps=90"),
+
+        GameProfile(
+            "fortnite_120",
+            "Fortnite 120 FPS",
+            "Fortnite — unlock 120 FPS trên flagship",
+            "ro.fortnite.fps=120"),
     ];
 
     private static DeviceSpoofProfile EliteProfile(
@@ -217,5 +257,19 @@ public static class DeviceSpoofCatalog
             Description = desc,
             Chip = chip,
             Props = props,
+        };
+
+    private static DeviceSpoofProfile GameProfile(
+        string id, string name, string desc, params string[] gameProps) =>
+        new()
+        {
+            Id = id,
+            DisplayName = name,
+            Description = desc,
+            Chip = "Game-Specific",
+            Props = new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["ro.game.fps_unlock"] = "1",
+            },
         };
 }

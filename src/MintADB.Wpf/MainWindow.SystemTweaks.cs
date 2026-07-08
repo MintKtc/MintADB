@@ -362,4 +362,280 @@ public partial class MainWindow
             GoogleServicesText.Text = await SystemTweaks.GetGoogleServicesStatusAsync(serial);
         });
     }
+
+    // ── Refresh Rate ──
+
+    private async void ReadRefreshRate_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        RefreshRateStatusText.Text = "Đang đọc...";
+        try
+        {
+            var status = await SystemTweaks.GetRefreshRateStatusAsync(serial);
+            RefreshRateStatusText.Text = status;
+            AppendLog("--- Hz ---");
+            AppendLog(status);
+        }
+        catch (Exception ex)
+        {
+            RefreshRateStatusText.Text = $"Lỗi: {ex.Message}";
+        }
+    }
+
+    private async void SetRefreshRate_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        if (sender is Button { Tag: string hzStr } && int.TryParse(hzStr, out var hz))
+        {
+            if (MessageBox.Show($"Đặt tần số quét → {hz}Hz?",
+                    "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+                return;
+
+            await RunToolAsync($"Hz → {hz}", async () =>
+            {
+                var r = await SystemTweaks.SetRefreshRateAsync(serial, hz);
+                AppendLog(r.Ok ? $"[OK] Hz → {hz}" : $"[FAIL] {r.Combined}");
+                RefreshRateStatusText.Text = await SystemTweaks.GetRefreshRateStatusAsync(serial);
+            });
+        }
+    }
+
+    // ── Font Scale ──
+
+    private async void ReadFontScale_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        FontScaleStatusText.Text = "Đang đọc...";
+        try
+        {
+            var status = await SystemTweaks.GetFontScaleStatusAsync(serial);
+            FontScaleStatusText.Text = status;
+            AppendLog("--- Font ---");
+            AppendLog(status);
+        }
+        catch (Exception ex)
+        {
+            FontScaleStatusText.Text = $"Lỗi: {ex.Message}";
+        }
+    }
+
+    private async void SetFontScale_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        if (sender is Button { Tag: string scaleStr } && float.TryParse(scaleStr, System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture, out var scale))
+        {
+            if (MessageBox.Show($"Đặt cỡ chữ → {scale}x?",
+                    "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+                return;
+
+            await RunToolAsync($"Font → {scale}x", async () =>
+            {
+                var r = await SystemTweaks.SetFontScaleAsync(serial, scale);
+                AppendLog(r.Ok ? $"[OK] Font → {scale}x" : $"[FAIL] {r.Combined}");
+                FontScaleStatusText.Text = await SystemTweaks.GetFontScaleStatusAsync(serial);
+            });
+        }
+    }
+
+    // ── Screen Timeout ──
+
+    private async void ReadScreenTimeout_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        ScreenTimeoutStatusText.Text = "Đang đọc...";
+        try
+        {
+            var status = await SystemTweaks.GetScreenTimeoutStatusAsync(serial);
+            ScreenTimeoutStatusText.Text = status;
+            AppendLog("--- Timeout ---");
+            AppendLog(status);
+        }
+        catch (Exception ex)
+        {
+            ScreenTimeoutStatusText.Text = $"Lỗi: {ex.Message}";
+        }
+    }
+
+    private async void SetScreenTimeout_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        if (sender is Button { Tag: string msStr } && int.TryParse(msStr, out var ms))
+        {
+            var label = ms switch
+            {
+                < 60000 => $"{ms / 1000}s",
+                < 3600000 => $"{ms / 60000} phút",
+                _ => "vô hạn"
+            };
+
+            if (MessageBox.Show($"Đặt thời gian tắt màn hình → {label}?",
+                    "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+                return;
+
+            await RunToolAsync($"Timeout → {label}", async () =>
+            {
+                var r = await SystemTweaks.SetScreenTimeoutAsync(serial, ms);
+                AppendLog(r.Ok ? $"[OK] Timeout → {label}" : $"[FAIL] {r.Combined}");
+                ScreenTimeoutStatusText.Text = await SystemTweaks.GetScreenTimeoutStatusAsync(serial);
+            });
+        }
+    }
+
+    // ── Developer Options ──
+
+    private async void ReadDevOptions_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        DevOptionsStatusText.Text = "Đang đọc...";
+        try
+        {
+            var stay = await SystemTweaks.GetStayAwakeStatusAsync(serial);
+            var taps = await SystemTweaks.GetShowTapsStatusAsync(serial);
+            var ptr = await SystemTweaks.GetPointerLocationStatusAsync(serial);
+            DevOptionsStatusText.Text = $"{stay}\n{taps}\n{ptr}";
+            StayAwakeToggle.IsChecked = stay.Contains("USB=True");
+            ShowTapsToggle.IsChecked = taps.Contains("bật");
+            PointerLocationToggle.IsChecked = ptr.Contains("bật");
+            AppendLog("--- Dev Options ---");
+            AppendLog(stay);
+            AppendLog(taps);
+            AppendLog(ptr);
+        }
+        catch (Exception ex)
+        {
+            DevOptionsStatusText.Text = $"Lỗi: {ex.Message}";
+        }
+    }
+
+    private async void ToggleStayAwake_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var enable = StayAwakeToggle.IsChecked == true;
+        await RunToolAsync($"Stay awake {(enable ? "bật" : "tắt")}", async () =>
+        {
+            var r = await SystemTweaks.SetStayAwakeAsync(serial, enable);
+            AppendLog(r.Ok ? $"[OK] Stay awake → {(enable ? "bật" : "tắt")}" : $"[FAIL] {r.Combined}");
+            DevOptionsStatusText.Text = await SystemTweaks.GetStayAwakeStatusAsync(serial);
+        });
+    }
+
+    private async void ToggleShowTaps_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var enable = ShowTapsToggle.IsChecked == true;
+        await RunToolAsync($"Show taps {(enable ? "bật" : "tắt")}", async () =>
+        {
+            var r = await SystemTweaks.SetShowTapsAsync(serial, enable);
+            AppendLog(r.Ok ? $"[OK] Show taps → {(enable ? "bật" : "tắt")}" : $"[FAIL] {r.Combined}");
+            DevOptionsStatusText.Text = await SystemTweaks.GetShowTapsStatusAsync(serial);
+        });
+    }
+
+    private async void TogglePointerLocation_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var enable = PointerLocationToggle.IsChecked == true;
+        await RunToolAsync($"Pointer location {(enable ? "bật" : "tắt")}", async () =>
+        {
+            var r = await SystemTweaks.SetPointerLocationAsync(serial, enable);
+            AppendLog(r.Ok ? $"[OK] Pointer location → {(enable ? "bật" : "tắt")}" : $"[FAIL] {r.Combined}");
+            DevOptionsStatusText.Text = await SystemTweaks.GetPointerLocationStatusAsync(serial);
+        });
+    }
+
+    // ── Status Bar ──
+
+    private async void ReadStatusBar_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        StatusBarStatusText.Text = "Đang đọc...";
+        try
+        {
+            var status = await SystemTweaks.GetStatusBarStatusAsync(serial);
+            StatusBarStatusText.Text = status;
+            AppendLog("--- Status Bar ---");
+            AppendLog(status);
+        }
+        catch (Exception ex)
+        {
+            StatusBarStatusText.Text = $"Lỗi: {ex.Message}";
+        }
+    }
+
+    private async void ApplyStatusBar_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        var showClock = StatusBarClockToggle.IsChecked == true;
+        var showBattery = StatusBarBatteryToggle.IsChecked == true;
+        var showSignal = StatusBarSignalToggle.IsChecked == true;
+
+        await RunToolAsync("Status Bar", async () =>
+        {
+            var (ok, fail) = await SystemTweaks.SetStatusBarAsync(serial, showClock, showBattery, showSignal, AppendLog);
+            AppendLog($"[StatusBar] {ok} OK · {fail} WARN");
+            StatusBarStatusText.Text = await SystemTweaks.GetStatusBarStatusAsync(serial);
+        });
+    }
+
+    // ── Battery Percentage ──
+
+    private async void ReadBatteryPercent_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        BatteryPercentStatusText.Text = "Đang đọc...";
+        try
+        {
+            var status = await SystemTweaks.GetBatteryPercentStatusAsync(serial);
+            BatteryPercentStatusText.Text = status;
+            AppendLog("--- Battery % ---");
+            AppendLog(status);
+        }
+        catch (Exception ex)
+        {
+            BatteryPercentStatusText.Text = $"Lỗi: {ex.Message}";
+        }
+    }
+
+    private async void SetBatteryPercent_Click(object sender, RoutedEventArgs e)
+    {
+        var serial = RequireDevice();
+        if (serial is null) return;
+
+        if (sender is Button { Tag: string showStr } && bool.TryParse(showStr, out var show))
+        {
+            await RunToolAsync($"Battery % {(show ? "hiện" : "ẩn")}", async () =>
+            {
+                var r = await SystemTweaks.SetBatteryPercentAsync(serial, show);
+                AppendLog(r.Ok ? $"[OK] Battery % → {(show ? "hiện" : "ẩn")}" : $"[FAIL] {r.Combined}");
+                BatteryPercentStatusText.Text = await SystemTweaks.GetBatteryPercentStatusAsync(serial);
+            });
+        }
+    }
 }

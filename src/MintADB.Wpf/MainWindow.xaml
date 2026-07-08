@@ -276,6 +276,12 @@
                                 <Border Style="{StaticResource MacSeparator}"/>
                                 <CheckBox x:Name="OptMiuiOpt" Content="Tắt MIUI Optimization (cần reboot)"
                                           Style="{StaticResource MacToggle}"/>
+                                <Border Style="{StaticResource MacSeparator}"/>
+                                <CheckBox x:Name="OptRegion" Content="Đổi region CN → Global (cần reboot)"
+                                          Style="{StaticResource MacToggle}"/>
+                                <Border Style="{StaticResource MacSeparator}"/>
+                                <CheckBox x:Name="OptAnalytics" Content="Tắt MIUI analytics &amp; theo dõi"
+                                          Style="{StaticResource MacToggle}" IsChecked="True"/>
                             </StackPanel>
                         </Border>
 
@@ -581,20 +587,84 @@
                         </StackPanel>
 
                         <!-- Action buttons -->
-                        <Border Style="{StaticResource MacGroupBoxWarn}"
-                                Padding="12,10" Margin="0,0,0,24">
-                        <StackPanel Orientation="Horizontal">
-                            <Button x:Name="BtnFixNotif" Content="Fix thông báo"
-                                    Click="FixNotifications_Click"
-                                    Style="{StaticResource MacBtnPrimary}"/>
-                            <Button x:Name="BtnGrant" Content="Cấp quyền"
-                                    Click="GrantPermissions_Click"
-                                    Style="{StaticResource MacBtnSecondary}"/>
-                            <Button x:Name="BtnFullOpt" Content="Full Optimize"
-                                    Click="FullOptimize_Click"
-                                    Style="{StaticResource MacBtnDestructive}"
-                                    Margin="0"/>
-                        </StackPanel>
+                        <TextBlock Text="Thao tác nhanh" Style="{StaticResource MacGroupLabelSafe}"/>
+                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Chọn app trong danh sách → chạy thao tác."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+                                <!-- Row 1: Fix & Grant -->
+                                <UniformGrid Columns="3" Margin="0,0,0,8">
+                                    <Button x:Name="BtnFixNotif" Content="Fix thông báo"
+                                            Click="FixNotifications_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"
+                                            ToolTip="Fix thông báo cho app đã chọn"/>
+                                    <Button x:Name="BtnGrant" Content="Cấp quyền"
+                                            Click="GrantPermissions_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"
+                                            ToolTip="Cấp quyền cho app đã chọn"/>
+                                    <Button x:Name="BtnFullOpt" Content="Full Optimize"
+                                            Click="FullOptimize_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"
+                                            ToolTip="Fix thông báo + cấp quyền + tắt pin"/>
+                                </UniformGrid>
+
+                                <!-- Row 2: Backup & Restore -->
+                                <UniformGrid Columns="3" Margin="0,0,0,8">
+                                    <Button x:Name="BtnBackupApps" Content="Backup danh sách"
+                                            Click="BackupAppList_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"
+                                            ToolTip="Lưu danh sách app đã chọn"/>
+                                    <Button x:Name="BtnRestoreApps" Content="Khôi phục từ file"
+                                            Click="RestoreAppList_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"
+                                            ToolTip="Khôi phục danh sách từ file backup"/>
+                                    <Button x:Name="BtnDebloatSafe" Content="Debloat an toàn"
+                                            Click="DebloatSafe_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"
+                                            ToolTip="Chỉ gỡ app rác, giữ app hệ thống"/>
+                                </UniformGrid>
+
+                                <!-- Progress -->
+                                <Border x:Name="OptProgressBorder" Background="#1a1a2e" CornerRadius="6"
+                                        Padding="10,8" Margin="0,0,0,0" Visibility="Collapsed">
+                                    <StackPanel>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock x:Name="OptProgressText" Text="Đang chạy..."
+                                                       FontSize="11" Foreground="{StaticResource MacBlueBrush}"/>
+                                            <TextBlock x:Name="OptProgressCount" Grid.Column="1" Text="0/0"
+                                                       FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"/>
+                                        </Grid>
+                                        <ProgressBar x:Name="OptProgressBar" Height="6" Minimum="0" Maximum="100"
+                                                     Margin="0,6,0,0" Background="#333" Foreground="{StaticResource MacBlueBrush}"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Undo -->
+                        <Border x:Name="UndoBorder" Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,24" Padding="12"
+                                Visibility="Collapsed">
+                            <StackPanel>
+                                <TextBlock Text="Hoàn tác gần nhất" FontSize="11" FontWeight="SemiBold"
+                                           Foreground="{StaticResource MacSecondaryBrush}" Margin="0,0,0,6"/>
+                                <TextBlock x:Name="UndoInfoText" Text=""
+                                           FontSize="11" Foreground="{StaticResource MacBlueBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <UniformGrid Columns="2">
+                                    <Button x:Name="BtnUndo" Content="Hoàn tác"
+                                            Click="Undo_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnClearUndo" Content="Xóa lịch sử"
+                                            Click="ClearUndo_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                            </StackPanel>
                         </Border>
 
                         </StackPanel>
@@ -619,7 +689,6 @@
                         <Border Style="{StaticResource MacTabBar}">
                             <Grid Style="{StaticResource MacTabStrip}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
@@ -653,9 +722,6 @@
                                 <Button x:Name="ToolNavFastboot" Grid.Column="7" Content="Fastboot"
                                         Click="ToolNavFastboot_Click"
                                         Style="{StaticResource MacToolNavBtn}"/>
-                                <Button x:Name="ToolNavMtk" Grid.Column="8" Content="MTK"
-                                        Click="ToolNavMtk_Click"
-                                        Style="{StaticResource MacToolNavBtn}"/>
                             </Grid>
                         </Border>
 
@@ -666,159 +732,111 @@
                         <StackPanel x:Name="ToolPageBasic">
 
                         <TextBlock Text="ADB / Fastboot &amp; Driver USB (offline)" Style="{StaticResource MacGroupLabelInfo}"/>
-                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,16" Padding="12">
+                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
                                 <TextBlock x:Name="PlatformToolsStatusText" Text="Đang kiểm tra..."
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
-                                           TextWrapping="Wrap" Margin="0,0,0,6"/>
+                                           TextWrapping="Wrap" Margin="0,0,0,6" Visibility="Collapsed"/>
                                 <TextBlock x:Name="UsbDriverStatusText" Text=""
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11" Foreground="{StaticResource MacGreenBrush}"
-                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <WrapPanel Margin="0,0,0,8">
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <TextBlock x:Name="AdbVersionText" Text=""
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="10" Foreground="{StaticResource MacBlueBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,8" Visibility="Collapsed"/>
+                                <UniformGrid Columns="3" Margin="0,0,0,8">
                                     <Button x:Name="BtnInstallPlatformTools" Content="Triển khai tools"
-                                            Click="InstallPlatformTools_Click" Style="{StaticResource MacBtnPrimary}"
-                                            ToolTip="Copy ADB/Fastboot offline vào %LOCALAPPDATA%\MintADB"/>
+                                            Click="InstallPlatformTools_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"
+                                            ToolTip="Copy ADB/Fastboot offline"/>
                                     <Button x:Name="BtnInstallUsbDriver" Content="Cài driver USB"
-                                            Click="InstallUsbDriver_Click" Style="{StaticResource MacBtnPrimary}"
-                                            ToolTip="Google android_winusb — ADB &amp; Fastboot (cần Admin)"/>
+                                            Click="InstallUsbDriver_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"
+                                            ToolTip="Google android_winusb"/>
                                     <Button x:Name="BtnRestartAdbServer" Content="Restart ADB"
-                                            Click="RestartAdbServer_Click" Style="{StaticResource MacToolBtn}"/>
-                                </WrapPanel>
-                                <WrapPanel>
+                                            Click="RestartAdbServer_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"
+                                            ToolTip="Khởi động lại ADB server"/>
+                                </UniformGrid>
+                                <UniformGrid Columns="3">
                                     <Button x:Name="BtnOpenDriverFolder" Content="Thư mục driver"
-                                            Click="OpenDriverFolder_Click" Style="{StaticResource MacToolbarBtn}"/>
+                                            Click="OpenDriverFolder_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"
+                                            ToolTip="Mở thư mục chứa driver USB"/>
                                     <Button x:Name="BtnOpenDeviceManager" Content="Device Manager"
-                                            Click="OpenDeviceManager_Click" Style="{StaticResource MacToolbarBtn}"
-                                            Margin="0"/>
-                                </WrapPanel>
-                                <TextBlock FontSize="10" Margin="0,10,0,0" TextWrapping="Wrap"
+                                            Click="OpenDeviceManager_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"
+                                            ToolTip="Mở Device Manager của Windows"/>
+                                    <Button x:Name="BtnCheckAdbVersion" Content="Kiểm tra version"
+                                            Click="CheckAdbVersion_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"
+                                            ToolTip="Xem version ADB và Fastboot"/>
+                                </UniformGrid>
+                                <TextBlock FontSize="10" Margin="0,8,0,0" TextWrapping="Wrap"
                                            Foreground="{StaticResource MacSecondaryBrush}">
                                     <Run Text="App đi kèm platform-tools + driver Google USB. "/>
                                     <Run Text="Xiaomi:" FontWeight="SemiBold"/>
-                                    <Run Text=" nếu pnputil không đủ, mở Device Manager → cập nhật driver thủ công từ thư mục Drivers."/>
+                                    <Run Text=" nếu pnputil không đủ, mở Device Manager → cập nhật driver thủ công."/>
                                 </TextBlock>
                             </StackPanel>
                         </Border>
 
                         <TextBlock Text="Khởi động lại" Style="{StaticResource MacGroupLabelDanger}"/>
-                        <Border Style="{StaticResource MacGroupBoxDanger}" Margin="0,0,0,16" Padding="12">
-                            <WrapPanel>
-                                <Button x:Name="BtnReboot" Content="Reboot" Click="Reboot_Click" Style="{StaticResource MacToolBtn}"/>
-                                <Button x:Name="BtnRebootRecovery" Content="Recovery" Click="RebootRecovery_Click" Style="{StaticResource MacToolBtn}"/>
-                                <Button x:Name="BtnRebootBootloader" Content="Bootloader" Click="RebootBootloader_Click" Style="{StaticResource MacToolBtn}"/>
-                                <Button x:Name="BtnRebootSideload" Content="Sideload" Click="RebootSideload_Click" Style="{StaticResource MacToolBtn}"/>
-                                <Button x:Name="BtnRebootEdl" Content="EDL" Click="RebootEdl_Click" Style="{StaticResource MacToolBtn}"/>
-                            </WrapPanel>
+                        <Border Style="{StaticResource MacGroupBoxDanger}" Margin="0,0,0,12" Padding="12">
+                            <UniformGrid Columns="5">
+                                <Button x:Name="BtnReboot" Content="Reboot" Click="Reboot_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                <Button x:Name="BtnRebootRecovery" Content="Recovery" Click="RebootRecovery_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                <Button x:Name="BtnRebootBootloader" Content="Bootloader" Click="RebootBootloader_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                <Button x:Name="BtnRebootSideload" Content="Sideload" Click="RebootSideload_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                <Button x:Name="BtnRebootEdl" Content="EDL" Click="RebootEdl_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                            </UniformGrid>
                         </Border>
 
-                        <TextBlock Text="Cài APK offline" Style="{StaticResource MacGroupLabelInfo}"/>
-                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,16" Padding="0" ClipToBounds="True"
-                                CornerRadius="{StaticResource MacRadiusGroup}">
+                        <TextBlock Text="Kho APK" Style="{StaticResource MacGroupLabelInfo}"/>
+                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <Border Background="#2A2A2A" Padding="14,12" Style="{StaticResource MacPanelHeader}">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="Kho APK Miui" FontSize="15" FontWeight="Bold"
-                                                       Foreground="{StaticResource MacTextBrush}"/>
-                                            <TextBlock x:Name="BundledApkSummaryText" Text="Đang tải..."
-                                                       FontSize="11" FontWeight="SemiBold"
-                                                       Foreground="#7EC8FF" Margin="0,2,0,0"/>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Button x:Name="BtnRefreshBundledApks" Content="↻"
-                                                    Click="RefreshBundledApks_Click"
-                                                    Style="{StaticResource MacToolBtn}"
-                                                    MinWidth="36" Padding="8,6" FontSize="14"
-                                                    ToolTip="Làm mới danh sách"/>
-                                            <Button x:Name="BtnPushAllBundledApks" Content="Đẩy tất cả"
-                                                    Click="PushAllBundledApks_Click"
-                                                    Style="{StaticResource MacBtnSecondary}"
-                                                    Padding="12,8" FontSize="12" Margin="8,0,0,0"
-                                                    ToolTip="Đẩy APK vào Download/MintADB trên điện thoại"/>
-                                            <Button x:Name="BtnInstallAllBundledApks" Content="Cài tất cả"
-                                                    Click="InstallAllBundledApks_Click"
-                                                    Style="{StaticResource MacBtnPrimary}"
-                                                    Padding="12,8" FontSize="12" Margin="6,0,0,0"
-                                                    ToolTip="Cài qua ADB (MIUI có thể chặn)"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
+                                <TextBlock x:Name="BundledApkSummaryText" Text="Đang tải..."
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,8"/>
+                                <UniformGrid Columns="3" Margin="0,0,0,8">
+                                    <Button x:Name="BtnRefreshBundledApks" Content="Làm mới"
+                                            Click="RefreshBundledApks_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnPushAllBundledApks" Content="Đẩy tất cả"
+                                            Click="PushAllBundledApks_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"
+                                            ToolTip="Đẩy APK vào Download/MintADB"/>
+                                    <Button x:Name="BtnInstallAllBundledApks" Content="Cài tất cả"
+                                            Click="InstallAllBundledApks_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"
+                                            ToolTip="Cài qua ADB"/>
+                                </UniformGrid>
 
-                                <ListBox x:Name="BundledApkList" MaxHeight="280"
+                                <ListBox x:Name="BundledApkList" MaxHeight="200"
                                          Style="{StaticResource MacBundledApkList}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border CornerRadius="{StaticResource MacRadiusGroup}" Padding="14,12"
-                                                    Background="#323232" BorderBrush="#484848" BorderThickness="1">
+                                            <Border CornerRadius="6" Padding="10,8"
+                                                    Background="#323232" BorderBrush="#484848" BorderThickness="1" Margin="0,0,0,4">
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="Auto"/>
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <Border Width="44" Height="44" CornerRadius="14"
-                                                            VerticalAlignment="Center" Margin="0,0,12,0">
-                                                        <Border.Style>
-                                                            <Style TargetType="Border">
-                                                                <Setter Property="Background" Value="#1A3A5C"/>
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding Kind}" Value="Keyboard">
-                                                                        <Setter Property="Background" Value="#1A3A5C"/>
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding Kind}" Value="Store">
-                                                                        <Setter Property="Background" Value="#1C2A22"/>
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding Kind}" Value="Settings">
-                                                                        <Setter Property="Background" Value="#2A2418"/>
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding Kind}" Value="Tool">
-                                                                        <Setter Property="Background" Value="#3D2A4A"/>
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </Border.Style>
-                                                        <TextBlock Text="{Binding IconLetter}"
-                                                                   FontSize="18" FontWeight="Bold"
+                                                    <Border Width="40" Height="40" CornerRadius="12"
+                                                            VerticalAlignment="Center" Margin="0,0,10,0">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="{Binding IconBackground}"/>
+                                                        </Border.Background>
+                                                        <TextBlock Text="{Binding IconEmoji}"
+                                                                   FontSize="18"
                                                                    HorizontalAlignment="Center"
-                                                                   VerticalAlignment="Center"
-                                                                   Foreground="{StaticResource MacTextBrush}"/>
+                                                                   VerticalAlignment="Center"/>
                                                     </Border>
                                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                                         <TextBlock Text="{Binding DisplayName}"
-                                                                   FontSize="15" FontWeight="Bold"
-                                                                   Foreground="{StaticResource MacTextBrush}"/>
-                                                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                                                            <Border CornerRadius="{StaticResource MacRadiusPill}"
-                                                                    Padding="8,2" Background="#1A3050" Margin="0,0,8,0">
-                                                                <TextBlock Text="{Binding KindLabel}" FontSize="10"
-                                                                           FontWeight="SemiBold"
-                                                                           Foreground="#7EC8FF"/>
-                                                            </Border>
-                                                            <TextBlock Text="{Binding SizeText}" FontSize="10"
-                                                                       FontWeight="SemiBold"
-                                                                       Foreground="{StaticResource MacSecondaryBrightBrush}"
-                                                                       VerticalAlignment="Center"/>
-                                                        </StackPanel>
+                                                                   FontSize="12" FontWeight="SemiBold"/>
+                                                        <TextBlock Text="{Binding SizeText}" FontSize="10"
+                                                                   Foreground="{StaticResource MacSecondaryBrush}"/>
                                                     </StackPanel>
-                                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="8,0,0,0">
-                                                        <Button Content="Đẩy"
-                                                                Click="PushBundledApk_Click"
-                                                                Tag="{Binding}"
-                                                                Focusable="False"
-                                                                Style="{StaticResource MacBtnSecondary}"
-                                                                MinWidth="72" Padding="10,6" FontSize="11" Margin="0"
-                                                                ToolTip="Đẩy APK vào điện thoại"/>
-                                                        <Button Content="Cài"
-                                                                Click="InstallBundledApk_Click"
-                                                                Tag="{Binding}"
-                                                                Focusable="False"
-                                                                Style="{StaticResource MacBtnPrimary}"
-                                                                MinWidth="72" Padding="10,6" FontSize="11" Margin="0,4,0,0"
-                                                                ToolTip="Cài qua ADB"/>
+                                                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <Button Content="Đẩy" Tag="{Binding}" Click="PushBundledApk_Click"
+                                                                Focusable="False" Style="{StaticResource MacToolbarBtn}"
+                                                                MinWidth="50" Padding="6,4" FontSize="10" Margin="0,0,4,0"/>
+                                                        <Button Content="Cài" Tag="{Binding}" Click="InstallBundledApk_Click"
+                                                                Focusable="False" Style="{StaticResource MacToolbarBtn}"
+                                                                MinWidth="50" Padding="6,4" FontSize="10"/>
                                                     </StackPanel>
                                                 </Grid>
                                             </Border>
@@ -826,85 +844,82 @@
                                     </ListBox.ItemTemplate>
                                 </ListBox>
 
-                                <Border Background="#1C1C1E" Padding="12,10" Style="{StaticResource MacPanelFooter}">
-                                    <StackPanel>
-                                        <TextBlock x:Name="BundledApkPhonePathText" FontSize="10"
-                                                   Foreground="#64B5F6" TextTrimming="CharacterEllipsis"
-                                                   Text="Trên máy: /sdcard/Download/MintADB"/>
-                                        <TextBlock x:Name="BundledApkDirText" FontSize="10" Margin="0,3,0,0"
-                                                   Foreground="{StaticResource MacSecondaryBrightBrush}"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   ToolTipService.ShowOnDisabled="True"/>
-                                        <TextBlock FontSize="10" Margin="0,6,0,0" TextWrapping="Wrap"
-                                                   Foreground="{StaticResource MacSecondaryBrightBrush}">
-                                            <Run Text="MIUI chặn cài ADB? Bật «Cài đặt qua USB» trong Tùy chọn nhà phát triển, hoặc "/>
-                                            <Run Text="Đẩy" FontWeight="Bold" Foreground="{StaticResource MacTextBrush}"/>
-                                            <Run Text=" rồi mở Tệp → Download → MintADB trên máy."/>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </Border>
+                                <TextBlock x:Name="BundledApkDirText" FontSize="10" Margin="0,4,0,0"
+                                           Foreground="{StaticResource MacSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock x:Name="BundledApkPhonePathText" FontSize="10" Margin="0,4,0,0"
+                                           Foreground="{StaticResource MacSecondaryBrush}" TextTrimming="CharacterEllipsis"
+                                           Text="Trên máy: /sdcard/Download/MintADB"/>
+                                <TextBlock FontSize="10" Margin="0,4,0,0" TextWrapping="Wrap"
+                                           Foreground="{StaticResource MacSecondaryBrush}">
+                                    <Run Text="MIUI chặn? Bật «Cài đặt qua USB» trong Tùy chọn nhà phát triển."/>
+                                </TextBlock>
                             </StackPanel>
                         </Border>
 
-                        <TextBlock Text="Ứng dụng &amp; File" Style="{StaticResource MacGroupLabelWarn}"/>
-                        <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,16" Padding="12">
+                        <TextBlock Text="Ứng dụng" Style="{StaticResource MacGroupLabelWarn}"/>
+                        <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <WrapPanel Margin="0,0,0,12">
-                                    <Button x:Name="BtnInstallApk" Content="Cài APK" Click="InstallApk_Click" Style="{StaticResource MacToolBtn}"/>
-                                    <Button x:Name="BtnClearData" Content="Xóa data" Click="ClearAppData_Click" Style="{StaticResource MacToolBtn}"/>
-                                    <Button x:Name="BtnForceStop" Content="Force stop" Click="ForceStopApps_Click" Style="{StaticResource MacToolBtn}"/>
-                                    <Button x:Name="BtnLaunchApp" Content="Mở app" Click="LaunchApp_Click" Style="{StaticResource MacToolBtn}"/>
-                                    <Button x:Name="BtnBackupApk" Content="Backup APK"
-                                            Click="BackupApk_Click" Style="{StaticResource MacToolBtn}"/>
-                                </WrapPanel>
-                                <Border Style="{StaticResource MacSeparator}" Margin="0,0,0,12"/>
-                                <TextBlock Text="Push / Pull" FontSize="11" FontWeight="SemiBold"
-                                           Foreground="{StaticResource MacSecondaryBrush}" Margin="0,0,0,8"/>
+                                <TextBlock Text="Chọn app bên trái rồi thao tác."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <UniformGrid Columns="3" Margin="0,0,0,8">
+                                    <Button x:Name="BtnInstallApk" Content="Cài APK" Click="InstallApk_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnBackupApk" Content="Backup APK" Click="BackupApk_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnLaunchApp" Content="Mở app" Click="LaunchApp_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                                <UniformGrid Columns="3">
+                                    <Button x:Name="BtnClearData" Content="Xóa data (1 app)" Click="ClearAppData_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnForceStop" Content="Force stop (1 app)" Click="ForceStopApps_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnBatchClearData" Content="Xóa data (nhiều)" Click="BatchClearData_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"
+                                            ToolTip="Chọn nhiều app trong danh sách"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="Push / Pull &amp; File Explorer" Style="{StaticResource MacGroupLabelInfo}"/>
+                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <Grid Margin="0,0,0,8">
+                                <TextBlock Text="Push file lên máy, Pull file về máy, hoặc liệt kê thư mục."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <Grid Margin="0,0,0,6">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBox x:Name="PushLocalBox" Tag="Đường dẫn file local (vd: C:\file.apk)"/>
+                                    <TextBox x:Name="PushLocalBox" Grid.Column="0" Tag="File local (vd: C:\file.apk)"/>
                                     <Button x:Name="BtnBrowsePush" Grid.Column="1" Content="Chọn file"
-                                            Click="BrowsePush_Click" Style="{StaticResource MacToolBtn}"
-                                            Margin="8,0,0,0" MinWidth="90"/>
+                                            Click="BrowsePush_Click" Style="{StaticResource MacToolbarBtn}" Margin="8,0,0,0"/>
                                 </Grid>
-                                <Grid Margin="0,0,0,8">
+                                <Grid Margin="0,0,0,6">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBox x:Name="PushRemoteBox" Tag="/sdcard/Download/"/>
+                                    <TextBox x:Name="PushRemoteBox" Grid.Column="0" Tag="/sdcard/Download/"/>
                                     <Button x:Name="BtnPush" Grid.Column="1" Content="Push"
-                                            Click="Push_Click" Style="{StaticResource MacToolBtn}"
-                                            Margin="8,0,0,0" MinWidth="80"/>
+                                            Click="Push_Click" Style="{StaticResource MacToolbarBtn}" Margin="8,0,0,0"/>
                                 </Grid>
-                                <Grid Margin="0,0,0,8">
+                                <Grid Margin="0,0,0,6">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBox x:Name="PullRemoteBox" Tag="/sdcard/Download/file.txt"/>
+                                    <TextBox x:Name="PullRemoteBox" Grid.Column="0" Tag="/sdcard/Download/file.txt"/>
                                     <Button x:Name="BtnPull" Grid.Column="1" Content="Pull"
-                                            Click="Pull_Click" Style="{StaticResource MacToolBtn}"
-                                            Margin="8,0,0,0" MinWidth="80"/>
+                                            Click="Pull_Click" Style="{StaticResource MacToolbarBtn}" Margin="8,0,0,0"/>
                                 </Grid>
                                 <TextBlock Text="Pull lưu vào Desktop\MintADB\Pulls\"
-                                           FontSize="10" Foreground="{StaticResource MacSecondaryBrush}"
-                                           Margin="0,0,0,8"/>
+                                           FontSize="10" Foreground="{StaticResource MacSecondaryBrush}" Margin="0,0,0,6"/>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBox x:Name="ListRemoteBox" Tag="/sdcard/"/>
-                                    <Button x:Name="BtnListRemote" Grid.Column="1" Content="Liệt kê thư mục"
-                                            Click="ListRemote_Click" Style="{StaticResource MacToolBtn}"
-                                            Margin="8,0,0,0" MinWidth="100"/>
+                                    <TextBox x:Name="ListRemoteBox" Grid.Column="0" Tag="/sdcard/"/>
+                                    <Button x:Name="BtnListRemote" Grid.Column="1" Content="Liệt kê"
+                                            Click="ListRemoteDir_Click" Style="{StaticResource MacToolbarBtn}" Margin="8,0,0,0"/>
                                 </Grid>
-                            </StackPanel>
                             </StackPanel>
                         </Border>
 
@@ -1041,32 +1056,183 @@
                                     <Border Padding="10,8" Background="#2A2A2A">
                                         <StackPanel>
                                             <TextBlock Text="Bộ nhanh" FontSize="11" FontWeight="Bold"
-                                                       Foreground="{StaticResource MacSecondaryBrightBrush}" Margin="0,0,0,6"/>
-                                            <WrapPanel Margin="0,0,0,6">
-                                                <Button x:Name="BtnToolPresetChat" Content="Chat / nhắn tin"
-                                                        Click="ToolPresetChat_Click"
-                                                        Style="{StaticResource MacToolbarBtn}"
-                                                        ToolTip="Thông báo + nền + pin"/>
-                                                <Button x:Name="BtnToolPresetBasic" Content="Cơ bản"
-                                                        Click="ToolPresetBasic_Click"
-                                                        Style="{StaticResource MacToolbarBtn}"
-                                                        ToolTip="Quyền mặc định khuyến nghị"/>
-                                                <Button x:Name="BtnToolPresetBattery" Content="Pin"
-                                                        Click="ToolPresetBattery_Click"
-                                                        Style="{StaticResource MacToolbarBtn}"
-                                                        ToolTip="Bỏ qua tối ưu pin + chạy nền"/>
-                                                <Button x:Name="BtnToolPresetMiuiAutostart" Content="Auto Start MIUI"
-                                                        Click="ToolPresetMiuiAutostart_Click"
-                                                        Style="{StaticResource MacToolbarBtn}" Margin="0"
-                                                        ToolTip="Tự khởi động MIUI + boot + chạy nền + pin"/>
-                                            </WrapPanel>
+                                                       Foreground="{StaticResource MacSecondaryBrightBrush}" Margin="0,0,6,6"/>
                                             <WrapPanel>
-                                                <Button x:Name="BtnSelectAllToolPerms" Content="Chọn tất cả"
-                                                        Click="SelectAllToolPermissions_Click"
-                                                        Style="{StaticResource MacToolbarBtn}"/>
-                                                <Button x:Name="BtnDeselectAllToolPerms" Content="Bỏ chọn"
-                                                        Click="DeselectAllToolPermissions_Click"
-                                                        Style="{StaticResource MacToolbarBtn}" Margin="0"/>
+                                                <Button x:Name="BtnToolPresetBasic" Content="Cơ bản"
+                                                        Click="ToolPresetBasic_Click" Margin="0,0,6,4"
+                                                        ToolTip="Quyền mặc định khuyến nghị"
+                                                        FontSize="12" FontWeight="SemiBold"
+                                                        Focusable="False" Cursor="Hand" Padding="14,6">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                            <Setter Property="Background" Value="#2C6B2F"/>
+                                                            <Setter Property="Foreground" Value="#C8E6C9"/>
+                                                            <Setter Property="BorderBrush" Value="#388E3C"/>
+                                                            <Setter Property="BorderThickness" Value="1"/>
+                                                            <Setter Property="Template">
+                                                                <Setter.Value>
+                                                                    <ControlTemplate TargetType="Button">
+                                                                        <Border Background="{TemplateBinding Background}"
+                                                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                                                CornerRadius="6"
+                                                                                Padding="{TemplateBinding Padding}">
+                                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                        </Border>
+                                                                        <ControlTemplate.Triggers>
+                                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                                <Setter Property="Background" Value="#388E3C"/>
+                                                                            </Trigger>
+                                                                            <Trigger Property="IsPressed" Value="True">
+                                                                                <Setter Property="Background" Value="#1B5E20"/>
+                                                                            </Trigger>
+                                                                        </ControlTemplate.Triggers>
+                                                                    </ControlTemplate>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </Style>
+                                                    </Button.Style>
+                                                </Button>
+                                                <Button x:Name="BtnToolPresetChat" Content="Chat"
+                                                        Click="ToolPresetChat_Click" Margin="0,0,6,4"
+                                                        ToolTip="Thông báo + nền + pin"
+                                                        FontSize="12" FontWeight="SemiBold"
+                                                        Focusable="False" Cursor="Hand" Padding="14,6">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                        <Setter Property="Background" Value="#2C3E50"/>
+                                                        <Setter Property="Foreground" Value="#90CAF9"/>
+                                                        <Setter Property="BorderThickness" Value="1"/>
+                                                            <Setter Property="BorderBrush" Value="#5C7C99"/>
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border Background="{TemplateBinding Background}"
+                                                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                                                            CornerRadius="6"
+                                                                            Padding="{TemplateBinding Padding}">
+                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                    </Border>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Background" Value="#3D5A80"/>
+                                                                        </Trigger>
+                                                                        <Trigger Property="IsPressed" Value="True">
+                                                                            <Setter Property="Background" Value="#1B2838"/>
+                                                                        </Trigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                    </Button.Style>
+                                                </Button>
+                                                <Button x:Name="BtnToolPresetBattery" Content="Chống pin"
+                                                        Click="ToolPresetBattery_Click" Margin="0,0,6,4"
+                                                        ToolTip="Bỏ qua tối ưu pin + chạy nền"
+                                                        FontSize="12" FontWeight="SemiBold"
+                                                        Focusable="False" Cursor="Hand" Padding="14,6">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                        <Setter Property="Background" Value="#5C4033"/>
+                                                        <Setter Property="Foreground" Value="#FFD060"/>
+                                                        <Setter Property="BorderThickness" Value="1"/>
+                                                            <Setter Property="BorderBrush" Value="#A6805A"/>
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border Background="{TemplateBinding Background}"
+                                                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                                                            CornerRadius="6"
+                                                                            Padding="{TemplateBinding Padding}">
+                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                    </Border>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Background" Value="#7A5543"/>
+                                                                        </Trigger>
+                                                                        <Trigger Property="IsPressed" Value="True">
+                                                                            <Setter Property="Background" Value="#3D2B1F"/>
+                                                                        </Trigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                    </Button.Style>
+                                                </Button>
+                                                <Button x:Name="BtnToolPresetMiuiAutostart" Content="MIUI Lock"
+                                                        Click="ToolPresetMiuiAutostart_Click" Margin="0,0,6,4"
+                                                        ToolTip="Auto Start MIUI + boot + chạy nền + pin"
+                                                        FontSize="12" FontWeight="SemiBold"
+                                                        Focusable="False" Cursor="Hand" Padding="14,6">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                        <Setter Property="Background" Value="#4A1A1A"/>
+                                                        <Setter Property="Foreground" Value="#EF9A9A"/>
+                                                        <Setter Property="BorderThickness" Value="1"/>
+                                                            <Setter Property="BorderBrush" Value="#8B3A3A"/>
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border Background="{TemplateBinding Background}"
+                                                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                                                            CornerRadius="6"
+                                                                            Padding="{TemplateBinding Padding}">
+                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                    </Border>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Background" Value="#6E2828"/>
+                                                                        </Trigger>
+                                                                        <Trigger Property="IsPressed" Value="True">
+                                                                            <Setter Property="Background" Value="#2E1010"/>
+                                                                        </Trigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                    </Button.Style>
+                                                </Button>
+                                                <Button x:Name="BtnToolPresetShizuku" Content="Shizuku"
+                                                        Click="ToolPresetShizuku_Click" Margin="0,0,0,4"
+                                                        ToolTip="WRITE_SECURE_SETTINGS, MANAGE_EXT_STORAGE,..."
+                                                        FontSize="12" FontWeight="SemiBold"
+                                                        Focusable="False" Cursor="Hand" Padding="14,6">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                        <Setter Property="Background" Value="#1A2A4A"/>
+                                                        <Setter Property="Foreground" Value="#81D4FA"/>
+                                                        <Setter Property="BorderThickness" Value="1"/>
+                                                            <Setter Property="BorderBrush" Value="#4A6FA5"/>
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border Background="{TemplateBinding Background}"
+                                                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                                                            CornerRadius="6"
+                                                                            Padding="{TemplateBinding Padding}">
+                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                    </Border>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Background" Value="#2A406A"/>
+                                                                        </Trigger>
+                                                                        <Trigger Property="IsPressed" Value="True">
+                                                                            <Setter Property="Background" Value="#0E1A30"/>
+                                                                        </Trigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                    </Button.Style>
+                                                </Button>
                                             </WrapPanel>
                                         </StackPanel>
                                     </Border>
@@ -1137,6 +1303,9 @@
                                                                             <DataTrigger Binding="{Binding Kind}" Value="Miui">
                                                                                 <Setter Property="Background" Value="#3D3018"/>
                                                                             </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding Kind}" Value="Shizuku">
+                                                                                <Setter Property="Background" Value="#2E3A4E"/>
+                                                                            </DataTrigger>
                                                                         </Style.Triggers>
                                                                     </Style>
                                                                 </Border.Style>
@@ -1151,6 +1320,9 @@
                                                                                 </DataTrigger>
                                                                                 <DataTrigger Binding="{Binding Kind}" Value="Miui">
                                                                                     <Setter Property="Foreground" Value="#FFD060"/>
+                                                                                </DataTrigger>
+                                                                                <DataTrigger Binding="{Binding Kind}" Value="Shizuku">
+                                                                                    <Setter Property="Foreground" Value="#90CAF9"/>
                                                                                 </DataTrigger>
                                                                             </Style.Triggers>
                                                                         </Style>
@@ -1170,21 +1342,77 @@
                         <TextBlock Text="Thao tác" Style="{StaticResource MacGroupLabelWarn}"/>
                         <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,24" Padding="12"
                                 CornerRadius="{StaticResource MacRadiusGroup}">
-                            <WrapPanel>
-                                <Button x:Name="BtnToolGrantPerms" Content="Cấp quyền đã chọn"
-                                        Click="ToolGrantPermissions_Click"
-                                        Style="{StaticResource MacBtnPrimary}"/>
-                                <Button x:Name="BtnToolFixNotif" Content="Tối ưu thông báo"
-                                        Click="ToolFixNotifications_Click"
-                                        Style="{StaticResource MacToolBtn}"/>
-                                <Button x:Name="BtnToolDisableBattery" Content="Tắt tối ưu pin"
-                                        Click="ToolDisableBattery_Click"
-                                        Style="{StaticResource MacToolBtn}"/>
-                                <Button x:Name="BtnToolApplyAll" Content="Áp dụng tất cả"
-                                        Click="ToolApplyAll_Click"
-                                        Style="{StaticResource MacBtnSecondary}"
-                                        ToolTip="Cấp quyền + thông báo + pin cho app đã chọn"/>
-                            </WrapPanel>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="8"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="8"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="8"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="8"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Button Grid.Column="0" x:Name="BtnToolCheckPerms" Content="Kiểm tra quyền"
+                                                Style="{StaticResource MacToolBtn}" Background="#4A90D9"
+                                                HorizontalAlignment="Stretch"
+                                                Click="ToolCheckPermissions_Click"
+                                                ToolTip="Liệt kê quyền đã cấp cho app qua dumpsys package"/>
+                                        <Button Grid.Column="2" x:Name="BtnToolOpenAppSettings" Content="Mở cài đặt ứng dụng"
+                                                Style="{StaticResource MacToolBtn}" Background="#6A1B9A"
+                                                HorizontalAlignment="Stretch"
+                                                Click="ToolOpenAppSettings_Click"
+                                                ToolTip="Mở trang quyền của app trong Cài đặt để cấp thủ công"/>
+                                        <Button Grid.Column="4" x:Name="BtnToolGrantPerms" Content="Cấp quyền đã chọn"
+                                                Style="{StaticResource MacToolBtn}" Background="#2C6B2F"
+                                                HorizontalAlignment="Stretch"
+                                                Click="ToolGrantPermissions_Click"
+                                                ToolTip="Cấp các quyền đã tick cho app"/>
+                                        <Button Grid.Row="2" Grid.Column="0" x:Name="BtnToolFixNotif" Content="Tối ưu thông báo"
+                                                Style="{StaticResource MacToolBtn}" Background="#E65100"
+                                                HorizontalAlignment="Stretch"
+                                                Click="ToolFixNotifications_Click"
+                                                ToolTip="Fix thông báo + cấp quyền + tắt pin"/>
+                                        <Button Grid.Row="2" Grid.Column="2" x:Name="BtnToolDisableBattery" Content="Tắt tối ưu pin"
+                                                Style="{StaticResource MacToolBtn}" Background="#5D4037"
+                                                HorizontalAlignment="Stretch"
+                                                Click="ToolDisableBattery_Click"/>
+                                        <Button Grid.Row="2" Grid.Column="4" x:Name="BtnToolApplyAll" Content="Áp dụng tất cả"
+                                                Style="{StaticResource MacToolBtn}" Background="#C62828"
+                                                HorizontalAlignment="Stretch"
+                                                Click="ToolApplyAll_Click"
+                                                ToolTip="Cấp quyền + thông báo + pin cho app đã chọn"/>
+                                    </Grid>
+                                    <Grid Grid.Row="2" HorizontalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="8"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" x:Name="BtnSelectAllToolPerms" Content="Chọn tất cả quyền"
+                                                Style="{StaticResource MacToolBtn}" Background="#37474F"
+                                                HorizontalAlignment="Stretch" Margin="0,0,0,0"
+                                                Click="SelectAllToolPermissions_Click"/>
+                                        <Button Grid.Column="2" x:Name="BtnDeselectAllToolPerms" Content="Bỏ chọn tất cả"
+                                                Style="{StaticResource MacToolBtn}" Background="#37474F"
+                                                HorizontalAlignment="Stretch" Margin="0"
+                                                Click="DeselectAllToolPermissions_Click"/>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
                         </Border>
 
                         </StackPanel>
@@ -1255,17 +1483,9 @@
                                     <TextBox x:Name="RecordSecondsBox" Grid.Column="1" Tag="15" Margin="8,0,8,0"/>
                                     <Button x:Name="BtnRecordScreen" Grid.Column="2" Content="Quay màn hình"
                                             Click="RecordScreen_Click" Style="{StaticResource MacToolBtn}"
-                                            MinWidth="110"/>
+                                            MinWidth="110" ToolTip="Quay video màn hình thiết bị"/>
                                 </Grid>
                             </StackPanel>
-                        </Border>
-
-                        <TextBlock Text="Khác" Style="{StaticResource MacGroupLabelInfo}"/>
-                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,24" Padding="12">
-                            <WrapPanel>
-                                <Button x:Name="BtnLogcat" Content="Logcat" Click="Logcat_Click" Style="{StaticResource MacToolBtn}"/>
-                                <Button x:Name="BtnDeviceInfo" Content="Thông tin máy" Click="DeviceInfo_Click" Style="{StaticResource MacToolBtn}"/>
-                            </WrapPanel>
                         </Border>
 
                         </StackPanel>
@@ -1273,13 +1493,104 @@
                         <!-- ── Mạng ── -->
                         <StackPanel x:Name="ToolPageNetwork" Visibility="Collapsed">
 
+                        <!-- Trạng thái mạng -->
+                        <TextBlock Text="Trạng thái mạng" Style="{StaticResource MacGroupLabelInfo}"/>
+                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock x:Name="NetworkStatusText" Text="Nhấn «Đọc» để xem trạng thái"
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <UniformGrid Columns="1">
+                                    <Button x:Name="BtnReadNetworkStatus" Content="Đọc trạng thái mạng"
+                                            Click="ReadNetworkStatus_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="150"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- WiFi -->
+                        <TextBlock Text="WiFi" Style="{StaticResource MacGroupLabelSafe}"/>
+                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Bật/tắt WiFi, quét mạng, kết nối nhanh."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <CheckBox x:Name="WifiToggle" Content="WiFi ON/OFF"
+                                          Margin="0,0,0,8" Click="ToggleWifi_Click"/>
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="WifiSsidBox" Grid.Column="0" Tag="SSID (tên WiFi)"/>
+                                    <Button x:Name="BtnScanWifi" Grid.Column="1" Content="Quét"
+                                            Click="ScanWifi_Click" Style="{StaticResource MacToolbarBtn}" Margin="8,0,0,0"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="WifiPasswordBox" Grid.Column="0" Tag="Mật khẩu WiFi"/>
+                                    <Button x:Name="BtnConnectWifi" Grid.Column="1" Content="Kết nối"
+                                            Click="ConnectWifi_Click" Style="{StaticResource MacToolbarBtn}" Margin="8,0,0,0"/>
+                                </Grid>
+                                <UniformGrid Columns="2">
+                                    <Button x:Name="BtnDisconnectWifi" Content="Ngắt WiFi"
+                                            Click="DisconnectWifi_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnCheckWifiStatus" Content="Kiểm tra WiFi"
+                                            Click="CheckNetworkStatus_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Bluetooth -->
+                        <TextBlock Text="Bluetooth" Style="{StaticResource MacGroupLabelInfo}"/>
+                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Bật/tắt Bluetooth, quét thiết bị."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <CheckBox x:Name="BluetoothToggle" Content="Bluetooth ON/OFF"
+                                          Margin="0,0,0,8" Click="ToggleBluetooth_Click"/>
+                                <UniformGrid Columns="1">
+                                    <Button x:Name="BtnScanBluetooth" Content="Quét Bluetooth"
+                                            Click="ScanBluetooth_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="120"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Airplane Mode -->
+                        <TextBlock Text="Chế độ máy bay" Style="{StaticResource MacGroupLabelWarn}"/>
+                        <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Bật/tắt chế độ máy bay — tắt tất cả kết nối."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <CheckBox x:Name="AirplaneToggle" Content="Airplane mode ON/OFF"
+                                          Margin="0,0,0,0" Click="ToggleAirplane_Click"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Hotspot -->
+                        <TextBlock Text="Hotspot" Style="{StaticResource MacGroupLabelSafe}"/>
+                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Bật/tắt điểm phát WiFi."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <CheckBox x:Name="HotspotToggle" Content="Hotspot ON/OFF"
+                                          Margin="0,0,0,0" Click="ToggleHotspot_Click"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Mạng di động -->
                         <TextBlock Text="Mạng di động" Style="{StaticResource MacGroupLabelWarn}"/>
-                        <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,16" Padding="12">
+                        <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
                                 <TextBlock Text="Chọn chế độ 3G / LTE / 5G — áp dụng qua preferred_network_mode"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <Grid Margin="0,0,0,10">
+                                <Grid Margin="0,0,0,8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="90"/>
                                         <ColumnDefinition Width="*"/>
@@ -1291,7 +1602,7 @@
                                         <ComboBoxItem Content="SIM 2"/>
                                     </ComboBox>
                                 </Grid>
-                                <ComboBox x:Name="MobileNetworkPreset" Margin="0,0,0,10" SelectedIndex="0">
+                                <ComboBox x:Name="MobileNetworkPreset" Margin="0,0,0,8" SelectedIndex="0">
                                     <ComboBoxItem Content="5G + LTE + 3G (tự động)" Tag="33"/>
                                     <ComboBoxItem Content="5G + LTE" Tag="26"/>
                                     <ComboBoxItem Content="Chỉ 5G" Tag="23"/>
@@ -1299,12 +1610,12 @@
                                     <ComboBoxItem Content="Chỉ LTE" Tag="11"/>
                                     <ComboBoxItem Content="3G" Tag="2"/>
                                 </ComboBox>
-                                <WrapPanel>
+                                <UniformGrid Columns="2">
                                     <Button x:Name="BtnSetMobileNetwork" Content="Áp dụng"
-                                            Click="SetMobileNetwork_Click" Style="{StaticResource MacToolBtn}"/>
+                                            Click="SetMobileNetwork_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
                                     <Button x:Name="BtnCheckMobileNetwork" Content="Kiểm tra"
-                                            Click="CheckMobileNetwork_Click" Style="{StaticResource MacToolBtn}"/>
-                                </WrapPanel>
+                                            Click="CheckMobileNetwork_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
                             </StackPanel>
                         </Border>
 
@@ -1645,6 +1956,91 @@
                             </Border>
                         </StackPanel>
 
+                        <!-- Storage Info -->
+                        <TextBlock Text="Bộ nhớ" Style="{StaticResource MacGroupLabelInfo}" Margin="0,8,0,0"/>
+                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Thông tin bộ nhớ trong và SD Card."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <TextBlock x:Name="StorageInfoText" Text="Nhấn «Đọc» để xem thông tin bộ nhớ"
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <UniformGrid Columns="1">
+                                    <Button x:Name="BtnLoadStorageInfo" Content="Đọc thông tin bộ nhớ"
+                                            Click="LoadStorageInfo_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="150"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- RAM Info -->
+                        <TextBlock Text="RAM" Style="{StaticResource MacGroupLabelSafe}"/>
+                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Thông tin RAM và swap."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <TextBlock x:Name="RamInfoText" Text="Nhấn «Đọc» để xem thông tin RAM"
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <UniformGrid Columns="1">
+                                    <Button x:Name="BtnLoadRamInfo" Content="Đọc thông tin RAM"
+                                            Click="LoadRamInfo_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="150"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- CPU Info -->
+                        <TextBlock Text="CPU" Style="{StaticResource MacGroupLabelWarn}"/>
+                        <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Thông tin chip xử lý."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <TextBlock x:Name="CpuInfoText" Text="Nhấn «Đọc» để xem thông tin CPU"
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <UniformGrid Columns="1">
+                                    <Button x:Name="BtnLoadCpuInfo" Content="Đọc thông tin CPU"
+                                            Click="LoadCpuInfo_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="150"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- GPU Info -->
+                        <TextBlock Text="GPU" Style="{StaticResource MacGroupLabelSafe}"/>
+                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Thông tin đồ họa."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <TextBlock x:Name="GpuInfoText" Text="Nhấn «Đọc» để xem thông tin GPU"
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <UniformGrid Columns="1">
+                                    <Button x:Name="BtnLoadGpuInfo" Content="Đọc thông tin GPU"
+                                            Click="LoadGpuInfo_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="150"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Touch Info -->
+                        <TextBlock Text="Touch" Style="{StaticResource MacGroupLabelInfo}"/>
+                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,24" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Thông tin cảm ứng."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <TextBlock x:Name="TouchInfoText" Text="Nhấn «Đọc» để xem thông tin touch"
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <UniformGrid Columns="1">
+                                    <Button x:Name="BtnLoadTouchInfo" Content="Đọc thông tin Touch"
+                                            Click="LoadTouchInfo_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="150"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
                         </StackPanel>
 
                         <!-- ── Tinh chỉnh ── -->
@@ -1658,42 +2054,51 @@
                         <TextBlock Text="DPI màn hình" Style="{StaticResource MacGroupLabelInfo}"/>
                         <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Thay đổi mật độ điểm ảnh (DPI) — giao diện lớn/nhỏ hơn. Reset nếu cần."
+                                <TextBlock Text="Mật độ điểm ảnh — giao diện lớn (DPI cao) hoặc nhỏ (DPI thấp)."
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
-                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="DensityStatusText" Text="Nhấn «Đọc DPI»"
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <TextBlock x:Name="DensityStatusText" Text="Nhấn «Đọc» để xem DPI hiện tại"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
-                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,8"/>
-                                <Grid Margin="0,0,0,8">
+                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
+
+                                <!-- Preset buttons -->
+                                <TextBlock Text="Chọn nhanh:" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <UniformGrid Columns="6" Margin="0,0,0,10">
+                                    <Button Content="320" Tag="320" Click="DensityPreset_Click"
+                                            Style="{StaticResource MacToolbarBtn}" MinWidth="70" Margin="0,0,4,4"/>
+                                    <Button Content="360" Tag="360" Click="DensityPreset_Click"
+                                            Style="{StaticResource MacToolbarBtn}" MinWidth="70" Margin="0,0,4,4"/>
+                                    <Button Content="400" Tag="400" Click="DensityPreset_Click"
+                                            Style="{StaticResource MacToolbarBtn}" MinWidth="70" Margin="0,0,4,4"/>
+                                    <Button Content="440" Tag="440" Click="DensityPreset_Click"
+                                            Style="{StaticResource MacToolbarBtn}" MinWidth="70" Margin="0,0,4,4"/>
+                                    <Button Content="480" Tag="480" Click="DensityPreset_Click"
+                                            Style="{StaticResource MacToolbarBtn}" MinWidth="70" Margin="0,0,4,4"/>
+                                    <Button Content="560" Tag="560" Click="DensityPreset_Click"
+                                            Style="{StaticResource MacToolbarBtn}" MinWidth="70" Margin="0,0,4,4"/>
+                                </UniformGrid>
+
+                                <!-- Custom input -->
+                                <TextBlock Text="Hoặc nhập tùy chỉnh:" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <Grid Margin="0,0,0,10">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="DPI tùy chỉnh" VerticalAlignment="Center" FontWeight="SemiBold"/>
-                                    <TextBox x:Name="DensityCustomBox" Grid.Column="1" Tag="440" Margin="8,0,8,0"/>
-                                    <Button x:Name="BtnApplyDensity" Grid.Column="2" Content="Áp dụng"
+                                    <TextBox x:Name="DensityCustomBox" Grid.Column="0" Tag="440"
+                                             Margin="0,0,8,0"/>
+                                    <Button x:Name="BtnApplyDensity" Grid.Column="1" Content="Áp dụng"
                                             Click="ApplyDensity_Click" Style="{StaticResource MacToolbarBtn}"
-                                            MinWidth="80"/>
+                                            MinWidth="90"/>
                                 </Grid>
-                                <WrapPanel>
+
+                                <!-- Action buttons -->
+                                <UniformGrid Columns="2">
                                     <Button x:Name="BtnReadDensity" Content="Đọc DPI"
-                                            Click="ReadDensity_Click" Style="{StaticResource MacToolbarBtn}"/>
-                                    <Button x:Name="BtnResetDensity" Content="Reset DPI"
-                                            Click="ResetDensity_Click" Style="{StaticResource MacToolBtn}"/>
-                                    <Button Content="320" Tag="320" Click="DensityPreset_Click"
-                                            Style="{StaticResource MacToolbarBtn}" Margin="0"/>
-                                    <Button Content="360" Tag="360" Click="DensityPreset_Click"
-                                            Style="{StaticResource MacToolbarBtn}" Margin="0"/>
-                                    <Button Content="400" Tag="400" Click="DensityPreset_Click"
-                                            Style="{StaticResource MacToolbarBtn}" Margin="0"/>
-                                    <Button Content="440" Tag="440" Click="DensityPreset_Click"
-                                            Style="{StaticResource MacToolbarBtn}" Margin="0"/>
-                                    <Button Content="480" Tag="480" Click="DensityPreset_Click"
-                                            Style="{StaticResource MacToolbarBtn}" Margin="0"/>
-                                    <Button Content="560" Tag="560" Click="DensityPreset_Click"
-                                            Style="{StaticResource MacToolbarBtn}" Margin="0"/>
-                                </WrapPanel>
+                                            Click="ReadDensity_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnResetDensity" Content="Reset mặc định"
+                                            Click="ResetDensity_Click" Style="{StaticResource MacToolBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
                             </StackPanel>
                         </Border>
 
@@ -1704,10 +2109,10 @@
                                 <TextBlock Text="Tăng tốc animation — 0.5x nhanh hơn, 1x mặc định, 10x chậm/xem hiệu ứng."
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="AnimationStatusText" Text="Nhấn «Đọc animation»"
+                                <TextBlock x:Name="AnimationStatusText" Text="Nhấn «Đọc»"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
-                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,8"/>
-                                <Grid Margin="0,0,0,8">
+                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
+                                <Grid Margin="0,0,0,10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="90"/>
                                         <ColumnDefinition Width="*"/>
@@ -1725,12 +2130,12 @@
                                     </ComboBox>
                                     <Button x:Name="BtnApplyAnimation" Grid.Column="2" Content="Áp dụng"
                                             Click="ApplyAnimationSpeed_Click" Style="{StaticResource MacToolbarBtn}"
-                                            MinWidth="80"/>
+                                            MinWidth="90"/>
                                 </Grid>
-                                <WrapPanel>
+                                <UniformGrid Columns="1">
                                     <Button x:Name="BtnReadAnimation" Content="Đọc animation"
-                                            Click="ReadAnimationStatus_Click" Style="{StaticResource MacToolbarBtn}"/>
-                                </WrapPanel>
+                                            Click="ReadAnimationStatus_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="120"/>
+                                </UniformGrid>
                             </StackPanel>
                         </Border>
 
@@ -1741,19 +2146,19 @@
                                 <TextBlock Text="Chuyển giữa cử chỉ / 3 nút. Immersive ẩn thanh điều hướng."
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="NavStatusText" Text="Nhấn «Đọc điều hướng»"
+                                <TextBlock x:Name="NavStatusText" Text="Nhấn «Đọc»"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
-                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,8"/>
-                                <WrapPanel Margin="0,0,0,8">
-                                    <Button x:Name="BtnReadNav" Content="Đọc điều hướng"
-                                            Click="ReadNavigationStatus_Click" Style="{StaticResource MacToolbarBtn}"/>
+                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
+                                <UniformGrid Columns="3" Margin="0,0,0,8">
+                                    <Button x:Name="BtnReadNav" Content="Đọc"
+                                            Click="ReadNavigationStatus_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
                                     <Button x:Name="BtnGestureNav" Content="Cử chỉ"
-                                            Click="SetGestureNav_Click" Style="{StaticResource MacToolbarBtn}"/>
+                                            Click="SetGestureNav_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
                                     <Button x:Name="BtnThreeButtonNav" Content="3 nút"
-                                            Click="SetThreeButtonNav_Click" Style="{StaticResource MacToolbarBtn}"/>
-                                </WrapPanel>
+                                            Click="SetThreeButtonNav_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
                                 <CheckBox x:Name="ImmersiveToggle" Content="Immersive mode (ẩn thanh điều hướng)"
-                                          Margin="0,0,0,6" Click="ToggleImmersiveMode_Click"/>
+                                          Margin="0,0,0,4" Click="ToggleImmersiveMode_Click"/>
                             </StackPanel>
                         </Border>
 
@@ -1766,16 +2171,15 @@
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
                                 <TextBlock x:Name="OtaStatusText" Text="Nhấn «Kiểm tra»"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
-                                           Foreground="{StaticResource MacGreenBrush}" Margin="0,0,0,8"/>
-                                <WrapPanel>
+                                           Foreground="{StaticResource MacGreenBrush}" Margin="0,0,0,10"/>
+                                <UniformGrid Columns="3">
                                     <Button x:Name="BtnReadOta" Content="Kiểm tra"
-                                            Click="ReadOtaStatus_Click" Style="{StaticResource MacToolbarBtn}"/>
+                                            Click="ReadOtaStatus_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
                                     <Button x:Name="BtnBlockOta" Content="Chặn OTA"
-                                            Click="BlockOta_Click" Style="{StaticResource MacBtnPrimary}"/>
-                                    <Button x:Name="BtnUnblockOta" Content="Khôi phục OTA"
-                                            Click="UnblockOta_Click" Style="{StaticResource MacBtnSecondary}"
-                                            Margin="0"/>
-                                </WrapPanel>
+                                            Click="BlockOta_Click" Style="{StaticResource MacBtnPrimary}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnUnblockOta" Content="Khôi phục"
+                                            Click="UnblockOta_Click" Style="{StaticResource MacBtnSecondary}" Margin="4,0,0,0"/>
+                                </UniformGrid>
                             </StackPanel>
                         </Border>
 
@@ -1786,9 +2190,9 @@
                                 <TextBlock Text="Chọn codec Bluetooth, bật/tắt absolute volume, A2DP offload."
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="AudioStatusText" Text="Nhấn «Đọc audio»"
+                                <TextBlock x:Name="AudioStatusText" Text="Nhấn «Đọc»"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
-                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,8"/>
+                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
                                 <Grid Margin="0,0,0,8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="100"/>
@@ -1808,33 +2212,185 @@
                                     </ComboBox>
                                     <Button x:Name="BtnApplyCodec" Grid.Column="2" Content="Áp dụng"
                                             Click="ApplyBluetoothCodec_Click" Style="{StaticResource MacToolbarBtn}"
-                                            MinWidth="80"/>
+                                            MinWidth="90"/>
                                 </Grid>
                                 <CheckBox x:Name="AbsVolumeToggle" Content="Absolute volume (đồng bộ âm lượng)"
                                           Margin="0,0,0,6" Click="ToggleAbsoluteVolume_Click" IsChecked="True"/>
-                                <WrapPanel>
+                                <UniformGrid Columns="1">
                                     <Button x:Name="BtnReadAudio" Content="Đọc audio"
-                                            Click="ReadAudioStatus_Click" Style="{StaticResource MacToolbarBtn}"/>
-                                </WrapPanel>
+                                            Click="ReadAudioStatus_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="120"/>
+                                </UniformGrid>
                             </StackPanel>
                         </Border>
 
                         <!-- Google Services -->
                         <TextBlock Text="Google Services" Style="{StaticResource MacGroupLabelSafe}"/>
-                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,24" Padding="12">
+                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
                                 <TextBlock Text="Kiểm tra &amp; bật dịch vụ Google (GMS) trên ROM China."
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
                                 <TextBlock x:Name="GoogleServicesText" Text="Nhấn «Kiểm tra»"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
-                                           Foreground="{StaticResource MacGreenBrush}" Margin="0,0,0,8"/>
-                                <WrapPanel>
+                                           Foreground="{StaticResource MacGreenBrush}" Margin="0,0,0,10"/>
+                                <UniformGrid Columns="2">
                                     <Button x:Name="BtnCheckGoogle" Content="Kiểm tra"
-                                            Click="GoogleServicesStatus_Click" Style="{StaticResource MacToolbarBtn}"/>
-                                    <Button x:Name="BtnEnableGoogle" Content="Bật Google Services"
-                                            Click="EnableGoogleServices_Click" Style="{StaticResource MacBtnPrimary}"/>
-                                </WrapPanel>
+                                            Click="GoogleServicesStatus_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnEnableGoogle" Content="Bật Google"
+                                            Click="EnableGoogleServices_Click" Style="{StaticResource MacBtnPrimary}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Refresh Rate -->
+                        <TextBlock Text="Tần số quét (Hz)" Style="{StaticResource MacGroupLabelInfo}"/>
+                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Khóa tần số quét màn hình — 60Hz tiết kiệm pin, 120Hz mượt hơn."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <TextBlock x:Name="RefreshRateStatusText" Text="Nhấn «Đọc»"
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
+                                <UniformGrid Columns="4">
+                                    <Button x:Name="BtnReadHz" Content="Đọc"
+                                            Click="ReadRefreshRate_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="60Hz" Tag="60" Click="SetRefreshRate_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="90Hz" Tag="90" Click="SetRefreshRate_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="120Hz" Tag="120" Click="SetRefreshRate_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Font Scale -->
+                        <TextBlock Text="Kích thước Font" Style="{StaticResource MacGroupLabelSafe}"/>
+                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Thay đổi cỡ chữ hệ thống — nhỏ hơn hoặc lớn hơn."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <TextBlock x:Name="FontScaleStatusText" Text="Nhấn «Đọc»"
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
+                                <UniformGrid Columns="6">
+                                    <Button x:Name="BtnReadFont" Content="Đọc"
+                                            Click="ReadFontScale_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="0.85x" Tag="0.85" Click="SetFontScale_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="1.0x" Tag="1.0" Click="SetFontScale_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="1.15x" Tag="1.15" Click="SetFontScale_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="1.3x" Tag="1.3" Click="SetFontScale_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="1.5x" Tag="1.5" Click="SetFontScale_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Screen Timeout -->
+                        <TextBlock Text="Thời gian tắt màn hình" Style="{StaticResource MacGroupLabelWarn}"/>
+                        <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Đặt thời gian chờ trước khi màn hình tự tắt."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <TextBlock x:Name="ScreenTimeoutStatusText" Text="Nhấn «Đọc»"
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
+                                <UniformGrid Columns="4">
+                                    <Button x:Name="BtnReadTimeout" Content="Đọc"
+                                            Click="ReadScreenTimeout_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="15s" Tag="15000" Click="SetScreenTimeout_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="30s" Tag="30000" Click="SetScreenTimeout_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="1 phút" Tag="60000" Click="SetScreenTimeout_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                                <UniformGrid Columns="4" Margin="0,4,0,0">
+                                    <Button Content="5 phút" Tag="300000" Click="SetScreenTimeout_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="10 phút" Tag="600000" Click="SetScreenTimeout_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="30 phút" Tag="1800000" Click="SetScreenTimeout_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="Vô hạn" Tag="2147483647" Click="SetScreenTimeout_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Developer Options -->
+                        <TextBlock Text="Tùy chọn Nhà phát triển" Style="{StaticResource MacGroupLabelInfo}"/>
+                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Các toggle nhanh cho Developer Options."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <UniformGrid Columns="1" Margin="0,0,0,8">
+                                    <Button x:Name="BtnReadDev" Content="Đọc tất cả"
+                                            Click="ReadDevOptions_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="120"/>
+                                </UniformGrid>
+                                <TextBlock x:Name="DevOptionsStatusText" Text="Nhấn «Đọc tất cả»"
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
+                                <CheckBox x:Name="StayAwakeToggle" Content="Luôn sáng khi sạc (Stay awake)"
+                                          Margin="0,0,0,6" Click="ToggleStayAwake_Click"/>
+                                <CheckBox x:Name="ShowTapsToggle" Content="Hiện chạm (Show taps)"
+                                          Margin="0,0,0,6" Click="ToggleShowTaps_Click"/>
+                                <CheckBox x:Name="PointerLocationToggle" Content="Vị trí con trỏ (Pointer location)"
+                                          Margin="0,0,0,6" Click="TogglePointerLocation_Click"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Status Bar -->
+                        <TextBlock Text="Thanh trạng thái" Style="{StaticResource MacGroupLabelSafe}"/>
+                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Tùy chỉnh hiển thị trên thanh trạng thái."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <TextBlock x:Name="StatusBarStatusText" Text="Nhấn «Đọc»"
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
+                                <UniformGrid Columns="2" Margin="0,0,0,8">
+                                    <Button x:Name="BtnReadStatusBar" Content="Đọc"
+                                            Click="ReadStatusBar_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnApplyStatusBar" Content="Áp dụng"
+                                            Click="ApplyStatusBar_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                                <CheckBox x:Name="StatusBarClockToggle" Content="Hiện đồng hồ"
+                                          Margin="0,0,0,4"/>
+                                <CheckBox x:Name="StatusBarBatteryToggle" Content="Hiện pin"
+                                          Margin="0,0,0,4"/>
+                                <CheckBox x:Name="StatusBarSignalToggle" Content="Hiện tín hiệu"
+                                          Margin="0,0,0,4"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Battery Display -->
+                        <TextBlock Text="Hiển thị Pin" Style="{StaticResource MacGroupLabelWarn}"/>
+                        <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,24" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Hiển thị / ẩn phần trăm pin trên thanh trạng thái."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <TextBlock x:Name="BatteryPercentStatusText" Text="Nhấn «Đọc»"
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
+                                <UniformGrid Columns="3">
+                                    <Button x:Name="BtnReadBattery" Content="Đọc"
+                                            Click="ReadBatteryPercent_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="Hiện %" Tag="true" Click="SetBatteryPercent_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="Ẩn %" Tag="false" Click="SetBatteryPercent_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
                             </StackPanel>
                         </Border>
 
@@ -1880,23 +2436,100 @@
                         </Border>
 
                         <TextBlock Text="Reboot (fastboot)" Style="{StaticResource MacGroupLabelDanger}"/>
-                        <Border Style="{StaticResource MacGroupBoxDanger}" Margin="0,0,0,16" Padding="12">
-                            <WrapPanel>
-                                <Button x:Name="BtnFastbootReboot" Content="Reboot"
-                                        Click="FastbootReboot_Click" Style="{StaticResource MacToolBtn}"/>
-                                <Button x:Name="BtnFastbootRebootBootloader" Content="Bootloader"
-                                        Click="FastbootRebootBootloader_Click" Style="{StaticResource MacToolBtn}"/>
-                                <Button x:Name="BtnFastbootRebootRecovery" Content="Recovery"
-                                        Click="FastbootRebootRecovery_Click" Style="{StaticResource MacToolBtn}"/>
-                                <Button x:Name="BtnFastbootRebootFastbootd" Content="Fastbootd"
-                                        Click="FastbootRebootFastbootd_Click" Style="{StaticResource MacToolBtn}"/>
-                                <Button x:Name="BtnFastbootContinue" Content="Continue"
-                                        Click="FastbootContinue_Click" Style="{StaticResource MacToolBtn}"
-                                        ToolTip="Tiếp tục boot sau khi flash"/>
-                                <Button x:Name="BtnFastbootOemEdl" Content="OEM EDL"
-                                        Click="FastbootOemEdl_Click" Style="{StaticResource MacBtnSecondary}"
-                                        ToolTip="Xiaomi — fastboot oem edl"/>
-                            </WrapPanel>
+                        <Border Style="{StaticResource MacGroupBoxDanger}" Margin="0,0,0,12" Padding="12">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="8"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <UniformGrid Grid.Row="0" Columns="3">
+                                    <Button x:Name="BtnFastbootReboot" Content="Reboot"
+                                            Click="FastbootReboot_Click" Style="{StaticResource MacBtnSecondary}" Background="#4A90D9" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnFastbootRebootBootloader" Content="Bootloader"
+                                            Click="FastbootRebootBootloader_Click" Style="{StaticResource MacBtnSecondary}" Background="#6A1B9A" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnFastbootRebootRecovery" Content="Recovery"
+                                            Click="FastbootRebootRecovery_Click" Style="{StaticResource MacBtnSecondary}" Background="#2C6B2F" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                                <UniformGrid Grid.Row="2" Columns="3">
+                                    <Button x:Name="BtnFastbootRebootFastbootd" Content="Fastbootd"
+                                            Click="FastbootRebootFastbootd_Click" Style="{StaticResource MacBtnSecondary}" Background="#E65100" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnFastbootContinue" Content="Continue"
+                                            Click="FastbootContinue_Click" Style="{StaticResource MacBtnSecondary}" Background="#5D4037" Margin="0,0,4,0"
+                                            ToolTip="Tiếp tục boot sau khi flash"/>
+                                    <Button x:Name="BtnFastbootOemEdl" Content="OEM EDL"
+                                            Click="FastbootOemEdl_Click" Style="{StaticResource MacBtnSecondary}" Background="#C62828" Margin="4,0,0,0"
+                                            ToolTip="Xiaomi — fastboot oem edl"/>
+                                </UniformGrid>
+                            </Grid>
+                        </Border>
+
+                        <!-- Bootloader Lock/Unlock -->
+                        <TextBlock Text="Bootloader Lock / Unlock" Style="{StaticResource MacGroupLabelDanger}"/>
+                        <Border Style="{StaticResource MacGroupBoxDanger}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Mở khóa / khóa bootloader. Unlock sẽ xóa dữ liệu!"
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <UniformGrid Columns="4">
+                                    <Button x:Name="BtnFastbootUnlock" Content="Unlock"
+                                            Click="FastbootUnlock_Click" Style="{StaticResource MacBtnDestructive}" Margin="0,0,4,0"
+                                            ToolTip="flashing unlock — xóa dữ liệu!"/>
+                                    <Button x:Name="BtnFastbootLock" Content="Lock"
+                                            Click="FastbootLock_Click" Style="{StaticResource MacBtnSecondary}" Background="#2C6B2F" Margin="0,0,4,0"
+                                            ToolTip="flashing lock"/>
+                                    <Button x:Name="BtnFastbootOemUnlock" Content="OEM Unlock"
+                                            Click="FastbootOemUnlock_Click" Style="{StaticResource MacBtnDestructive}" Margin="0,0,4,0"
+                                            ToolTip="oem unlock — xóa dữ liệu!"/>
+                                    <Button x:Name="BtnFastbootOemLock" Content="OEM Lock"
+                                            Click="FastbootOemLock_Click" Style="{StaticResource MacBtnSecondary}" Background="#2C6B2F" Margin="4,0,0,0"
+                                            ToolTip="oem lock"/>
+                                </UniformGrid>
+                                <TextBlock FontSize="10" Margin="0,8,0,0" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap">
+                                    <Run Text="Xiaomi:" FontWeight="SemiBold"/>
+                                    <Run Text=" Dùng OEM Unlock/Lock. Các hãng khác: Flashing Unlock/Lock."/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Factory Reset + Slot -->
+                        <TextBlock Text="Wipe &amp; Slot" Style="{StaticResource MacGroupLabelDanger}"/>
+                        <Border Style="{StaticResource MacGroupBoxDanger}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Factory reset (xóa data) hoặc đổi slot A/B."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <UniformGrid Columns="3">
+                                    <Button x:Name="BtnFastbootWipe" Content="Wipe (xóa data)"
+                                            Click="FastbootWipe_Click" Style="{StaticResource MacBtnDestructive}" Margin="0,0,4,0"
+                                            ToolTip="fastboot -w — xóa sạch dữ liệu"/>
+                                    <Button x:Name="BtnFastbootSetActiveA" Content="Slot A"
+                                            Click="FastbootSetActiveA_Click" Style="{StaticResource MacBtnSecondary}" Background="#4A90D9" Margin="0,0,4,0"
+                                            ToolTip="set_active a"/>
+                                    <Button x:Name="BtnFastbootSetActiveB" Content="Slot B"
+                                            Click="FastbootSetActiveB_Click" Style="{StaticResource MacBtnSecondary}" Background="#6A1B9A" Margin="4,0,0,0"
+                                            ToolTip="set_active b"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Boot temporary -->
+                        <TextBlock Text="Boot tạm thời" Style="{StaticResource MacGroupLabelWarn}"/>
+                        <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="Boot từ image mà không flash — thử ROM/custom trước khi cài."
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <UniformGrid Columns="1">
+                                    <Button x:Name="BtnFastbootBootTemp" Content="Boot image (tạm thời)"
+                                            Click="FastbootBootTemp_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="150"/>
+                                </UniformGrid>
+                                <TextBlock FontSize="10" Margin="0,8,0,0" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap">
+                                    <Run Text="Dùng file đã chọn ở mục Flash image phía dưới."/>
+                                </TextBlock>
+                            </StackPanel>
                         </Border>
 
                         <TextBlock Text="Flash image" Style="{StaticResource MacGroupLabelWarn}"/>
@@ -1927,228 +2560,112 @@
                                             Click="BrowseFastbootImage_Click" Style="{StaticResource MacToolBtn}"
                                             Margin="8,0,0,0" MinWidth="90"/>
                                 </Grid>
-                                <WrapPanel Margin="0,0,0,10">
+                                <UniformGrid Columns="3" Margin="0,0,0,10">
                                     <Button x:Name="BtnFastbootFlash" Content="Flash"
-                                            Click="FastbootFlash_Click" Style="{StaticResource MacBtnPrimary}"
-                                            MinWidth="100"/>
-                                    <Button x:Name="BtnFastbootErase" Content="Erase partition"
-                                            Click="FastbootErase_Click" Style="{StaticResource MacBtnDestructive}"
-                                            MinWidth="120" ToolTip="Xóa partition — nguy hiểm"/>
-                                </WrapPanel>
+                                            Click="FastbootFlash_Click" Style="{StaticResource MacBtnPrimary}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnFastbootErase" Content="Erase"
+                                            Click="FastbootErase_Click" Style="{StaticResource MacBtnDestructive}" Margin="0,0,4,0"
+                                            ToolTip="Xóa partition — nguy hiểm"/>
+                                    <Button x:Name="BtnFastbootFormat" Content="Format"
+                                            Click="FastbootFormat_Click" Style="{StaticResource MacBtnDestructive}" Margin="4,0,0,0"
+                                            ToolTip="Format partition — xóa hoàn toàn"/>
+                                </UniformGrid>
                                 <TextBlock Text="Flash nhanh (dùng file đã chọn ở trên)" FontSize="10"
                                            Foreground="{StaticResource MacSecondaryBrush}" Margin="0,0,0,6"/>
-                                <WrapPanel>
+                                <UniformGrid Columns="5">
                                     <Button x:Name="BtnFastbootFlashBoot" Content="boot"
-                                            Click="FastbootFlashBoot_Click" Style="{StaticResource MacToolbarBtn}"/>
+                                            Click="FastbootFlashBoot_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
                                     <Button x:Name="BtnFastbootFlashRecovery" Content="recovery"
-                                            Click="FastbootFlashRecovery_Click" Style="{StaticResource MacToolbarBtn}"/>
+                                            Click="FastbootFlashRecovery_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
                                     <Button x:Name="BtnFastbootFlashVendorBoot" Content="vendor_boot"
-                                            Click="FastbootFlashVendorBoot_Click" Style="{StaticResource MacToolbarBtn}"/>
+                                            Click="FastbootFlashVendorBoot_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
                                     <Button x:Name="BtnFastbootFlashVbmeta" Content="vbmeta"
-                                            Click="FastbootFlashVbmeta_Click" Style="{StaticResource MacToolbarBtn}"
-                                            Margin="0"/>
-                                </WrapPanel>
-                                <TextBlock FontSize="10" Margin="0,10,0,0" TextWrapping="Wrap"
+                                            Click="FastbootFlashVbmeta_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnFastbootFlashVbmetaDisable" Content="vbmeta (no verify)"
+                                            Click="FastbootFlashVbmetaDisable_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"
+                                            ToolTip="Flash vbmeta với --disable-verity --disable-verification"/>
+                                </UniformGrid>
+                                <TextBlock FontSize="10" Margin="0,8,0,0" TextWrapping="Wrap"
                                            Foreground="{StaticResource MacSecondaryBrush}">
-                                    <Run Text="Máy phải ở chế độ Fastboot (khóa bootloader mở). "/>
-                                    <Run Text="vbmeta" FontWeight="SemiBold"/>
-                                    <Run Text=" — thêm «--disable-verity --disable-verification» nếu cần (chạy tay trong terminal)."/>
+                                    <Run Text="vbmeta (no verify)" FontWeight="SemiBold"/>
+                                    <Run Text=" — tắt verified boot, cần cho custom ROM."/>
                                 </TextBlock>
                             </StackPanel>
                         </Border>
 
-                        </StackPanel>
-
-                        <!-- ── MTK Client ── -->
-                        <StackPanel x:Name="ToolPageMtk" Visibility="Collapsed">
-
-                        <TextBlock Text="MTK Client" Style="{StaticResource MacPageTitle}"/>
-                        <TextBlock Text="Công cụ MediaTek — Bypass FRP, Unlock bootloader, Flash, Format"
-                                   Style="{StaticResource MacPageSubtitle}" Margin="0,4,0,14"/>
-
-                        <!-- Status / Setup -->
-                        <TextBlock Text="Cấu hình" Style="{StaticResource MacGroupLabelInfo}"/>
+                        <!-- Device Info -->
+                        <TextBlock Text="Thông tin thiết bị" Style="{StaticResource MacGroupLabelInfo}"/>
                         <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="mtkclient (github.com/bkerler/mtkclient) — công cụ Python cho chip MediaTek."
+                                <TextBlock Text="Đọc thông tin chi tiết về thiết bị trong chế độ Fastboot."
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="MtkStatusText" Text="Đang kiểm tra..."
-                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
-                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,8"/>
-                                <TextBlock x:Name="MtkPythonDetectText" Text=""
-                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="10"
-                                           Foreground="{StaticResource MacSecondaryBrush}" Margin="0,0,0,4"/>
-                                <TextBlock x:Name="MtkDepsText" Text=""
-                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="10"
-                                           Foreground="{StaticResource MacSecondaryBrush}" Margin="0,0,0,8"/>
-                                <WrapPanel>
-                                    <Button x:Name="BtnCheckMtkClient" Content="Kiểm tra lại"
-                                            Click="CheckMtkClient_Click" Style="{StaticResource MacToolbarBtn}"/>
-                                    <Button x:Name="BtnCheckMtkEnv" Content="Môi trường"
-                                            Click="CheckMtkEnv_Click" Style="{StaticResource MacToolbarBtn}"
-                                            Margin="8,0,0,0"/>
-                                    <Button x:Name="BtnInstallMtkClient" Content="Cài đặt (pip)"
-                                            Click="InstallMtkClient_Click" Style="{StaticResource MacBtnPrimary}"
-                                            Margin="8,0,0,0"/>
-                                    <Button x:Name="BtnDownloadBundled" Content="Tải bundled"
-                                            Click="DownloadBundled_Click" Style="{StaticResource MacToolbarBtn}"
-                                            Margin="8,0,0,0"/>
-                                    <Button x:Name="BtnInstallMtkDeps" Content="Dependencies"
-                                            Click="InstallMtkDeps_Click" Style="{StaticResource MacToolbarBtn}"
-                                            Margin="8,0,0,0"/>
-                                    <Button x:Name="BtnOfflineBundle" Content="Offline bundle"
-                                            Click="OfflineBundle_Click" Style="{StaticResource MacToolbarBtn}"
-                                            Margin="8,0,0,0"/>
-                                </WrapPanel>
-                                <Border Style="{StaticResource MacSeparator}" Margin="0,6,0,6"/>
-                                <TextBlock Text="USB" FontSize="11" FontWeight="SemiBold"
-                                           Foreground="{StaticResource MacSecondaryBrush}" Margin="0,0,0,6"/>
-                                <StackPanel Margin="0,0,0,6">
-                                    <WrapPanel>
-                                        <Button x:Name="BtnMtkUsbScan" Content="Quét USB"
-                                                Click="MtkUsbScan_Click" Style="{StaticResource MacToolbarBtn}"
-                                                MinWidth="80"/>
-                                        <Button x:Name="BtnCheckMtkDriver" Content="Kiểm tra driver"
-                                                Click="CheckMtkDriver_Click" Style="{StaticResource MacToolbarBtn}"
-                                                MinWidth="90" Margin="8,0,0,0"/>
-                                        <Button x:Name="BtnInstallMtkDriver" Content="Cài driver MTK"
-                                                Click="InstallMtkDriver_Click" Style="{StaticResource MacToolbarBtn}"
-                                                MinWidth="90" Margin="8,0,0,0"/>
-                                    </WrapPanel>
-                                    <TextBlock x:Name="MtkUsbStatusText"
-                                               Text="Chưa quét" VerticalAlignment="Center"
-                                               FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
-                                               Foreground="{StaticResource MacSecondaryBrush}"
-                                               Margin="0,6,0,0"/>
-                                    <Button x:Name="BtnZadig" Content="Zadig - Cài driver USB (WinUSB/libusb)"
-                                            Click="Zadig_Click" Style="{StaticResource MacToolbarBtn}"
-                                            Height="28" Margin="0,6,0,0" HorizontalAlignment="Left"/>
-                                </StackPanel>
-                                <Border Style="{StaticResource MacSeparator}" Margin="0,6,0,6"/>
-                                <Expander Header="Đường dẫn tùy chỉnh (nâng cao)"
-                                          FontSize="11" Foreground="{StaticResource MacSecondaryBrush}">
-                                    <StackPanel Margin="0,6,0,0">
-                                        <Grid Margin="0,0,0,6">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBox x:Name="MtkCustomPathBox" Tag="Đường dẫn mtk.exe / mtk.py"/>
-                                            <Button x:Name="BtnBrowseMtkClient" Grid.Column="1" Content="Chọn"
-                                                    Click="BrowseMtkClient_Click" Style="{StaticResource MacToolbarBtn}"
-                                                    Margin="8,0,0,0" MinWidth="60"/>
-                                        </Grid>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBox x:Name="MtkPythonPathBox" Tag="Đường dẫn python.exe"/>
-                                            <Button x:Name="BtnBrowsePythonPath" Grid.Column="1" Content="Chọn"
-                                                    Click="BrowsePythonPath_Click" Style="{StaticResource MacToolbarBtn}"
-                                                    Margin="8,0,0,0" MinWidth="60"/>
-                                        </Grid>
-                                    </StackPanel>
-                                </Expander>
+                                <UniformGrid Columns="2">
+                                    <Button x:Name="BtnFastbootGetVarAll" Content="Get all variables"
+                                            Click="FastbootGetVarAll_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnFastbootOemDeviceInfo" Content="OEM device info"
+                                            Click="FastbootOemDeviceInfo_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
                             </StackPanel>
                         </Border>
 
-                        <!-- Device Operations -->
-                        <TextBlock Text="Thao tác" Style="{StaticResource MacGroupLabelSafe}"/>
-                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
+                        <!-- ── Flash ROM (MiFlash-style) ── -->
+                        <TextBlock Text="Flash ROM (MiFlash)" Style="{StaticResource MacGroupLabelDanger}"/>
+                        <Border Style="{StaticResource MacGroupBoxDanger}" Margin="0,0,0,16" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Máy phải ở chế độ BROM (tắt nguồn, giữ Volume +/- và cắm USB)."
+                                <TextBlock Text="Chọn thư mục ROM đã giải nén (chứa flash_all.bat / flash_all_except_storage.bat / images/)"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <Grid Margin="0,0,0,8">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Button x:Name="BtnMtkPrintInfo" Content="Thông tin MTK"
-                                            Click="MtkPrintInfo_Click" Style="{StaticResource MacToolbarBtn}"/>
-                                    <Button x:Name="BtnMtkPayload" Grid.Column="1" Content="Payload"
-                                            Click="MtkPayload_Click" Style="{StaticResource MacToolbarBtn}" Margin="8,0,0,0"/>
-                                </Grid>
-                                <Grid Margin="0,0,0,8">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Button x:Name="BtnMtkGetFlashInfo" Content="Thông tin flash"
-                                            Click="MtkGetFlashInfo_Click" Style="{StaticResource MacToolbarBtn}"/>
-                                    <Button x:Name="BtnMtkFormatFlash" Grid.Column="1" Content="Format flash"
-                                            Click="MtkFormatFlash_Click" Style="{StaticResource MacBtnDestructive}"
-                                            Margin="8,0,0,0"/>
-                                </Grid>
-                                <WrapPanel>
-                                    <Button x:Name="BtnMtkReset" Content="Reset MTK"
-                                            Click="MtkReset_Click" Style="{StaticResource MacToolbarBtn}"/>
-                                </WrapPanel>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Bootloader -->
-                        <TextBlock Text="Bootloader &amp; FRP" Style="{StaticResource MacGroupLabelWarn}"/>
-                        <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,12" Padding="12">
-                            <StackPanel>
-                                <WrapPanel Margin="0,0,0,8">
-                                    <Button x:Name="BtnMtkUnlockBootloader" Content="Mở khóa bootloader"
-                                            Click="MtkUnlockBootloader_Click" Style="{StaticResource MacBtnDestructive}"/>
-                                    <Button x:Name="BtnMtkBypassFrp" Content="Bypass FRP"
-                                            Click="MtkBypassFrp_Click" Style="{StaticResource MacBtnPrimary}"
-                                            Margin="8,0,0,0"/>
-                                </WrapPanel>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Partitions -->
-                        <TextBlock Text="Partition (Read / Write / Erase)" Style="{StaticResource MacGroupLabelDanger}"/>
-                        <Border Style="{StaticResource MacGroupBoxDanger}" Margin="0,0,0,12" Padding="12">
-                            <StackPanel>
-                                <Grid Margin="0,0,0,8">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Partition" VerticalAlignment="Center" FontWeight="SemiBold"/>
-                                    <TextBox x:Name="MtkPartitionBox" Grid.Column="1" Tag="boot, recovery, nvram..."
-                                             Margin="8,0,0,0"/>
-                                </Grid>
-                                <WrapPanel Margin="0,0,0,8">
-                                    <Button x:Name="BtnMtkReadPartition" Content="Đọc partition"
-                                            Click="MtkReadPartition_Click" Style="{StaticResource MacToolbarBtn}"/>
-                                    <Button x:Name="BtnMtkWritePartition" Content="Ghi partition"
-                                            Click="MtkWritePartition_Click" Style="{StaticResource MacBtnPrimary}"/>
-                                    <Button x:Name="BtnMtkErasePartition" Content="Xóa partition"
-                                            Click="MtkErasePartition_Click" Style="{StaticResource MacBtnDestructive}"
-                                            Margin="0"/>
-                                </WrapPanel>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Custom command -->
-                        <TextBlock Text="Custom command" Style="{StaticResource MacGroupLabelInfo}"/>
-                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
-                            <StackPanel>
-                                <TextBlock Text="Chạy lệnh mtkclient trực tiếp (vd: printinfo, r boot boot.img)."
-                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
-                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
-                                <Grid Margin="0,0,0,8">
+                                <Grid Margin="0,0,0,10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBox x:Name="MtkCustomCommandBox" Tag="Lệnh mtk (vd: printinfo)"/>
-                                    <Button x:Name="BtnMtkCustomCommand" Grid.Column="1" Content="Chạy"
-                                            Click="MtkCustomCommand_Click" Style="{StaticResource MacToolbarBtn}"
-                                            Margin="8,0,0,0" MinWidth="80"/>
+                                    <TextBox x:Name="FastbootRomBox" Grid.Column="0" Tag="Đường dẫn thư mục ROM"/>
+                                    <Button x:Name="BtnBrowseFastbootRom" Grid.Column="1" Content="Chọn ROM"
+                                            Click="BrowseFastbootRom_Click" Style="{StaticResource MacToolbarBtn}"
+                                            Margin="8,0,4,0" MinWidth="90"/>
+                                    <Button x:Name="BtnFastbootAutoDetect" Grid.Column="2" Content="Tìm tự động"
+                                            Click="FastbootAutoDetectSerial_Click" Style="{StaticResource MacToolbarBtn}"
+                                            MinWidth="90"/>
                                 </Grid>
-                                <TextBox x:Name="MtkLogText" IsReadOnly="True" TextWrapping="Wrap"
-                                         MinHeight="80" MaxHeight="200" VerticalScrollBarVisibility="Auto"
-                                         FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
-                                         Text="Kết quả sẽ hiển thị ở đây"/>
+
+                                <!-- ROM Info -->
+                                <TextBlock x:Name="FastbootRomStatusText" FontSize="11" Margin="0,0,0,4"
+                                           Foreground="{StaticResource MacSecondaryBrush}" TextWrapping="Wrap"/>
+                                <TextBlock x:Name="FastbootRomInfoText" FontSize="10" Margin="0,0,0,10"
+                                           Foreground="{StaticResource MacBlueBrush}" TextWrapping="Wrap"/>
+
+                                <!-- Flash options -->
+                                <TextBlock Text="Chọn chế độ flash:" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <UniformGrid Columns="3" Margin="0,0,0,10">
+                                    <Button x:Name="BtnFastbootFlashRom" Content="Flash all (xóa sạch)"
+                                            Click="FastbootFlashRom_Click" Style="{StaticResource MacBtnDestructive}" Margin="0,0,4,0"
+                                            ToolTip="flash_all.bat — xóa sạch dữ liệu"/>
+                                    <Button x:Name="BtnFastbootFlashRomKeep" Content="Flash all (giữ data)"
+                                            Click="FastbootFlashRomKeep_Click" Style="{StaticResource MacBtnSecondary}" Margin="0,0,4,0"
+                                            ToolTip="flash_all_except_storage.bat — giữ userdata"/>
+                                    <Button x:Name="BtnFastbootFlashRomCurrentSlot" Content="Flash current slot"
+                                            Click="FastbootFlashRomCurrentSlot_Click" Style="{StaticResource MacBtnSecondary}" Background="#6A1B9A" Margin="4,0,0,0"
+                                            ToolTip="flash_current_slot.bat — chỉ flash slot hiện tại"/>
+                                </UniformGrid>
+
+                                <UniformGrid Columns="3" Margin="0,0,0,10">
+                                    <Button x:Name="BtnFastbootFlashRomLock" Content="Flash + Lock"
+                                            Click="FastbootFlashRomLock_Click" Style="{StaticResource MacBtnDestructive}" Margin="0,0,4,0"
+                                            ToolTip="flash_all_lock.bat — flash và khóa bootloader"/>
+                                    <Button x:Name="BtnFastbootCancelFlash" Content="Hủy flash"
+                                            Click="CancelFlashRom_Click" Style="{StaticResource MacBtnSecondary}" Background="#E65100" Margin="0,0,4,0"
+                                            ToolTip="Dừng flash giữa chừng"/>
+                                    <Button x:Name="BtnFastbootFlashRomOpenDir" Content="Mở thư mục ROM"
+                                            Click="FastbootFlashRomOpenDir_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+
+                                <TextBlock FontSize="10" Foreground="{StaticResource MacSecondaryBrush}" TextWrapping="Wrap">
+                                    <Run Text="Lưu ý:" FontWeight="SemiBold"/>
+                                    <Run Text=" Flash current slot chỉ flash vào partition đang active. Flash + Lock sẽ khóa bootloader."/>
+                                </TextBlock>
                             </StackPanel>
                         </Border>
 
@@ -2238,61 +2755,101 @@
                                     <Button x:Name="BtnCheckShizuku" Content="Kiểm tra"
                                             Click="CheckShizuku_Click" Style="{StaticResource MacToolBtn}"/>
                                     <Button x:Name="BtnStartShizuku" Content="Khởi động Shizuku"
-                                            Click="StartShizuku_Click" Style="{StaticResource MacToolBtn}"/>
+                                            Click="StartShizuku_Click" Style="{StaticResource MacBtnPrimary}"/>
                                     <Button x:Name="BtnOpenShizuku" Content="Mở app Shizuku"
                                             Click="OpenShizuku_Click" Style="{StaticResource MacToolBtn}"/>
                                 </WrapPanel>
                             </StackPanel>
                         </Border>
 
-                        <TextBlock Text="Quyền Shizuku cho app" Style="{StaticResource MacGroupLabelWarn}"/>
+                        <TextBlock Text="Cấp quyền Shizuku" Style="{StaticResource MacGroupLabelWarn}"/>
                         <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,16" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Chọn app trong danh sách (tab Tối ưu) hoặc nhập package tùy chỉnh."
+                                <TextBlock Text="Chọn app trong tab Tối ưu, hoặc nhập package + quyền để Grant/Revoke."
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
                                 <WrapPanel Margin="0,0,0,10">
-                                    <Button x:Name="BtnGrantShizukuApi" Content="Cấp quyền API Shizuku"
+                                    <Button x:Name="BtnGrantShizukuApi" Content="Cấp API Shizuku"
                                             Click="GrantShizukuApi_Click" Style="{StaticResource MacToolBtn}"/>
-                                    <Button x:Name="BtnGrantAllShizukuPerms" Content="Cấp tất cả quyền"
-                                            Click="GrantAllShizukuPerms_Click" Style="{StaticResource MacToolBtn}"/>
+                                    <Button x:Name="BtnGrantAllShizukuPerms" Content="Cấp tất cả (privileged)"
+                                            Click="GrantAllShizukuPerms_Click" Style="{StaticResource MacBtnPrimary}"/>
                                 </WrapPanel>
-                                <ComboBox x:Name="ShizukuPermPreset" Margin="0,0,0,10" SelectedIndex="0">
-                                    <ComboBoxItem Content="Quyền API Shizuku" Tag="moe.shizuku.manager.permission.API_V23"/>
-                                    <ComboBoxItem Content="WRITE_SECURE_SETTINGS" Tag="android.permission.WRITE_SECURE_SETTINGS"/>
-                                    <ComboBoxItem Content="WRITE_SETTINGS" Tag="android.permission.WRITE_SETTINGS"/>
-                                    <ComboBoxItem Content="DUMP" Tag="android.permission.DUMP"/>
-                                    <ComboBoxItem Content="READ_LOGS" Tag="android.permission.READ_LOGS"/>
-                                    <ComboBoxItem Content="POST_NOTIFICATIONS" Tag="android.permission.POST_NOTIFICATIONS"/>
-                                    <ComboBoxItem Content="Bỏ qua tối ưu pin" Tag="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
-                                    <ComboBoxItem Content="MANAGE_EXTERNAL_STORAGE" Tag="android.permission.MANAGE_EXTERNAL_STORAGE"/>
-                                </ComboBox>
-                                <TextBox x:Name="ShizukuPermCustomBox" Tag="android.permission.CUSTOM…" Margin="0,0,0,10"/>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ComboBox x:Name="ShizukuPermPreset" SelectedIndex="0" Margin="0,0,8,0">
+                                        <ComboBoxItem Content="Quyền API Shizuku" Tag="moe.shizuku.manager.permission.API_V23"/>
+                                        <ComboBoxItem Content="WRITE_SECURE_SETTINGS" Tag="android.permission.WRITE_SECURE_SETTINGS"/>
+                                        <ComboBoxItem Content="WRITE_SETTINGS" Tag="android.permission.WRITE_SETTINGS"/>
+                                        <ComboBoxItem Content="DUMP" Tag="android.permission.DUMP"/>
+                                        <ComboBoxItem Content="READ_LOGS" Tag="android.permission.READ_LOGS"/>
+                                        <ComboBoxItem Content="POST_NOTIFICATIONS" Tag="android.permission.POST_NOTIFICATIONS"/>
+                                        <ComboBoxItem Content="Bỏ qua tối ưu pin" Tag="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+                                        <ComboBoxItem Content="MANAGE_EXTERNAL_STORAGE" Tag="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+                                    </ComboBox>
+                                    <TextBox x:Name="ShizukuPermCustomBox" Tag="android.permission.CUSTOM…" Grid.Column="1"/>
+                                </Grid>
                                 <WrapPanel>
-                                    <Button x:Name="BtnGrantShizukuPerm" Content="Grant quyền"
-                                            Click="GrantShizukuPerm_Click" Style="{StaticResource MacToolBtn}"/>
-                                    <Button x:Name="BtnRevokeShizukuPerm" Content="Revoke quyền"
-                                            Click="RevokeShizukuPerm_Click" Style="{StaticResource MacToolBtn}"/>
+                                    <Button x:Name="BtnGrantShizukuPerm" Content="Grant"
+                                            Click="GrantShizukuPerm_Click" Style="{StaticResource MacBtnPrimary}"/>
+                                    <Button x:Name="BtnRevokeShizukuPerm" Content="Revoke"
+                                            Click="RevokeShizukuPerm_Click" Style="{StaticResource MacBtnDestructive}"/>
                                 </WrapPanel>
                             </StackPanel>
                         </Border>
 
-                        <TextBlock Text="AppOps (Shizuku / ADB)" Style="{StaticResource MacGroupLabelSafe}"/>
+                        <TextBlock Text="AppOps nhanh (Shizuku / ADB)" Style="{StaticResource MacGroupLabelSafe}"/>
                         <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,24" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Các quyền đặc biệt thường cấp qua Shizuku hoặc ADB shell."
+                                <TextBlock Text="Cấp AppOps phổ biến cho app đã chọn."
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <WrapPanel>
-                                    <Button x:Name="BtnShizukuUsageStats" Content="Thống kê sử dụng"
-                                            Click="GrantShizukuUsageStats_Click" Style="{StaticResource MacToolBtn}"/>
-                                    <Button x:Name="BtnShizukuOverlay" Content="Hiển thị trên app"
-                                            Click="GrantShizukuOverlay_Click" Style="{StaticResource MacToolBtn}"/>
-                                    <Button x:Name="BtnShizukuBattery" Content="Bỏ qua tối ưu pin"
-                                            Click="GrantShizukuBattery_Click" Style="{StaticResource MacToolBtn}"/>
+
+                                <!-- AppOps cơ bản -->
+                                <TextBlock Text="Cơ bản:" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <UniformGrid Columns="4" Margin="0,0,0,10">
+                                    <Button x:Name="BtnShizukuUsageStats" Content="Thống kê"
+                                            Click="GrantShizukuUsageStats_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnShizukuOverlay" Content="Overlay"
+                                            Click="GrantShizukuOverlay_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnShizukuBattery" Content="Chống pin"
+                                            Click="GrantShizukuBattery_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
                                     <Button x:Name="BtnShizukuRunBackground" Content="Chạy nền"
-                                            Click="GrantShizukuRunBackground_Click" Style="{StaticResource MacToolBtn}"/>
-                                </WrapPanel>
+                                            Click="GrantShizukuRunBackground_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+
+                                <!-- AppOps vị trí & camera -->
+                                <TextBlock Text="Vị trí &amp; Camera:" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <UniformGrid Columns="4" Margin="0,0,0,10">
+                                    <Button x:Name="BtnShizukuNfc" Content="NFC"
+                                            Click="GrantShizukuNfc_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnShizukuLocation" Content="Vị trí gần"
+                                            Click="GrantShizukuLocation_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnShizukuFineLocation" Content="Vị trí chính xác"
+                                            Click="GrantShizukuFineLocation_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnShizukuCamera" Content="Camera"
+                                            Click="GrantShizukuCamera_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+
+                                <!-- AppOps khác -->
+                                <TextBlock Text="Khác:" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <UniformGrid Columns="2" Margin="0,0,0,10">
+                                    <Button x:Name="BtnShizukuContacts" Content="Đọc danh bạ"
+                                            Click="GrantShizukuContacts_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button x:Name="BtnShizukuCustomAppOp" Content="Custom AppOp"
+                                            Click="GrantShizukuCustomAppOp_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+
+                                <!-- Custom AppOp input -->
+                                <Grid Margin="0,0,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="ShizukuCustomAppOpBox" Grid.Column="0"
+                                             Tag="Nhập tên AppOps tùy chỉnh"/>
+                                </Grid>
                             </StackPanel>
                         </Border>
 

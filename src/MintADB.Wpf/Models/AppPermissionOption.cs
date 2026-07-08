@@ -8,6 +8,7 @@ public enum PermissionGrantKind
     Runtime,
     AppOp,
     Miui,
+    Shizuku,
 }
 
 public sealed class AppPermissionOption : INotifyPropertyChanged
@@ -26,6 +27,7 @@ public sealed class AppPermissionOption : INotifyPropertyChanged
         PermissionGrantKind.Runtime => "pm grant",
         PermissionGrantKind.AppOp => "AppOps",
         PermissionGrantKind.Miui => "MIUI",
+        PermissionGrantKind.Shizuku => "Shizuku",
         _ => "—",
     };
 
