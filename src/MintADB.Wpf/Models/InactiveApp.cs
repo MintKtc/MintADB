@@ -14,9 +14,9 @@ public static class InactiveAppStateExtensions
 {
     public static string Label(this InactiveAppState state) => state switch
     {
-        InactiveAppState.Disabled => "Đã tắt",
-        InactiveAppState.Uninstalled => "Đã gỡ",
-        InactiveAppState.Hidden => "Đã ẩn",
+        InactiveAppState.Disabled => MintADB.Wpf.Resources.Loc.Get("InactiveDisabled", "Đã tắt"),
+        InactiveAppState.Uninstalled => MintADB.Wpf.Resources.Loc.Get("InactiveUninstalled", "Đã gỡ"),
+        InactiveAppState.Hidden => MintADB.Wpf.Resources.Loc.Get("InactiveHidden", "Đã ẩn"),
         _ => state.ToString(),
     };
 

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -33,9 +33,12 @@
     <None Include="Drivers\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\**\*">
+    <None Include="Assets\**\*" Exclude="Assets\HyperDebloat.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <!-- Script debloat mặc định — nhúng trong DLL, không phụ thuộc file Desktop -->
+    <EmbeddedResource Include="Assets\HyperDebloat.txt"
+                      LogicalName="MintADB.HyperDebloat.txt" />
   </ItemGroup>
 
 </Project>

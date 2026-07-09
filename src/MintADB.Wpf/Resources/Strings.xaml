@@ -1,0 +1,443 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Navigation & General -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="NavOptimize">Tối ưu</sys:String>
+    <sys:String x:Key="NavTools">Công cụ</sys:String>
+    <sys:String x:Key="Device">Thiết bị</sys:String>
+    <sys:String x:Key="RefreshDeviceList">Làm mới danh sách thiết bị</sys:String>
+    <sys:String x:Key="DeviceInfo">Thông tin thiết bị</sys:String>
+    <sys:String x:Key="Connected">Đã kết nối</sys:String>
+    <sys:String x:Key="Disconnected">Chưa kết nối</sys:String>
+    <sys:String x:Key="Model">Model</sys:String>
+    <sys:String x:Key="Serial">Serial</sys:String>
+    <sys:String x:Key="Status">Trạng thái</sys:String>
+    <sys:String x:Key="Close">Đóng</sys:String>
+    <sys:String x:Key="Minimize">Thu nhỏ</sys:String>
+    <sys:String x:Key="Maximize">Phóng to</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Optimize Tab -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="XiaomiChina">Xiaomi China</sys:String>
+    <sys:String x:Key="OptimizeSubtitle">Tối ưu ROM nội địa — trải nghiệm Global-like</sys:String>
+    <sys:String x:Key="ROM">ROM</sys:String>
+    <sys:String x:Key="Scan">Quét</sys:String>
+    <sys:String x:Key="SystemOptions">Tùy chọn hệ thống</sys:String>
+    <sys:String x:Key="DisableAndroidRestrictions">Tắt hạn chế Android</sys:String>
+    <sys:String x:Key="UnlockXiaomiChinaControl">Mở khóa kiểm soát Xiaomi China</sys:String>
+    <sys:String x:Key="AutoGrantPermissions">Cấp quyền tự động</sys:String>
+    <sys:String x:Key="DisableMIUIOptimization">Tắt MIUI Optimization (cần reboot)</sys:String>
+    <sys:String x:Key="ChangeRegionCNtoGlobal">Đổi region CN → Global (cần reboot)</sys:String>
+    <sys:String x:Key="DisableMIUIAnalytics">Tắt MIUI analytics &amp; theo dõi</sys:String>
+    <sys:String x:Key="Apps">Ứng dụng</sys:String>
+    <sys:String x:Key="Installed">Đang cài</sys:String>
+    <sys:String x:Key="Disabled">Đã tắt / gỡ</sys:String>
+    <sys:String x:Key="PlayStore">Play Store</sys:String>
+    <sys:String x:Key="User">User</sys:String>
+    <sys:String x:Key="ROMBloat">Rác ROM</sys:String>
+    <sys:String x:Key="System">Hệ thống</sys:String>
+    <sys:String x:Key="ScanApps">Quét app</sys:String>
+    <sys:String x:Key="SelectAll">Chọn cả</sys:String>
+    <sys:String x:Key="DeselectAll">Tắt cả</sys:String>
+    <sys:String x:Key="SearchByNameOrPackage">Tìm tên hoặc package...</sys:String>
+    <sys:String x:Key="RemoveDisable">Gỡ/tắt</sys:String>
+    <sys:String x:Key="Restore">Khôi phục</sys:String>
+    <sys:String x:Key="UninstallDisableApps">Gỡ &amp; tắt app</sys:String>
+    <sys:String x:Key="UninstallDisableAppsDesc">Chọn app trong danh sách hoặc gõ package tùy chỉnh. App hệ thống gỡ bằng shell: pm uninstall --user 0. App lõi không gỡ được sẽ tự disable/ẩn.</sys:String>
+    <sys:String x:Key="UninstallDisable">Gỡ / tắt (đã chọn)</sys:String>
+    <sys:String x:Key="UninstallSystemShell">Gỡ hệ thống (shell)</sys:String>
+    <sys:String x:Key="DisableApps">Tắt app (đã chọn)</sys:String>
+    <sys:String x:Key="UninstallAllBloat">Gỡ tất cả rác ROM</sys:String>
+    <sys:String x:Key="RestoreApps">Khôi phục app</sys:String>
+    <sys:String x:Key="RestoreAppsDesc">Bật lại app đã tắt/ẩn hoặc cài lại app đã gỡ khỏi user 0.</sys:String>
+    <sys:String x:Key="RestoreSelected">Khôi phục (đã chọn)</sys:String>
+    <sys:String x:Key="EnableSelected">Bật lại (đã chọn)</sys:String>
+    <sys:String x:Key="QuickActions">Thao tác nhanh</sys:String>
+    <sys:String x:Key="QuickActionsDesc">Chọn app trong danh sách → chạy thao tác.</sys:String>
+    <sys:String x:Key="FixNotifications">Fix thông báo</sys:String>
+    <sys:String x:Key="GrantPermissions">Cấp quyền</sys:String>
+    <sys:String x:Key="FullOptimize">Full Optimize</sys:String>
+    <sys:String x:Key="BackupAppList">Backup danh sách</sys:String>
+    <sys:String x:Key="RestoreFromBackup">Khôi phục từ file</sys:String>
+    <sys:String x:Key="SafeDebloat">Debloat an toàn</sys:String>
+    <sys:String x:Key="Undo">Hoàn tác</sys:String>
+    <sys:String x:Key="UndoHistory">Hoàn tác gần nhất</sys:String>
+    <sys:String x:Key="ClearHistory">Xóa lịch sử</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Tools Tab -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="ADBTools">Công cụ ADB</sys:String>
+    <sys:String x:Key="ADBToolsSubtitle">Đầy đủ lệnh ADB — gỡ/tắt app ở tab Tối ưu</sys:String>
+    <sys:String x:Key="Basic">Cơ bản</sys:String>
+    <sys:String x:Key="ToolsApps">Ứng dụng</sys:String>
+    <sys:String x:Key="Scrcpy">Scrcpy</sys:String>
+    <sys:String x:Key="ScrcpyTab">Scrcpy</sys:String>
+    <sys:String x:Key="Network">Mạng</sys:String>
+    <sys:String x:Key="SystemInfo">Hệ thống</sys:String>
+    <sys:String x:Key="Tweaks">Tinh chỉnh</sys:String>
+    <sys:String x:Key="Advanced">Nâng cao</sys:String>
+    <sys:String x:Key="FastbootTab">Fastboot</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Basic Tools -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="ADBFastbootDriver">ADB / Fastboot &amp; Driver USB (offline)</sys:String>
+    <sys:String x:Key="DeployTools">Triển khai tools</sys:String>
+    <sys:String x:Key="InstallUSBDriver">Cài driver USB</sys:String>
+    <sys:String x:Key="RestartADB">Restart ADB</sys:String>
+    <sys:String x:Key="DriverFolder">Thư mục driver</sys:String>
+    <sys:String x:Key="DeviceManager">Device Manager</sys:String>
+    <sys:String x:Key="CheckVersion">Kiểm tra version</sys:String>
+    <sys:String x:Key="Reboot">Reboot</sys:String>
+    <sys:String x:Key="Recovery">Recovery</sys:String>
+    <sys:String x:Key="Bootloader">Bootloader</sys:String>
+    <sys:String x:Key="Sideload">Sideload</sys:String>
+    <sys:String x:Key="EDL">EDL</sys:String>
+    <sys:String x:Key="APKStore">Kho APK</sys:String>
+    <sys:String x:Key="Refresh">Làm mới</sys:String>
+    <sys:String x:Key="PushAll">Đẩy tất cả</sys:String>
+    <sys:String x:Key="InstallAll">Cài tất cả</sys:String>
+    <sys:String x:Key="Push">Push</sys:String>
+    <sys:String x:Key="Install">Cài</sys:String>
+    <sys:String x:Key="InstallAPK">Cài APK</sys:String>
+    <sys:String x:Key="BackupAPK">Backup APK</sys:String>
+    <sys:String x:Key="OpenApp">Mở app</sys:String>
+    <sys:String x:Key="ClearData1App">Xóa data (1 app)</sys:String>
+    <sys:String x:Key="ForceStop1App">Force stop (1 app)</sys:String>
+    <sys:String x:Key="ClearDataMultiple">Xóa data (nhiều)</sys:String>
+    <sys:String x:Key="PushPullFileExplorer">Push / Pull &amp; File Explorer</sys:String>
+    <sys:String x:Key="PushDesc">Push file lên máy, Pull file về máy, hoặc liệt kê thư mục.</sys:String>
+    <sys:String x:Key="ChooseFile">Chọn file</sys:String>
+    <sys:String x:Key="LocalFile">File local (vd: C:\file.apk)</sys:String>
+    <sys:String x:Key="RemotePath">/sdcard/Download/</sys:String>
+    <sys:String x:Key="List">Liệt kê</sys:String>
+    <sys:String x:Key="PullSavedTo">Pull lưu vào Desktop\MintADB\Pulls\</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Tools Apps Tab -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="UserAppsPlayStore">App user &amp; Play Store</sys:String>
+    <sys:String x:Key="UserAppsPlayStoreDesc">Chọn app bên trái, tick quyền bên phải — mỗi quyền có mô tả và lệnh ADB</sys:String>
+    <sys:String x:Key="Permissions">Quyền chi tiết</sys:String>
+    <sys:String x:Key="PermissionsSelected">quyền đã chọn</sys:String>
+    <sys:String x:Key="QuickPresets">Bộ nhanh</sys:String>
+    <sys:String x:Key="Chat">Chat</sys:String>
+    <sys:String x:Key="Battery">Chống pin</sys:String>
+    <sys:String x:Key="MILock">MIUI Lock</sys:String>
+    <sys:String x:Key="ShizukuPreset">Shizuku</sys:String>
+    <sys:String x:Key="Actions">Thao tác</sys:String>
+    <sys:String x:Key="CheckPermissions">Kiểm tra quyền</sys:String>
+    <sys:String x:Key="OpenAppSettings">Mở cài đặt ứng dụng</sys:String>
+    <sys:String x:Key="GrantSelectedPermissions">Cấp quyền đã chọn</sys:String>
+    <sys:String x:Key="OptimizeNotifications">Tối ưu thông báo</sys:String>
+    <sys:String x:Key="DisableBatteryOptimization">Tắt tối ưu pin</sys:String>
+    <sys:String x:Key="ApplyAll">Áp dụng tất cả</sys:String>
+    <sys:String x:Key="SelectAllPermissions">Chọn tất cả quyền</sys:String>
+    <sys:String x:Key="DeselectAllPermissions">Bỏ chọn tất cả</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Scrcpy Tab -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="ScrcpyDesc">Điều khiển màn hình mượt — H.264, tối đa 120 FPS</sys:String>
+    <sys:String x:Key="KeepScreenOn">Giữ màn hình sáng</sys:String>
+    <sys:String x:Key="LaunchScrcpy">Mở Scrcpy</sys:String>
+    <sys:String x:Key="Screenshot">Chụp ảnh</sys:String>
+    <sys:String x:Key="ScreenshotDesc">Chụp ảnh màn hình thiết bị</sys:String>
+    <sys:String x:Key="ChooseSaveFolder">Chọn thư mục</sys:String>
+    <sys:String x:Key="SaveFolder">Thư mục lưu ảnh (vd: C:\Pictures\MintADB)</sys:String>
+    <sys:String x:Key="TakeScreenshot">Chụp màn hình</sys:String>
+    <sys:String x:Key="ScreenRecord">Quay màn hình</sys:String>
+    <sys:String x:Key="ScreenRecordDesc">Quay video màn hình thiết bị</sys:String>
+    <sys:String x:Key="DurationSeconds">Thời lượng (giây)</sys:String>
+    <sys:String x:Key="RecordScreen">Quay màn hình</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Network Tab -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="NetworkStatus">Trạng thái mạng</sys:String>
+    <sys:String x:Key="ReadNetworkStatus">Đọc trạng thái mạng</sys:String>
+    <sys:String x:Key="WiFi">WiFi</sys:String>
+    <sys:String x:Key="WiFiDesc">Bật/tắt WiFi, quét mạng, kết nối nhanh.</sys:String>
+    <sys:String x:Key="SSID">SSID (tên WiFi)</sys:String>
+    <sys:String x:Key="Password">Mật khẩu WiFi</sys:String>
+    <sys:String x:Key="Connect">Kết nối</sys:String>
+    <sys:String x:Key="DisconnectWiFi">Ngắt WiFi</sys:String>
+    <sys:String x:Key="CheckWiFi">Kiểm tra WiFi</sys:String>
+    <sys:String x:Key="Bluetooth">Bluetooth</sys:String>
+    <sys:String x:Key="BluetoothDesc">Bật/tắt Bluetooth, quét thiết bị.</sys:String>
+    <sys:String x:Key="ScanBluetooth">Quét Bluetooth</sys:String>
+    <sys:String x:Key="AirplaneMode">Chế độ máy bay</sys:String>
+    <sys:String x:Key="AirplaneModeDesc">Bật/tắt chế độ máy bay — tắt tất cả kết nối.</sys:String>
+    <sys:String x:Key="Hotspot">Hotspot</sys:String>
+    <sys:String x:Key="HotspotDesc">Bật/tắt điểm phát WiFi.</sys:String>
+    <sys:String x:Key="MobileNetwork">Mạng di động</sys:String>
+    <sys:String x:Key="MobileNetworkDesc">Chọn chế độ 3G / LTE / 5G — áp dụng qua preferred_network_mode</sys:String>
+    <sys:String x:Key="Locale">Ngôn ngữ &amp; vùng (Locale)</sys:String>
+    <sys:String x:Key="LocaleDesc">Đặt locale hệ thống — ví dụ vi-VN, en-US, zh-CN (có thể cần reboot)</sys:String>
+    <sys:String x:Key="Custom">Tùy chỉnh</sys:String>
+    <sys:String x:Key="ApplyLocale">Áp dụng locale</sys:String>
+    <sys:String x:Key="CheckLocale">Kiểm tra</sys:String>
+    <sys:String x:Key="BlockMIUIAds">Chặn MIUI</sys:String>
+    <sys:String x:Key="BlockGoogleAds">Chặn Google</sys:String>
+    <sys:String x:Key="BlockAllAds">Chặn tất cả</sys:String>
+    <sys:String x:Key="RestoreMIUIAds">Khôi phục MIUI</sys:String>
+    <sys:String x:Key="RestoreGoogleAds">Khôi phục Google</sys:String>
+    <sys:String x:Key="CheckAdBlockStatus">Kiểm tra</sys:String>
+    <sys:String x:Key="AdBlockDNS">DNS chặn quảng cáo</sys:String>
+    <sys:String x:Key="AdBlockDNSDesc">Private DNS (Android 9+) — chặn quảng cáo &amp; tracker qua DNS</sys:String>
+    <sys:String x:Key="EnableAdBlock">Bật chặn quảng cáo</sys:String>
+    <sys:String x:Key="DefaultDNS">DNS mặc định</sys:String>
+    <sys:String x:Key="CheckDNS">Kiểm tra DNS</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- System Tab -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="BatteryInfo">Thông tin pin</sys:String>
+    <sys:String x:Key="ReadBatteryInfo">Đọc thông tin pin</sys:String>
+    <sys:String x:Key="DisplayInfo">Thông tin màn hình</sys:String>
+    <sys:String x:Key="ReadDisplayInfo">Đọc thông tin màn hình</sys:String>
+    <sys:String x:Key="LockHz">Lock Hz &amp; UI mượt</sys:String>
+    <sys:String x:Key="LockHzDesc">Khóa min = max = peak để UI cuộn mượt, giảm giật khi chuyển app. Chỉ cần ADB — Shizuku giúp khi MIUI chặn.</sys:String>
+    <sys:String x:Key="LockAt">Khóa ở</sys:String>
+    <sys:String x:Key="ReadHz">Đọc Hz</sys:String>
+    <sys:String x:Key="ApplyHzLock">Khóa Hz</sys:String>
+    <sys:String x:Key="SmoothUI">UI mượt</sys:String>
+    <sys:String x:Key="ApplyHzLockFull">Khóa + UI</sys:String>
+    <sys:String x:Key="RestoreAdaptiveHz">Khôi phục adaptive</sys:String>
+    <sys:String x:Key="DeviceInfoTitle">Thông tin máy</sys:String>
+    <sys:String x:Key="DeviceInfoDesc">Thông tin chi tiết về thiết bị</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Tweaks Tab -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="DPI">Điều chỉnh DPI</sys:String>
+    <sys:String x:Key="DPIPresets">Preset DPI</sys:String>
+    <sys:String x:Key="SetDPI">Đặt DPI</sys:String>
+    <sys:String x:Key="ResetDPI">Reset DPI</sys:String>
+    <sys:String x:Key="AnimationSpeed">Tốc độ animation</sys:String>
+    <sys:String x:Key="SetAnimation">Đặt animation</sys:String>
+    <sys:String x:Key="NavigationMode">Chế độ điều hướng</sys:String>
+    <sys:String x:Key="GestureNav">Điều hướng cử chỉ</sys:String>
+    <sys:String x:Key="ThreeButtonNav">Điều hướng 3 nút</sys:String>
+    <sys:String x:Key="StatusBar">Tùy chỉnh thanh trạng thái</sys:String>
+    <sys:String x:Key="StatusBarDesc">Tùy chỉnh hiển thị thanh trạng thái</sys:String>
+    <sys:String x:Key="BatteryPercentage">Hiển thị phần trăm pin</sys:String>
+    <sys:String x:Key="DeveloperOptions">Tùy chọn Nhà phát triển</sys:String>
+    <sys:String x:Key="StayAwake">Giữ màn hình sáng khi sạc</sys:String>
+    <sys:String x:Key="ShowTaps">Hiển thị thao tác chạm</sys:String>
+    <sys:String x:Key="PointerLocation">Hiển thị vị trí con trỏ</sys:String>
+    <sys:String x:Key="FontSize">Kích thước font</sys:String>
+    <sys:String x:Key="ScreenTimeout">Thời gian tắt màn hình</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Advanced Tab -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="DeviceSpoof">Giả mạo thiết bị</sys:String>
+    <sys:String x:Key="DeviceSpoofDesc">Fake ro.product.* để game nhận máy cao cấp hơn</sys:String>
+    <sys:String x:Key="UnlockFPS">Unlock FPS</sys:String>
+    <sys:String x:Key="UnlockFPSDesc">Mở khóa FPS / tần số quét</sys:String>
+    <sys:String x:Key="ShizukuIntegration">Tích hợp Shizuku</sys:String>
+    <sys:String x:Key="ShizukuIntegrationDesc">Shizuku giúp thực thi lệnh mà không cần root</sys:String>
+    <sys:String x:Key="StartShizuku">Khởi động Shizuku</sys:String>
+    <sys:String x:Key="AppOps">Quản lý AppOps</sys:String>
+    <sys:String x:Key="AppOpsDesc">Quản lý quyền chi tiết qua AppOps</sys:String>
+    <sys:String x:Key="CheckAppOps">Kiểm tra AppOps</sys:String>
+    <sys:String x:Key="SetAppOps">Đặt AppOps</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Fastboot Tab -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="FastbootDevices">Thiết bị Fastboot</sys:String>
+    <sys:String x:Key="FlashImage">Flash image</sys:String>
+    <sys:String x:Key="FlashImageDesc">Flash file .img vào partition</sys:String>
+    <sys:String x:Key="ChooseImage">Chọn file .img</sys:String>
+    <sys:String x:Key="Partition">Partition</sys:String>
+    <sys:String x:Key="Flash">Flash</sys:String>
+    <sys:String x:Key="FlashROM">Flash ROM</sys:String>
+    <sys:String x:Key="FlashROMDesc">Flash ROM (kiểu MiFlash) với tự động tìm</sys:String>
+    <sys:String x:Key="ChooseROMFolder">Chọn thư mục ROM</sys:String>
+    <sys:String x:Key="FlashCurrentSlot">Flash slot hiện tại</sys:String>
+    <sys:String x:Key="FlashAndLock">Flash + Lock bootloader</sys:String>
+    <sys:String x:Key="CancelFlash">Hủy flash</sys:String>
+    <sys:String x:Key="FactoryReset">Factory reset</sys:String>
+    <sys:String x:Key="FactoryResetDesc">Xóa sạch dữ liệu</sys:String>
+    <sys:String x:Key="SetActiveSlot">Đặt slot active (A/B)</sys:String>
+    <sys:String x:Key="BootTemp">Boot tạm thời (không flash)</sys:String>
+    <sys:String x:Key="OEMUnlock">Mở khóa bootloader</sys:String>
+    <sys:String x:Key="OEMLock">Khóa bootloader</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Log & Status Messages -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="Scanning">Đang quét...</sys:String>
+    <sys:String x:Key="Running">Đang chạy...</sys:String>
+    <sys:String x:Key="Success">Thành công</sys:String>
+    <sys:String x:Key="Failed">Thất bại</sys:String>
+    <sys:String x:Key="Error">Lỗi</sys:String>
+    <sys:String x:Key="Completed">Hoàn tất</sys:String>
+    <sys:String x:Key="NotConnected">Chưa kết nối</sys:String>
+    <sys:String x:Key="Unauthorized">Chưa ủy quyền</sys:String>
+    <sys:String x:Key="Offline">Offline</sys:String>
+    <sys:String x:Key="Ready">Sẵn sàng</sys:String>
+    <sys:String x:Key="Confirm">Xác nhận</sys:String>
+    <sys:String x:Key="Yes">Có</sys:String>
+    <sys:String x:Key="No">Không</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- MessageBox Messages -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="NoDeviceSelected">Chưa chọn thiết bị ADB.</sys:String>
+    <sys:String x:Key="SelectAtLeastOneApp">Chọn ít nhất 1 app.</sys:String>
+    <sys:String x:Key="SelectAtLeastOnePermission">Chọn ít nhất 1 quyền.</sys:String>
+    <sys:String x:Key="ConfirmAction">Xác nhận</sys:String>
+    <sys:String x:Key="DeviceNotReady">Thiết bị chưa sẵn sàng</sys:String>
+    <sys:String x:Key="UnauthorizedMessage">Thiết bị chưa ủy quyền ADB.\n\n1. Rút/cắm lại cáp USB\n2. Trên máy: Cài đặt → Tùy chọn nhà phát triển → bật USB Debugging\n3. Chấp nhận popup «Cho phép gỡ lỗi USB» (tick Luôn cho phép)\n4. Bấm ↻ làm mới danh sách</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Permission Labels -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="Notifications">Thông báo</sys:String>
+    <sys:String x:Key="Autostart">Tự khởi động</sys:String>
+    <sys:String x:Key="Vibrate">Rung</sys:String>
+    <sys:String x:Key="InternetPerm">Internet</sys:String>
+    <sys:String x:Key="Camera">Camera</sys:String>
+    <sys:String x:Key="Microphone">Micro</sys:String>
+    <sys:String x:Key="Location">Vị trí</sys:String>
+    <sys:String x:Key="Contacts">Danh bạ</sys:String>
+    <sys:String x:Key="Phone">Điện thoại</sys:String>
+    <sys:String x:Key="SMS">SMS</sys:String>
+    <sys:String x:Key="Storage">Bộ nhớ</sys:String>
+    <sys:String x:Key="Files">Tệp</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Welcome Window -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="WelcomeTitle">Hướng dẫn sử dụng</sys:String>
+    <sys:String x:Key="QuickGuide">Hướng dẫn sử dụng nhanh</sys:String>
+    <sys:String x:Key="ConnectPhone">Kết nối điện thoại</sys:String>
+    <sys:String x:Key="ConnectPhoneDesc">Kết nối điện thoại Xiaomi / Redmi / POCO với máy tính qua cáp USB</sys:String>
+    <sys:String x:Key="EnableUSBDebugging">Bật USB Debugging</sys:String>
+    <sys:String x:Key="EnableUSBDebuggingDesc">Vào Cài đặt → Giới thiệu → Nhấn 7 lần vào Số phiên bản → Quay lại Cài đặt → Tùy chọn nhà phát triển → Bật USB Debugging</sys:String>
+    <sys:String x:Key="AllowUSBDebugging">Cho phép gỡ lỗi USB</sys:String>
+    <sys:String x:Key="AllowUSBDebuggingDesc">Khi popup xuất hiện trên điện thoại, tick "Luôn cho phép" rồi nhấn OK</sys:String>
+    <sys:String x:Key="UsefulTips">Mẹo hữu ích</sys:String>
+    <sys:String x:Key="Tip1">Sử dụng tab "Tối ưu" để fix thông báo, debloat, tối ưu ROM China</sys:String>
+    <sys:String x:Key="Tip2">Sử dụng tab "Công cụ" để quản lý ADB, chụp ảnh, quay màn hình</sys:String>
+    <sys:String x:Key="Tip3">"Debloat an toàn" dùng script Hyper nhúng sẵn trong app — backup APK vào Desktop\MintADB\DebloatBackup</sys:String>
+    <sys:String x:Key="Tip4">Sử dụng "Backup danh sách" để lưu lại danh sách app đã gỡ</sys:String>
+    <sys:String x:Key="Tip5">Sử dụng "Hoàn tác" để khôi phục app đã gỡ nhầm</sys:String>
+    <sys:String x:Key="Tip6">Luôn backup dữ liệu quan trọng trước khi thao tác với hệ thống</sys:String>
+    <sys:String x:Key="DontShowAgain">Không hiển thị lại</sys:String>
+    <sys:String x:Key="GetStarted">Bắt đầu</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Language -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="Language">Ngôn ngữ</sys:String>
+    <sys:String x:Key="Vietnamese">Tiếng Việt</sys:String>
+    <sys:String x:Key="English">English</sys:String>
+    <sys:String x:Key="CatUserInstalled">User tự cài</sys:String>
+    <sys:String x:Key="AllCategories">Tất cả loại</sys:String>
+    <sys:String x:Key="AllStates">Tất cả trạng thái</sys:String>
+    <sys:String x:Key="InactiveDisabled">Đã tắt</sys:String>
+    <sys:String x:Key="InactiveUninstalled">Đã gỡ</sys:String>
+    <sys:String x:Key="InactiveHidden">Đã ẩn</sys:String>
+    <sys:String x:Key="DebloatHyperTitle">Debloat an toàn (script Hyper trong app)</sys:String>
+    <sys:String x:Key="DebloatHyperConfirm">· {0} app trong danh sách&#10;· Gỡ/tắt qua shell · backup APK&#10;· App đã gỡ / bị chặn → bỏ qua&#10;&#10;Tiếp tục?</sys:String>
+    <sys:String x:Key="DebloatHyperDone">Debloat Hyper xong.&#10;&#10;Đã gỡ/tắt: {0}&#10;Bỏ qua: {1}&#10;Lỗi: {2}</sys:String>
+    <sys:String x:Key="DebloatHyperEmpty">Script Hyper debloat trong app bị lỗi / trống. Cài lại MintADB.</sys:String>
+    <sys:String x:Key="DebloatHyperRunning">Debloat Hyper…</sys:String>
+    <sys:String x:Key="DebloatHyperDoneStatus">Hoàn tất</sys:String>
+    <sys:String x:Key="DebloatProgressBackup">Đang backup…</sys:String>
+    <sys:String x:Key="DebloatProgressUninstall">Đang gỡ {0}</sys:String>
+    <sys:String x:Key="DebloatProgressDisable">Đang tắt {0}</sys:String>
+    <sys:String x:Key="DebloatProgressClear">Xóa data {0}</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Additional Status Messages -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="NoDeviceHint">Không có thiết bị — cắm USB và bật USB Debugging</sys:String>
+    <sys:String x:Key="DeviceNotReadyHint">Thiết bị chưa sẵn sàng — chấp nhận popup «Cho phép gỡ lỗi USB» trên máy, rồi bấm ↻</sys:String>
+    <sys:String x:Key="WaitingForDevice">Đang chờ thiết bị...</sys:String>
+    <sys:String x:Key="DeviceReady">Thiết bị sẵn sàng</sys:String>
+    <sys:String x:Key="ROMInfo">Thông tin ROM</sys:String>
+    <sys:String x:Key="NotScanned">Chưa quét</sys:String>
+    <sys:String x:Key="ScannedFromCache">từ cache</sys:String>
+    <sys:String x:Key="AppsFound">app được tìm thấy</sys:String>
+    <sys:String x:Key="ScanningComplete">Quét xong</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Additional Button Labels -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="Read">Đọc</sys:String>
+    <sys:String x:Key="Write">Ghi</sys:String>
+    <sys:String x:Key="Apply">Áp dụng</sys:String>
+    <sys:String x:Key="ResetBtn">Reset</sys:String>
+    <sys:String x:Key="Save">Lưu</sys:String>
+    <sys:String x:Key="CancelBtn">Hủy</sys:String>
+    <sys:String x:Key="OKBtn">OK</sys:String>
+    <sys:String x:Key="Browse">Duyệt</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Additional Status & Info -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="NoAPKInFolder">Không có APK trong thư mục</sys:String>
+    <sys:String x:Key="FolderNotFound">Thư mục không tồn tại</sys:String>
+    <sys:String x:Key="FileNotFound">Không tìm thấy file</sys:String>
+    <sys:String x:Key="InvalidInput">Dữ liệu không hợp lệ</sys:String>
+    <sys:String x:Key="OperationComplete">Thao tác hoàn tất</sys:String>
+    <sys:String x:Key="OperationFailed">Thao tác thất bại</sys:String>
+    <sys:String x:Key="DeviceWillReboot">Thiết bị sẽ tự khởi động lại</sys:String>
+    <sys:String x:Key="WarningMessage">CẢNH BÁO</sys:String>
+    <sys:String x:Key="DestructiveWarning">Hành động không thể hoàn tác</sys:String>
+    <sys:String x:Key="CannotUndo">Không thể hoàn tác</sys:String>
+    <sys:String x:Key="DataWillBeDeleted">Dữ liệu sẽ bị XÓA SẠCH</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Log Prefixes -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="LogOK">OK</sys:String>
+    <sys:String x:Key="LogFAIL">FAIL</sys:String>
+    <sys:String x:Key="LogWARN">WARN</sys:String>
+    <sys:String x:Key="LogINFO">INFO</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Additional UI Elements -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="SearchPlaceholder">Tìm kiếm...</sys:String>
+    <sys:String x:Key="CustomPackage">Package tùy chỉnh (vd: com.example.app)</sys:String>
+    <sys:String x:Key="WiFiSSIDPlaceholder">SSID (tên WiFi)</sys:String>
+    <sys:String x:Key="WiFiPasswordPlaceholder">Mật khẩu WiFi</sys:String>
+    <sys:String x:Key="LocalFilePath">File local (vd: C:\file.apk)</sys:String>
+    <sys:String x:Key="RemoteDevicePath">/sdcard/Download/</sys:String>
+    <sys:String x:Key="RemoteFilePath">/sdcard/Download/file.txt</sys:String>
+    <sys:String x:Key="SaveFolderPath">Thư mục lưu</sys:String>
+    <sys:String x:Key="ScreenshotSavePath">Thư mục lưu ảnh (vd: C:\Pictures\MintADB)</sys:String>
+    <sys:String x:Key="RecordSavePath">Thư mục lưu video (vd: C:\Videos\MintADB)</sys:String>
+    <sys:String x:Key="CustomLocale">vi-VN, en-US…</sys:String>
+    <sys:String x:Key="FastbootImageFile">File image (.img)</sys:String>
+    <sys:String x:Key="ShizukuCustomPerm">Quyền tùy chỉnh</sys:String>
+    <sys:String x:Key="CustomAppOps">AppOps tùy chỉnh</sys:String>
+    <sys:String x:Key="CustomPermission">Quyền tùy chỉnh</sys:String>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Permission Category Names -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="PermGroupNotifications">Thông báo</sys:String>
+    <sys:String x:Key="PermGroupBackground">Chạy nền</sys:String>
+    <sys:String x:Key="PermGroupBattery">Pin &amp; năng lượng</sys:String>
+    <sys:String x:Key="PermGroupMIUI">MIUI &amp; pin</sys:String>
+    <sys:String x:Key="PermGroupNetwork">Mạng</sys:String>
+    <sys:String x:Key="PermGroupLocation">Vị trí</sys:String>
+    <sys:String x:Key="PermGroupCameraMic">Camera &amp; mic</sys:String>
+    <sys:String x:Key="PermGroupStorage">Lưu trữ</sys:String>
+    <sys:String x:Key="PermGroupDisplay">Hiển thị</sys:String>
+    <sys:String x:Key="PermGroupOther">Khác</sys:String>
+    <sys:String x:Key="PermGroupShizuku">Shizuku (đặc quyền)</sys:String>
+
+</ResourceDictionary>

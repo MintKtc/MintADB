@@ -1,0 +1,255 @@
+shell pm path com.eg.android.AlipayGphone
+shell cp -r "/cust/app/customized/partner-com.eg.android.AlipayGphone_23/partner-com.eg.android.AlipayGphone_23.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/partner-com.eg.android.AlipayGphone_23.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.eg.android.AlipayGphone [v.10.8.10.3200].apk"
+shell rm -R "/storage/emulated/0/partner-com.eg.android.AlipayGphone_23.apk"
+shell pm uninstall --user 0 com.eg.android.AlipayGphone
+shell pm path com.baidu.searchbox
+shell cp -r "/cust/app/customized/partner-com.baidu.searchbox_9/partner-com.baidu.searchbox_9.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/partner-com.baidu.searchbox_9.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.baidu.searchbox [v.13.76.0.10].apk"
+shell rm -R "/storage/emulated/0/partner-com.baidu.searchbox_9.apk"
+shell pm uninstall --user 0 com.baidu.searchbox
+shell pm path com.baidu.input_mi
+shell cp -r "/product/data-app/BaiduIME/BaiduIME.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/BaiduIME.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.baidu.input_mi [v.10.6.124.308].apk"
+shell rm -R "/storage/emulated/0/BaiduIME.apk"
+shell pm uninstall --user 0 com.baidu.input_mi
+shell pm path com.android.browser
+shell cp -r "/product/priv-app/MIUIBrowser/MIUIBrowser.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUIBrowser.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.android.browser [v.20.8.101224].apk"
+shell rm -R "/storage/emulated/0/MIUIBrowser.apk"
+shell pm uninstall --user 0 com.android.browser
+shell pm path com.miui.cloudbackup
+shell cp -r "/product/priv-app/MIUICloudBackup/MIUICloudBackup.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUICloudBackup.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.cloudbackup [v.1.12.1.6.42.6].apk"
+shell rm -R "/storage/emulated/0/MIUICloudBackup.apk"
+shell pm uninstall --user 0 com.miui.cloudbackup
+shell pm path com.miui.newhome
+shell cp -r "/product/data-app/MIUINewHome_Removable/MIUINewHome_Removable.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUINewHome_Removable.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.newhome [v.9.4.01.1304].apk"
+shell rm -R "/storage/emulated/0/MIUINewHome_Removable.apk"
+shell pm uninstall --user 0 com.miui.newhome
+shell pm uninstall com.miui.newhome
+shell pm path com.miui.notes
+shell cp -r "/product/data-app/MIUINotes/MIUINotes.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUINotes.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.notes [v.2.3.4.3].apk"
+shell rm -R "/storage/emulated/0/MIUINotes.apk"
+shell pm uninstall --user 0 com.miui.notes
+shell pm uninstall com.miui.notes
+shell pm path com.miui.notes
+shell cp -r "/product/data-app/MIUINotes/MIUINotes.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUINotes.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.notes [v.2.3.4.3].apk"
+shell rm -R "/storage/emulated/0/MIUINotes.apk"
+shell pm uninstall --user 0 com.miui.notes
+shell pm uninstall com.miui.notes
+shell pm disable-user --user 0 com.miui.notes
+shell pm clear --user 0 com.miui.notes
+shell pm disable-user --user 0 com.miui.newhome
+shell pm clear --user 0 com.miui.newhome
+shell pm path com.miui.voiceassist
+shell cp -r "/product/app/VoiceAssistAndroidT/VoiceAssistAndroidT.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/VoiceAssistAndroidT.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.voiceassist [v.7.10.3.1514].apk"
+shell rm -R "/storage/emulated/0/VoiceAssistAndroidT.apk"
+shell pm path com.miui.voiceassistoverlay
+shell cp -r "/product/overlay/VoiceAssistAndroidOverlay/VoiceAssistAndroidOverlay.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/VoiceAssistAndroidOverlay.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.voiceassistoverlay [v.2.0].apk"
+shell rm -R "/storage/emulated/0/VoiceAssistAndroidOverlay.apk"
+shell pm path com.miui.voiceassistProxy
+shell cp -r "/product/data-app/VoiceAssistProxy/VoiceAssistProxy.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/VoiceAssistProxy.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.voiceassistProxy [v.1.5.0].apk"
+shell rm -R "/storage/emulated/0/VoiceAssistProxy.apk"
+shell pm path com.miui.voicetrigger
+shell cp -r "/product/app/VoiceTrigger/VoiceTrigger.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/VoiceTrigger.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.voicetrigger [v.v-8.0.0.26-xiaomi].apk"
+shell rm -R "/storage/emulated/0/VoiceTrigger.apk"
+shell pm uninstall --user 0 com.miui.voiceassist
+shell pm uninstall --user 0 com.miui.voiceassistoverlay
+shell pm uninstall --user 0 com.miui.voiceassistProxy
+shell pm uninstall --user 0 com.miui.voicetrigger
+shell pm path com.mi.health
+shell cp -r "/product/data-app/Health/Health.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/Health.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.mi.health [v.3.53.2].apk"
+shell rm -R "/storage/emulated/0/Health.apk"
+shell pm path com.milink.service
+shell cp -r "/product/app/MiLinkOS3Cn/MiLinkOS3Cn.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MiLinkOS3Cn.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.milink.service [v.17.2.0.1.2601081906].apk"
+shell rm -R "/storage/emulated/0/MiLinkOS3Cn.apk"
+shell pm path com.mipay.wallet
+shell cp -r "/product/data-app/MIpay/MIpay.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIpay.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.mipay.wallet [v.6.99.1.5504.2648].apk"
+shell rm -R "/storage/emulated/0/MIpay.apk"
+shell pm uninstall --user 0 com.mi.health
+shell pm uninstall --user 0 com.milink.service
+shell pm uninstall --user 0 com.mipay.wallet
+shell pm path com.miui.backup
+shell cp -r "/product/priv-app/Backup/Backup.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/Backup.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.backup [v.7.0.0.9-OS3].apk"
+shell rm -R "/storage/emulated/0/Backup.apk"
+shell pm path com.miui.bugreport
+shell cp -r "/product/app/MiBugReportOS3/MiBugReportOS3.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MiBugReportOS3.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.bugreport [v.17.0.5.4].apk"
+shell rm -R "/storage/emulated/0/MiBugReportOS3.apk"
+shell pm uninstall --user 0 com.miui.backup
+shell pm uninstall --user 0 com.miui.bugreport
+shell pm path com.miui.greenguard
+shell cp -r "/product/app/MIUIgreenguard/MIUIgreenguard.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUIgreenguard.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.greenguard [v.3.13.01.20.00].apk"
+shell rm -R "/storage/emulated/0/MIUIgreenguard.apk"
+shell pm path com.miui.guardprovider
+shell cp -r "/product/app/MIUIGuardProvider/MIUIGuardProvider.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUIGuardProvider.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.guardprovider [v.2.5.6-20251106.0].apk"
+shell rm -R "/storage/emulated/0/MIUIGuardProvider.apk"
+shell pm uninstall --user 0 com.miui.greenguard
+shell pm uninstall --user 0 com.miui.guardprovider
+shell pm path com.miui.huanji
+shell cp -r "/product/data-app/MIUIHuanji/MIUIHuanji.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUIHuanji.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.huanji [v.4.5.5.1].apk"
+shell rm -R "/storage/emulated/0/MIUIHuanji.apk"
+shell pm path com.miui.micloudsync
+shell cp -r "/product/app/MIUIMiCloudSync/MIUIMiCloudSync.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUIMiCloudSync.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.micloudsync [v.1.12.0.1.40].apk"
+shell rm -R "/storage/emulated/0/MIUIMiCloudSync.apk"
+shell pm path com.miui.miservice
+shell cp -r "/product/data-app/MIService/MIService.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIService.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.miservice [v.17.0.0.0].apk"
+shell rm -R "/storage/emulated/0/MIService.apk"
+shell pm path com.miui.mishare.connectivity
+shell cp -r "/product/priv-app/MIShare/MIShare.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIShare.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.mishare.connectivity [v.4.12.0].apk"
+shell rm -R "/storage/emulated/0/MIShare.apk"
+shell pm uninstall --user 0 com.miui.huanji
+shell pm uninstall --user 0 com.miui.micloudsync
+shell pm uninstall --user 0 com.miui.miservice
+shell pm uninstall --user 0 com.miui.mishare.connectivity
+shell pm path com.xiaomi.vipaccount
+shell cp -r "/product/data-app/OS2VipAccount/OS2VipAccount.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/OS2VipAccount.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.vipaccount [v.6.6.2].apk"
+shell rm -R "/storage/emulated/0/OS2VipAccount.apk"
+shell pm uninstall --user 0 com.xiaomi.vipaccount
+shell pm path com.miui.yellowpage
+shell cp -r "/product/priv-app/MIUIYellowPage/MIUIYellowPage.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUIYellowPage.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.yellowpage [v.23.0.260108].apk"
+shell rm -R "/storage/emulated/0/MIUIYellowPage.apk"
+shell pm uninstall --user 0 com.miui.yellowpage
+shell pm path com.xiaomi.simactivate.service
+shell cp -r "/product/app/XiaomiSimActivateServiceCn/XiaomiSimActivateServiceCn.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/XiaomiSimActivateServiceCn.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.simactivate.service [v.26.01.09-R].apk"
+shell rm -R "/storage/emulated/0/XiaomiSimActivateServiceCn.apk"
+shell pm uninstall --user 0 com.xiaomi.simactivate.service
+shell pm path com.miui.cloudservice
+shell cp -r "/product/app/MIUICloudService/MIUICloudService.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUICloudService.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.cloudservice [v.1.12.0.8.07].apk"
+shell rm -R "/storage/emulated/0/MIUICloudService.apk"
+shell pm path com.xiaomi.micloud.sdk
+shell cp -r "/system_ext/priv-app/RtMiCloudSDK/RtMiCloudSDK.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/RtMiCloudSDK.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.micloud.sdk [v.2.0.0.0].apk"
+shell rm -R "/storage/emulated/0/RtMiCloudSDK.apk"
+shell pm uninstall --user 0 com.miui.cloudservice
+shell pm uninstall --user 0 com.xiaomi.micloud.sdk
+shell pm path com.xiaomi.aiasst.service
+shell cp -r "/product/app/MIUIAiasstService/MIUIAiasstService.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUIAiasstService.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.aiasst.service [v.6.0.3].apk"
+shell rm -R "/storage/emulated/0/MIUIAiasstService.apk"
+shell pm uninstall --user 0 com.xiaomi.aiasst.service
+shell pm path com.xiaomi.aiservice
+shell cp -r "/product/priv-app/AIService/AIService.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/AIService.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.aiservice [v.3.11.1_1b0c727_260129_cn].apk"
+shell rm -R "/storage/emulated/0/AIService.apk"
+shell pm uninstall --user 0 com.xiaomi.aiservice
+shell pm path com.android.updater
+shell cp -r "/product/app/Updater/Updater.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/Updater.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.android.updater [v.9.2.6].apk"
+shell rm -R "/storage/emulated/0/Updater.apk"
+shell pm uninstall --user 0 com.android.updater
+shell pm path com.xiaomi.joyose
+shell cp -r "/system/app/Joyose/Joyose.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/Joyose.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.joyose [v.2.4.85].apk"
+shell rm -R "/storage/emulated/0/Joyose.apk"
+shell pm uninstall --user 0 com.xiaomi.joyose
+shell pm path com.xiaomi.payment
+shell cp -r "/product/app/PaymentService/PaymentService.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/PaymentService.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.payment [v.2.9.4].apk"
+shell rm -R "/storage/emulated/0/PaymentService.apk"
+shell pm uninstall --user 0 com.xiaomi.payment
+shell pm path com.xiaomi.mi_connect_service
+shell cp -r "/product/app/LyraWOS3CN/LyraWOS3CN.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/LyraWOS3CN.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.mi_connect_service [v.5.1.143.10].apk"
+shell rm -R "/storage/emulated/0/LyraWOS3CN.apk"
+shell pm uninstall --user 0 com.xiaomi.mi_connect_service
+shell pm path com.xiaomi.migameservice
+shell cp -r "/product/app/MiGameService_GameAI_MTK/MiGameService_GameAI_MTK.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MiGameService_GameAI_MTK.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.migameservice [v.1.5.1.4.8.1].apk"
+shell rm -R "/storage/emulated/0/MiGameService_GameAI_MTK.apk"
+shell pm uninstall --user 0 com.xiaomi.migameservice
+shell pm path com.xiaomi.ab
+shell cp -r "/product/app/system/system.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/system.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.ab [v.3.0.1.20250225].apk"
+shell rm -R "/storage/emulated/0/system.apk"
+shell pm uninstall --user 0 com.xiaomi.ab
+shell pm path com.miui.packageinstaller
+shell cp -r "/product/priv-app/MIUIPackageInstaller/MIUIPackageInstaller.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUIPackageInstaller.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.packageinstaller [v.5.4.2.0.0-20251202].apk"
+shell rm -R "/storage/emulated/0/MIUIPackageInstaller.apk"
+shell pm uninstall --user 0 com.miui.packageinstaller
+shell pm uninstall com.miui.packageinstaller
+shell pm disable-user --user 0 com.miui.packageinstaller
+shell pm disable com.miui.packageinstaller
+shell pm path com.miui.thirdappassistant
+shell cp -r "/product/app/ThirdAppAssistant/ThirdAppAssistant.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/ThirdAppAssistant.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.thirdappassistant [v.5.6].apk"
+shell rm -R "/storage/emulated/0/ThirdAppAssistant.apk"
+shell pm uninstall --user 0 com.miui.thirdappassistant
+shell pm path com.miui.daemon
+shell cp -r "/system_ext/app/MiuiDaemon/MiuiDaemon.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MiuiDaemon.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.miui.daemon [v.2.2.2].apk"
+shell rm -R "/storage/emulated/0/MiuiDaemon.apk"
+shell pm uninstall --user 0 com.miui.daemon
+shell pm path com.xiaomi.aiasst.vision
+shell cp -r "/product/app/AiasstVision/AiasstVision.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/AiasstVision.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.aiasst.vision [v.5.10.1.40].apk"
+shell rm -R "/storage/emulated/0/AiasstVision.apk"
+shell pm uninstall --user 0 com.xiaomi.aiasst.vision
+shell pm path com.xiaomi.aicr
+shell cp -r "/product/priv-app/MIUIAICR/MIUIAICR.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUIAICR.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.aicr [v.3.16.0].apk"
+shell rm -R "/storage/emulated/0/MIUIAICR.apk"
+shell pm uninstall --user 0 com.xiaomi.aicr
+shell pm path com.xiaomi.minigame
+shell cp -r "/product/priv-app/MiniGameService/MiniGameService.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MiniGameService.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.minigame [v.1.31.2.0].apk"
+shell rm -R "/storage/emulated/0/MiniGameService.apk"
+shell pm uninstall --user 0 com.xiaomi.minigame
+shell pm path com.xiaomi.gamecenter.sdk.service
+shell cp -r "/product/priv-app/MiGameCenterSDKService/MiGameCenterSDKService.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MiGameCenterSDKService.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.gamecenter.sdk.service [v.8.8.8.15].apk"
+shell rm -R "/storage/emulated/0/MiGameCenterSDKService.apk"
+shell pm uninstall --user 0 com.xiaomi.gamecenter.sdk.service
+shell pm path com.xiaomi.aireco
+shell cp -r "/product/app/XiaoaiRecommendation/XiaoaiRecommendation.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/XiaoaiRecommendation.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.aireco [v.0.1.6].apk"
+shell rm -R "/storage/emulated/0/XiaoaiRecommendation.apk"
+shell pm uninstall --user 0 com.xiaomi.aireco
+shell pm path com.tencent.soter.soterserver
+shell cp -r "/product/app/SoterService/SoterService.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/SoterService.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.tencent.soter.soterserver [v.2.0.250811].apk"
+shell rm -R "/storage/emulated/0/SoterService.apk"
+shell pm uninstall --user 0 com.tencent.soter.soterserver
+shell pm path com.android.stk
+shell cp -r "/system/priv-app/Stk1/Stk1.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/Stk1.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.android.stk [v.16].apk"
+shell rm -R "/storage/emulated/0/Stk1.apk"
+shell pm path com.android.stk.overlay.miui
+shell cp -r "/product/overlay/MiuiStkResOverlay.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MiuiStkResOverlay.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.android.stk.overlay.miui [v.1.0.3].apk"
+shell rm -R "/storage/emulated/0/MiuiStkResOverlay.apk"
+shell pm uninstall --user 0 com.android.stk
+shell pm uninstall --user 0 com.android.stk.overlay.miui
+shell pm path org.ifaa.aidl.manager
+shell cp -r "/product/app/IFAAService/IFAAService.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/IFAAService.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\org.ifaa.aidl.manager [v.1.0.250812].apk"
+shell rm -R "/storage/emulated/0/IFAAService.apk"
+shell pm uninstall --user 0 org.ifaa.aidl.manager
+shell pm path com.xiaomi.market
+shell cp -r "/product/app/MIUISuperMarket/MIUISuperMarket.apk" "/storage/emulated/0"
+pull "/storage/emulated/0/MIUISuperMarket.apk" "C:\Users\Mint\Downloads\ADB_AppControl\downloads\Xiaomi 2602BRT18C\com.xiaomi.market [v.4.106.2].apk"
+shell rm -R "/storage/emulated/0/MIUISuperMarket.apk"
+shell pm uninstall --user 0 com.xiaomi.market

@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using MintADB.Wpf.Helpers;
 using MintADB.Wpf.Models;
+using MintADB.Wpf.Resources;
 using MintADB.Wpf.Services;
 
 namespace MintADB.Wpf;
@@ -30,6 +31,8 @@ public partial class MainWindow : Window
     private bool _suppressDeviceSelection;
     private string _filterText = "";
     private AppCategory? _filterCategory;
+    private bool _suppressLanguageEvent;
+    private readonly List<TextBox> _hintBoxes = [];
 
     public MainWindow()
     {
@@ -46,6 +49,9 @@ public partial class MainWindow : Window
         AppList.ItemsSource = _appViewSource.View;
 
         DeviceList.ItemsSource = _devices;
+        InitLanguageSelector();
+        LanguageManager.LanguageChanged += OnLanguageChanged;
+        Closed += (_, _) => LanguageManager.LanguageChanged -= OnLanguageChanged;
         InitCategoryFilter();
         InitInactiveAppList();
 
@@ -108,26 +114,137 @@ public partial class MainWindow : Window
         });
     }
 
-    private static void InitHintBox(TextBox box)
+    private void InitHintBox(TextBox box)
     {
+        if (!_hintBoxes.Contains(box))
+            _hintBoxes.Add(box);
+
         box.GotFocus += (_, _) =>
         {
-            if (box.Tag is string hint && box.Text == hint) box.Text = "";
+            var hint = ResolveHint(box);
+            if (hint.Length > 0 && box.Text == hint) box.Text = "";
         };
         box.LostFocus += (_, _) =>
         {
-            if (string.IsNullOrWhiteSpace(box.Text) && box.Tag is string hint) box.Text = hint;
+            if (string.IsNullOrWhiteSpace(box.Text))
+            {
+                var hint = ResolveHint(box);
+                if (hint.Length > 0) box.Text = hint;
+            }
         };
-        if (box.Tag is string t) box.Text = t;
+        ApplyHintText(box, force: true);
+    }
+
+    private static string ResolveHint(TextBox box)
+    {
+        // Tag có thể là string resource key đã resolve (DynamicResource gán string)
+        if (box.Tag is string s && s.Length > 0)
+            return s;
+        return "";
+    }
+
+    private static void ApplyHintText(TextBox box, bool force)
+    {
+        var hint = ResolveHint(box);
+        if (hint.Length == 0) return;
+        if (force || string.IsNullOrWhiteSpace(box.Text))
+            box.Text = hint;
     }
 
     private void InitCategoryFilter()
     {
-        CategoryFilter.Items.Add(new ComboItem(null, "Tất cả loại"));
+        var selected = CategoryFilter.SelectedItem as ComboItem;
+        CategoryFilter.Items.Clear();
+        CategoryFilter.Items.Add(new ComboItem(null, Loc.Get("AllCategories", "Tất cả loại")));
         foreach (AppCategory cat in Enum.GetValues<AppCategory>().OrderBy(c => c.SortOrder()))
             CategoryFilter.Items.Add(new ComboItem(cat, cat.Label()));
         CategoryFilter.DisplayMemberPath = nameof(ComboItem.Label);
-        CategoryFilter.SelectedIndex = 0;
+
+        if (selected is not null)
+        {
+            var match = CategoryFilter.Items.Cast<ComboItem>()
+                .FirstOrDefault(i => Equals(i.Category, selected.Category));
+            CategoryFilter.SelectedItem = match ?? CategoryFilter.Items[0];
+        }
+        else
+            CategoryFilter.SelectedIndex = 0;
+    }
+
+    private void InitLanguageSelector()
+    {
+        _suppressLanguageEvent = true;
+        try
+        {
+            var lang = LanguageManager.CurrentLanguage;
+            foreach (var obj in LanguageSelector.Items)
+            {
+                if (obj is ComboBoxItem item && item.Tag is string tag
+                    && string.Equals(tag, lang, StringComparison.OrdinalIgnoreCase))
+                {
+                    LanguageSelector.SelectedItem = item;
+                    break;
+                }
+            }
+        }
+        finally
+        {
+            _suppressLanguageEvent = false;
+        }
+    }
+
+    private void OnLanguageChanged(string lang)
+    {
+        if (!Dispatcher.CheckAccess())
+        {
+            Dispatcher.Invoke(() => OnLanguageChanged(lang));
+            return;
+        }
+
+        InitLanguageSelector();
+        InitCategoryFilter();
+        try { RebuildInactiveStateFilter(); } catch { /* panel chưa init */ }
+
+        // Nhãn sidebar / trạng thái gán từ code
+        var connected = _selectedSerial is not null
+                        && _devices.Any(d => d.Serial == _selectedSerial && d.IsOnline);
+        ConnectionLabel.Text = connected ? Loc.Get("Connected", Strings.Connected) : Loc.Get("Disconnected", Strings.Disconnected);
+        if (!connected)
+            DeviceStateText.Text = Loc.Get("Disconnected", Strings.Disconnected);
+
+        if (string.IsNullOrWhiteSpace(RomInfoText.Text)
+            || RomInfoText.Text is "Chưa quét" or "Not scanned" or "Not Scanned")
+            RomInfoText.Text = Loc.Get("NotScanned", Strings.NotScanned);
+
+        if (_apps.Count == 0)
+            AppScanStatus.Text = Loc.Get("NoDeviceHint", Strings.NoDeviceHint);
+
+        // Hint TextBox: Tag (DynamicResource) đã đổi → cập nhật Text nếu đang hiện hint
+        foreach (var box in _hintBoxes)
+        {
+            // Force re-read Tag from resource: re-set Tag via key if needed
+            // Tag binding DynamicResource already updated value
+            var hint = ResolveHint(box);
+            if (hint.Length == 0) continue;
+            // Nếu text rỗng hoặc text là hint ngôn ngữ cũ (không khớp hint mới) → gán hint mới
+            if (string.IsNullOrWhiteSpace(box.Text) || IsLikelyOldHint(box.Text, hint))
+                box.Text = hint;
+        }
+
+        RefreshAppView();
+        try { RefreshInactiveAppView(); } catch { /* ok */ }
+        try { RefreshToolAppView(); } catch { /* ok */ }
+    }
+
+    private static bool IsLikelyOldHint(string text, string newHint)
+    {
+        if (text == newHint) return false;
+        // Các hint placeholder thường kết thúc ... hoặc chứa từ khóa tìm
+        return text.Contains("...", StringComparison.Ordinal)
+               || text.Contains("Tìm", StringComparison.OrdinalIgnoreCase)
+               || text.Contains("Search", StringComparison.OrdinalIgnoreCase)
+               || text.Contains("Package", StringComparison.OrdinalIgnoreCase)
+               || text.Contains("vd:", StringComparison.OrdinalIgnoreCase)
+               || text.Contains("e.g.", StringComparison.OrdinalIgnoreCase);
     }
 
     private void AppendLog(string msg) => AppendLog(msg, LogClassifier.Classify(msg));
@@ -176,7 +293,7 @@ public partial class MainWindow : Window
     private void SetConnectionStatus(bool connected)
     {
         ConnectionDot.Fill = BrushFromHex(connected ? "#5DD68A" : "#636366");
-        ConnectionLabel.Text = connected ? "Đã kết nối" : "Chưa kết nối";
+        ConnectionLabel.Text = connected ? Strings.Connected : Strings.Disconnected;
         ConnectionLabel.Foreground = BrushFromHex(connected ? "#5DD68A" : "#AEAEB2");
     }
 
@@ -186,7 +303,7 @@ public partial class MainWindow : Window
         {
             DeviceModelText.Text = "—";
             DeviceSerialText.Text = "—";
-            DeviceStateText.Text = "Chưa kết nối";
+            DeviceStateText.Text = Strings.Disconnected;
             DeviceStateBadge.Background = BrushFromHex("#3A3A3C");
             DeviceStateText.Foreground = BrushFromHex("#AEAEB2");
             return;
@@ -225,11 +342,7 @@ public partial class MainWindow : Window
             if (device.State == "unauthorized")
             {
                 MessageBox.Show(
-                    "Thiết bị chưa ủy quyền ADB.\n\n"
-                    + "1. Rút/cắm lại cáp USB\n"
-                    + "2. Trên máy: Cài đặt → Tùy chọn nhà phát triển → bật USB Debugging\n"
-                    + "3. Chấp nhận popup «Cho phép gỡ lỗi USB» (tick Luôn cho phép)\n"
-                    + "4. Bấm ↻ làm mới danh sách",
+                    Strings.UnauthorizedMessage,
                     "MintADB", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return null;
             }
@@ -237,7 +350,7 @@ public partial class MainWindow : Window
             if (!device.IsOnline)
             {
                 MessageBox.Show(
-                    $"Thiết bị đang «{device.StateLabel}» — chờ trạng thái «Sẵn sàng» rồi thử lại.",
+                    $"Device is «{device.StateLabel}» — wait for «Ready» then try again.",
                     "MintADB", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return null;
             }
@@ -248,7 +361,7 @@ public partial class MainWindow : Window
         if (!string.IsNullOrEmpty(_selectedSerial))
             return _selectedSerial;
 
-        MessageBox.Show("Chưa chọn thiết bị ADB.", "MintADB", MessageBoxButton.OK, MessageBoxImage.Warning);
+        MessageBox.Show(Strings.NoDeviceSelected, "MintADB", MessageBoxButton.OK, MessageBoxImage.Warning);
         return null;
     }
 
@@ -339,7 +452,7 @@ public partial class MainWindow : Window
         if (!hasDevices && !string.IsNullOrWhiteSpace(emptyMessage))
             NoDeviceText.Text = emptyMessage;
         else if (!hasDevices)
-            NoDeviceText.Text = "Không có thiết bị — cắm USB và bật USB Debugging";
+            NoDeviceText.Text = Strings.NoDeviceHint;
         NoDeviceText.Visibility = hasDevices ? Visibility.Collapsed : Visibility.Visible;
     }
 
@@ -391,7 +504,7 @@ public partial class MainWindow : Window
                     DeviceList.SelectedItem = null;
                     _suppressDeviceSelection = false;
                     UpdateDevicePanel(null);
-                    RomInfoText.Text = "Chưa quét";
+                    RomInfoText.Text = Strings.NotScanned;
                     SetConnectionStatus(false);
                     SetDeviceHint(null);
                     UpdateDeviceListUi(false);
@@ -405,7 +518,7 @@ public partial class MainWindow : Window
                 {
                     SetConnectionStatus(false);
                     SetDeviceHint(
-                        "Thiết bị chưa sẵn sàng — chấp nhận popup «Cho phép gỡ lỗi USB» trên máy, rồi bấm ↻");
+                        Strings.DeviceNotReadyHint);
                 }
                 else
                     SetDeviceHint(null);
@@ -440,7 +553,7 @@ public partial class MainWindow : Window
         catch (Exception) when (silent) { }
         catch (Exception ex)
         {
-            AppendLog($"[Thiết bị] Lỗi: {ex.Message}");
+            AppendLog($"[Device] Error: {ex.Message}");
         }
         finally
         {
@@ -452,8 +565,8 @@ public partial class MainWindow : Window
     {
         _apps.Clear();
         _inactiveApps.Clear();
-        AppScanStatus.Text = "Kết nối thiết bị để quét toàn bộ app";
-        InactiveAppScanStatus.Text = "Quét để xem app đã tắt, gỡ hoặc ẩn";
+        AppScanStatus.Text = Strings.NoDeviceHint;
+        InactiveAppScanStatus.Text = Strings.Scanning;
         RefreshAppView();
         RefreshInactiveAppView();
     }
@@ -483,17 +596,17 @@ public partial class MainWindow : Window
         SetConnectionStatus(false);
         RomInfoText.Text = device.State switch
         {
-            "unauthorized" => "Chờ ủy quyền USB Debugging",
-            "offline" => "Thiết bị offline — thử cắm lại USB",
-            _ => "Chưa sẵn sàng",
+            "unauthorized" => "Waiting for USB Debugging authorization",
+            "offline" => "Device offline — try reconnecting USB",
+            _ => "Not ready",
         };
 
         SetDeviceHint(device.State switch
         {
             "unauthorized" =>
-                "Chưa ủy quyền: trên máy bật USB Debugging và chấp nhận popup «Cho phép gỡ lỗi USB»",
-            "offline" => "Offline: thử cáp USB khác, cổng khác, hoặc adb kill-server rồi ↻",
-            _ => $"Trạng thái «{device.StateLabel}» — chờ «Sẵn sàng»",
+                "Unauthorized: enable USB Debugging on device and accept the popup",
+            "offline" => "Offline: try different USB cable, port, or adb kill-server then ↻",
+            _ => $"Status «{device.StateLabel}» — wait for «Ready»",
         });
     }
 
@@ -512,8 +625,8 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            RomInfoText.Text = "Không đọc được ROM";
-            AppendLog($"[ROM] Lỗi: {ex.Message}");
+            RomInfoText.Text = "Cannot read ROM";
+            AppendLog($"[ROM] Error: {ex.Message}");
         }
 
         if (autoScanApps)
@@ -551,15 +664,15 @@ public partial class MainWindow : Window
         foreach (var app in visible)
             app.Selected = true;
         AppScanStatus.Text = visible.Count > 0
-            ? $"Đã chọn {visible.Count} app (theo bộ lọc hiện tại)"
-            : "Không có app nào trong bộ lọc";
+            ? $"Selected {visible.Count} apps (filtered)"
+            : "No apps in filter";
     }
 
     private void DeselectAllApps_Click(object sender, RoutedEventArgs e)
     {
         foreach (var app in _apps)
             app.Selected = false;
-        AppScanStatus.Text = "Đã tắt chọn tất cả app";
+        AppScanStatus.Text = "All apps deselected";
     }
 
     private async void ScanApps_Click(object sender, RoutedEventArgs e)
@@ -571,14 +684,14 @@ public partial class MainWindow : Window
         if (serial is null)
         {
             await Dispatcher.InvokeAsync(() =>
-                AppScanStatus.Text = "Chưa chọn thiết bị — chọn máy ở sidebar trước");
+                AppScanStatus.Text = "No device selected — select device first");
             return;
         }
 
         if (_scanning) return;
         _scanning = true;
         await Dispatcher.InvokeAsync(() =>
-            AppScanStatus.Text = auto ? "Đang quét toàn bộ app..." : "Đang quét app trên máy...");
+            AppScanStatus.Text = auto ? "Scanning all apps..." : "Scanning apps on device...");
         EnterBusy();
         try
         {
@@ -603,15 +716,15 @@ public partial class MainWindow : Window
                 .Select(c => $"{c.Label()} {counts.GetValueOrDefault(c)}"));
 
             await Dispatcher.InvokeAsync(() =>
-                AppScanStatus.Text = $"Quét xong: {scanned.Count} app — {summary}");
+                AppScanStatus.Text = $"Scan complete: {scanned.Count} apps — {summary}");
 
-            AppendLog($"[Quét app] Tổng {scanned.Count} | Play Store {counts.GetValueOrDefault(AppCategory.PlayStore)} | User {counts.GetValueOrDefault(AppCategory.UserInstalled)} | Rác ROM {counts.GetValueOrDefault(AppCategory.RomBloat)} | Hệ thống {counts.GetValueOrDefault(AppCategory.System)}");
+            AppendLog($"[Scan] Total {scanned.Count} | Play Store {counts.GetValueOrDefault(AppCategory.PlayStore)} | User {counts.GetValueOrDefault(AppCategory.UserInstalled)} | ROM Bloat {counts.GetValueOrDefault(AppCategory.RomBloat)} | System {counts.GetValueOrDefault(AppCategory.System)}");
         }
         catch (Exception ex)
         {
             await Dispatcher.InvokeAsync(() =>
-                AppScanStatus.Text = $"Lỗi quét app: {ex.Message}");
-            AppendLog($"[Quét app] Lỗi: {ex.Message}");
+                AppScanStatus.Text = $"Scan error: {ex.Message}");
+            AppendLog($"[Scan] Error: {ex.Message}");
         }
         finally
         {
@@ -639,7 +752,7 @@ public partial class MainWindow : Window
         var apps = GetSelectedApps().ToList();
         if (apps.Count == 0)
         {
-            MessageBox.Show("Chọn ít nhất 1 app.", "MintADB");
+            MessageBox.Show(Strings.SelectAtLeastOneApp, "MintADB");
             return;
         }
 
@@ -663,7 +776,7 @@ public partial class MainWindow : Window
         var apps = GetSelectedApps().ToList();
         if (apps.Count == 0)
         {
-            MessageBox.Show("Chọn ít nhất 1 app.", "MintADB");
+            MessageBox.Show(Strings.SelectAtLeastOneApp, "MintADB");
             return;
         }
 
@@ -682,23 +795,23 @@ public partial class MainWindow : Window
         var apps = GetSelectedApps().ToList();
         if (apps.Count == 0)
         {
-            MessageBox.Show("Chọn ít nhất 1 app.", "MintADB");
+            MessageBox.Show(Strings.SelectAtLeastOneApp, "MintADB");
             return;
         }
 
         if (OptMiuiOpt.IsChecked == true)
         {
             var confirm = MessageBox.Show(
-                "Tắt MIUI Optimization sẽ thay đổi hành vi hệ thống.\nCần reboot sau khi chạy.\nTiếp tục?",
-                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                "Disabling MIUI Optimization will change system behavior.\nReboot required after.\nContinue?",
+                Strings.Confirm, MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (confirm != MessageBoxResult.Yes) return;
         }
 
         if (OptRegion.IsChecked == true)
         {
             var confirm = MessageBox.Show(
-                "Đổi region CN → Global sẽ thay đổi-region hệ thống.\nCần reboot sau khi chạy.\nTiếp tục?",
-                "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                "Changing region CN → Global will change system region.\nReboot required after.\nContinue?",
+                Strings.Confirm, MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (confirm != MessageBoxResult.Yes) return;
         }
 
@@ -714,7 +827,7 @@ public partial class MainWindow : Window
                 OptRegion.IsChecked == true,
                 OptAnalytics.IsChecked == true,
                 AppendLog);
-            MessageBox.Show("Tối ưu hoàn tất! Xem log để biết chi tiết.", "MintADB");
+            MessageBox.Show("Optimization complete! Check log for details.", "MintADB");
         });
     }
 
@@ -725,13 +838,13 @@ public partial class MainWindow : Window
         var apps = GetSelectedApps().ToList();
         if (apps.Count == 0)
         {
-            MessageBox.Show("Chọn ít nhất 1 app để backup.", "MintADB");
+            MessageBox.Show("Select at least 1 app to backup.", "MintADB");
             return;
         }
 
         var dlg = new Microsoft.Win32.SaveFileDialog
         {
-            Title = "Lưu danh sách app",
+            Title = "Save app list",
             Filter = "Text file (*.txt)|*.txt|CSV (*.csv)|*.csv",
             FileName = $"app_backup_{DateTime.Now:yyyyMMdd_HHmmss}.txt",
         };
@@ -742,8 +855,8 @@ public partial class MainWindow : Window
         {
             var lines = apps.Select(a => $"{a.Package}\t{a.Name}");
             await File.WriteAllLinesAsync(dlg.FileName, lines);
-            AppendLog($"[Backup] Đã lưu {apps.Count} app vào {dlg.FileName}");
-            MessageBox.Show($"Đã lưu danh sách {apps.Count} app:\n{dlg.FileName}", "Backup");
+            AppendLog($"[Backup] Saved {apps.Count} apps to {dlg.FileName}");
+            MessageBox.Show($"Saved {apps.Count} apps:\n{dlg.FileName}", "Backup");
         }
         catch (Exception ex)
         {
@@ -757,7 +870,7 @@ public partial class MainWindow : Window
     {
         var dlg = new Microsoft.Win32.OpenFileDialog
         {
-            Title = "Chọn file backup",
+            Title = "Select backup file",
             Filter = "Text file (*.txt)|*.txt|CSV (*.csv)|*.csv",
         };
 
@@ -774,7 +887,7 @@ public partial class MainWindow : Window
 
             if (packages.Count == 0)
             {
-                MessageBox.Show("File không có package hợp lệ.", "MintADB");
+                MessageBox.Show("File has no valid packages.", "MintADB");
                 return;
             }
 
@@ -786,8 +899,8 @@ public partial class MainWindow : Window
                 if (app.Selected) count++;
             }
 
-            AppendLog($"[Restore] Đã chọn {count}/{packages.Count} app từ file backup");
-            MessageBox.Show($"Đã chọn {count} app từ file backup.", "Restore");
+            AppendLog($"[Restore] Selected {count}/{packages.Count} apps from backup file");
+            MessageBox.Show($"Selected {count} apps from backup file.", "Restore");
         }
         catch (Exception ex)
         {
@@ -795,46 +908,79 @@ public partial class MainWindow : Window
         }
     }
 
-    // ── Debloat Safe Mode ──
+    // ── Debloat Safe Mode (script Hyper.txt) ──
+
+    private HyperDebloatService? _hyperDebloat;
+    private HyperDebloatService HyperDebloat => _hyperDebloat ??= new HyperDebloatService(_adb, Tools);
 
     private async void DebloatSafe_Click(object sender, RoutedEventArgs e)
     {
         var serial = RequireDevice();
         if (serial is null) return;
 
-        var bloat = _apps.Where(a => a.Category == AppCategory.RomBloat).ToList();
-        if (bloat.Count == 0)
+        var pkgCount = HyperDebloatService.CountUniquePackages();
+        if (pkgCount == 0)
         {
-            MessageBox.Show("Không tìm thấy app rác ROM.\nQuét app trước.", "MintADB");
+            MessageBox.Show(Loc.Get("DebloatHyperEmpty"), "MintADB", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
         var confirm = MessageBox.Show(
-            $"Debloat an toàn: gỡ {bloat.Count} app rác ROM?\n\n"
-            + "• Chỉ gỡ app được đánh dấu là \"Rác ROM\"\n"
-            + "• Không gỡ app hệ thống quan trọng\n"
-            + "• Có thể khôi phục sau",
-            "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            Loc.Get("DebloatHyperTitle") + "\n\n" + Loc.Format("DebloatHyperConfirm", pkgCount),
+            Loc.Get("Confirm", Strings.Confirm),
+            MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
         if (confirm != MessageBoxResult.Yes) return;
 
         ClearLog();
         await RunWithBusyAsync(async () =>
         {
-            foreach (var app in bloat)
+            try
             {
-                AppendLog($"[shell] pm uninstall --user 0 {app.Package}");
-                var r = await Tools.UninstallViaShellAsync(serial, app.Package, fallbackDisable: true);
-                AppendLog(r.Outcome switch
-                {
-                    PackageRemoveOutcome.Uninstalled => $"[OK] Đã gỡ {app.Name} (shell)",
-                    PackageRemoveOutcome.Disabled => $"[WARN] {app.Name}: disable",
-                    PackageRemoveOutcome.Hidden => $"[WARN] {app.Name}: ẩn",
-                    _ => $"[FAIL] {app.Name}: {r.Detail}",
-                });
+                ShowOptProgress(true, Loc.Get("DebloatHyperRunning"), 0, 1);
+                var progress = new Progress<(int Current, int Total, string Status)>(p =>
+                    ShowOptProgress(true, p.Status, p.Current, p.Total));
+
+                var (ok, fail, skip) = await HyperDebloat.RunAsync(
+                    serial, AppendLog, backupApk: true, progress: progress);
+
+                ShowOptProgress(true, Loc.Get("DebloatHyperDoneStatus"), 1, 1);
+                MessageBox.Show(Loc.Format("DebloatHyperDone", ok, skip, fail), "MintADB");
             }
-            AppendLog($"[Debloat] Hoàn tất: gỡ {bloat.Count} app rác ROM qua shell");
+            catch (Exception ex)
+            {
+                AppendLog($"[FAIL] Debloat Hyper: {ex.Message}");
+                MessageBox.Show(ex.Message, "MintADB", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                ShowOptProgress(false);
+            }
         });
+    }
+
+    private void ShowOptProgress(bool visible, string? text = null, int current = 0, int total = 0)
+    {
+        void Apply()
+        {
+            OptProgressBorder.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            if (!visible) return;
+
+            if (!string.IsNullOrWhiteSpace(text))
+                OptProgressText.Text = text;
+
+            var max = Math.Max(total, 1);
+            OptProgressBar.Minimum = 0;
+            OptProgressBar.Maximum = max;
+            OptProgressBar.Value = Math.Clamp(current, 0, max);
+            OptProgressCount.Text = $"{Math.Clamp(current, 0, max)}/{max}";
+            OptProgressBar.IsIndeterminate = total <= 0;
+        }
+
+        if (Dispatcher.CheckAccess())
+            Apply();
+        else
+            Dispatcher.Invoke(Apply);
     }
 
     // ── Undo ──
@@ -887,12 +1033,12 @@ public partial class MainWindow : Window
                 if (last.Action == "remove")
                 {
                     var r = await Tools.EnablePackageAsync(serial, pkg);
-                    AppendLog(r.Ok ? $"[OK] Khôi phục {pkg}" : $"[FAIL] {pkg}: {r.Combined}");
+                    AppendLog(r.Ok ? $"[OK] Restored {pkg}" : $"[FAIL] {pkg}: {r.Combined}");
                 }
                 else if (last.Action == "disable")
                 {
                     var r = await Tools.EnablePackageAsync(serial, pkg);
-                    AppendLog(r.Ok ? $"[OK] Bật lại {pkg}" : $"[FAIL] {pkg}: {r.Combined}");
+                    AppendLog(r.Ok ? $"[OK] Re-enabled {pkg}" : $"[FAIL] {pkg}: {r.Combined}");
                 }
             }
         });
@@ -909,11 +1055,18 @@ public partial class MainWindow : Window
 
     private void SetActionButtonsEnabled(bool enabled)
     {
-        // Chặn double-click bằng IsHitTestVisible — không IsEnabled=false (tránh nháy nền trắng mọi tab)
+        // Block double-click via IsHitTestVisible — not IsEnabled=false (avoids white flash on all tabs)
         PanelOptimize.IsHitTestVisible = enabled;
         PanelTools.IsHitTestVisible = enabled;
         NavOptimize.IsHitTestVisible = enabled;
         NavTools.IsHitTestVisible = enabled;
+    }
+
+    private void LanguageSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_suppressLanguageEvent) return;
+        if (LanguageSelector.SelectedItem is ComboBoxItem item && item.Tag is string lang)
+            LanguageManager.SetLanguage(lang);
     }
 
     private sealed record ComboItem(AppCategory? Category, string Label);

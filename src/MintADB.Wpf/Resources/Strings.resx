@@ -1,0 +1,1149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Navigation & General -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="NavOptimize" xml:space="preserve">
+    <value>Tối ưu</value>
+  </data>
+  <data name="NavTools" xml:space="preserve">
+    <value>Công cụ</value>
+  </data>
+  <data name="Device" xml:space="preserve">
+    <value>Thiết bị</value>
+  </data>
+  <data name="RefreshDeviceList" xml:space="preserve">
+    <value>Làm mới danh sách thiết bị</value>
+  </data>
+  <data name="DeviceInfo" xml:space="preserve">
+    <value>Thông tin thiết bị</value>
+  </data>
+  <data name="Connected" xml:space="preserve">
+    <value>Đã kết nối</value>
+  </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>Chưa kết nối</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="Serial" xml:space="preserve">
+    <value>Serial</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Trạng thái</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Đóng</value>
+  </data>
+  <data name="Minimize" xml:space="preserve">
+    <value>Thu nhỏ</value>
+  </data>
+  <data name="Maximize" xml:space="preserve">
+    <value>Phóng to</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Optimize Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="XiaomiChina" xml:space="preserve">
+    <value>Xiaomi China</value>
+  </data>
+  <data name="OptimizeSubtitle" xml:space="preserve">
+    <value>Tối ưu ROM nội địa — trải nghiệm Global-like</value>
+  </data>
+  <data name="ROM" xml:space="preserve">
+    <value>ROM</value>
+  </data>
+  <data name="Scan" xml:space="preserve">
+    <value>Quét</value>
+  </data>
+  <data name="SystemOptions" xml:space="preserve">
+    <value>Tùy chọn hệ thống</value>
+  </data>
+  <data name="DisableAndroidRestrictions" xml:space="preserve">
+    <value>Tắt hạn chế Android</value>
+  </data>
+  <data name="UnlockXiaomiChinaControl" xml:space="preserve">
+    <value>Mở khóa kiểm soát Xiaomi China</value>
+  </data>
+  <data name="AutoGrantPermissions" xml:space="preserve">
+    <value>Cấp quyền tự động</value>
+  </data>
+  <data name="DisableMIUIOptimization" xml:space="preserve">
+    <value>Tắt MIUI Optimization (cần reboot)</value>
+  </data>
+  <data name="ChangeRegionCNtoGlobal" xml:space="preserve">
+    <value>Đổi region CN → Global (cần reboot)</value>
+  </data>
+  <data name="DisableMIUIAnalytics" xml:space="preserve">
+    <value>Tắt MIUI analytics &amp; theo dõi</value>
+  </data>
+  <data name="Apps" xml:space="preserve">
+    <value>Ứng dụng</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Đang cài</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Đã tắt / gỡ</value>
+  </data>
+  <data name="PlayStore" xml:space="preserve">
+    <value>Play Store</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="ROMBloat" xml:space="preserve">
+    <value>Rác ROM</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>Hệ thống</value>
+  </data>
+  <data name="ScanApps" xml:space="preserve">
+    <value>Quét app</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Chọn cả</value>
+  </data>
+  <data name="DeselectAll" xml:space="preserve">
+    <value>Tắt cả</value>
+  </data>
+  <data name="SearchByNameOrPackage" xml:space="preserve">
+    <value>Tìm tên hoặc package...</value>
+  </data>
+  <data name="RemoveDisable" xml:space="preserve">
+    <value>Gỡ/tắt</value>
+  </data>
+  <data name="Restore" xml:space="preserve">
+    <value>Khôi phục</value>
+  </data>
+  <data name="UninstallDisableApps" xml:space="preserve">
+    <value>Gỡ &amp; tắt app</value>
+  </data>
+  <data name="UninstallDisableAppsDesc" xml:space="preserve">
+    <value>Chọn app trong danh sách hoặc gõ package tùy chỉnh. App hệ thống gỡ bằng shell: pm uninstall --user 0. App lõi không gỡ được sẽ tự disable/ẩn.</value>
+  </data>
+  <data name="UninstallDisable" xml:space="preserve">
+    <value>Gỡ / tắt (đã chọn)</value>
+  </data>
+  <data name="UninstallSystemShell" xml:space="preserve">
+    <value>Gỡ hệ thống (shell)</value>
+  </data>
+  <data name="DisableApps" xml:space="preserve">
+    <value>Tắt app (đã chọn)</value>
+  </data>
+  <data name="UninstallAllBloat" xml:space="preserve">
+    <value>Gỡ tất cả rác ROM</value>
+  </data>
+  <data name="UninstallFromFile" xml:space="preserve">
+    <value>Gỡ app theo file txt</value>
+  </data>
+  <data name="RestoreApps" xml:space="preserve">
+    <value>Khôi phục app</value>
+  </data>
+  <data name="RestoreAppsDesc" xml:space="preserve">
+    <value>Bật lại app đã tắt/ẩn hoặc cài lại app đã gỡ khỏi user 0.</value>
+  </data>
+  <data name="RestoreSelected" xml:space="preserve">
+    <value>Khôi phục (đã chọn)</value>
+  </data>
+  <data name="EnableSelected" xml:space="preserve">
+    <value>Bật lại (đã chọn)</value>
+  </data>
+  <data name="QuickActions" xml:space="preserve">
+    <value>Thao tác nhanh</value>
+  </data>
+  <data name="QuickActionsDesc" xml:space="preserve">
+    <value>Chọn app trong danh sách → chạy thao tác.</value>
+  </data>
+  <data name="FixNotifications" xml:space="preserve">
+    <value>Fix thông báo</value>
+  </data>
+  <data name="GrantPermissions" xml:space="preserve">
+    <value>Cấp quyền</value>
+  </data>
+  <data name="FullOptimize" xml:space="preserve">
+    <value>Full Optimize</value>
+  </data>
+  <data name="BackupAppList" xml:space="preserve">
+    <value>Backup danh sách</value>
+  </data>
+  <data name="RestoreFromBackup" xml:space="preserve">
+    <value>Khôi phục từ file</value>
+  </data>
+  <data name="SafeDebloat" xml:space="preserve">
+    <value>Debloat an toàn</value>
+  </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Hoàn tác</value>
+  </data>
+  <data name="UndoHistory" xml:space="preserve">
+    <value>Hoàn tác gần nhất</value>
+  </data>
+  <data name="ClearHistory" xml:space="preserve">
+    <value>Xóa lịch sử</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Tools Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="ADBTools" xml:space="preserve">
+    <value>Công cụ ADB</value>
+  </data>
+  <data name="ADBToolsSubtitle" xml:space="preserve">
+    <value>Đầy đủ lệnh ADB — gỡ/tắt app ở tab Tối ưu</value>
+  </data>
+  <data name="RiskLegend" xml:space="preserve">
+    <value>An toàn · Thông tin · Cảnh báo · Nguy hiểm</value>
+  </data>
+  <data name="Safe" xml:space="preserve">
+    <value>An toàn</value>
+  </data>
+  <data name="Info" xml:space="preserve">
+    <value>Thông tin</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Cảnh báo</value>
+  </data>
+  <data name="Dangerous" xml:space="preserve">
+    <value>Nguy hiểm</value>
+  </data>
+  <data name="Basic" xml:space="preserve">
+    <value>Cơ bản</value>
+  </data>
+  <data name="ToolsApps" xml:space="preserve">
+    <value>Ứng dụng</value>
+  </data>
+  <data name="Scrcpy" xml:space="preserve">
+    <value>Scrcpy</value>
+  </data>
+  <data name="Network" xml:space="preserve">
+    <value>Mạng</value>
+  </data>
+  <data name="SystemInfo" xml:space="preserve">
+    <value>Hệ thống</value>
+  </data>
+  <data name="Tweaks" xml:space="preserve">
+    <value>Tinh chỉnh</value>
+  </data>
+  <data name="Advanced" xml:space="preserve">
+    <value>Nâng cao</value>
+  </data>
+  <data name="Fastboot" xml:space="preserve">
+    <value>Fastboot</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Basic Tools -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="ADBFastbootDriver" xml:space="preserve">
+    <value>ADB / Fastboot &amp; Driver USB (offline)</value>
+  </data>
+  <data name="DeployTools" xml:space="preserve">
+    <value>Triển khai tools</value>
+  </data>
+  <data name="InstallUSBDriver" xml:space="preserve">
+    <value>Cài driver USB</value>
+  </data>
+  <data name="RestartADB" xml:space="preserve">
+    <value>Restart ADB</value>
+  </data>
+  <data name="DriverFolder" xml:space="preserve">
+    <value>Thư mục driver</value>
+  </data>
+  <data name="DeviceManager" xml:space="preserve">
+    <value>Device Manager</value>
+  </data>
+  <data name="CheckVersion" xml:space="preserve">
+    <value>Kiểm tra version</value>
+  </data>
+  <data name="Reboot" xml:space="preserve">
+    <value>Reboot</value>
+  </data>
+  <data name="Recovery" xml:space="preserve">
+    <value>Recovery</value>
+  </data>
+  <data name="Bootloader" xml:space="preserve">
+    <value>Bootloader</value>
+  </data>
+  <data name="Sideload" xml:space="preserve">
+    <value>Sideload</value>
+  </data>
+  <data name="EDL" xml:space="preserve">
+    <value>EDL</value>
+  </data>
+  <data name="APKStore" xml:space="preserve">
+    <value>Kho APK</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Làm mới</value>
+  </data>
+  <data name="PushAll" xml:space="preserve">
+    <value>Đẩy tất cả</value>
+  </data>
+  <data name="InstallAll" xml:space="preserve">
+    <value>Cài tất cả</value>
+  </data>
+  <data name="Push" xml:space="preserve">
+    <value>Push</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Cài</value>
+  </data>
+  <data name="InstallAPK" xml:space="preserve">
+    <value>Cài APK</value>
+  </data>
+  <data name="BackupAPK" xml:space="preserve">
+    <value>Backup APK</value>
+  </data>
+  <data name="OpenApp" xml:space="preserve">
+    <value>Mở app</value>
+  </data>
+  <data name="ClearData1App" xml:space="preserve">
+    <value>Xóa data (1 app)</value>
+  </data>
+  <data name="ForceStop1App" xml:space="preserve">
+    <value>Force stop (1 app)</value>
+  </data>
+  <data name="ClearDataMultiple" xml:space="preserve">
+    <value>Xóa data (nhiều)</value>
+  </data>
+  <data name="PushPullFileExplorer" xml:space="preserve">
+    <value>Push / Pull &amp; File Explorer</value>
+  </data>
+  <data name="PushDesc" xml:space="preserve">
+    <value>Push file lên máy, Pull file về máy, hoặc liệt kê thư mục.</value>
+  </data>
+  <data name="ChooseFile" xml:space="preserve">
+    <value>Chọn file</value>
+  </data>
+  <data name="LocalFile" xml:space="preserve">
+    <value>File local (vd: C:\file.apk)</value>
+  </data>
+  <data name="RemotePath" xml:space="preserve">
+    <value>/sdcard/Download/</value>
+  </data>
+  <data name="List" xml:space="preserve">
+    <value>Liệt kê</value>
+  </data>
+  <data name="PullSavedTo" xml:space="preserve">
+    <value>Pull lưu vào Desktop\MintADB\Pulls\</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Tools Apps Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="UserAppsPlayStore" xml:space="preserve">
+    <value>App user &amp; Play Store</value>
+  </data>
+  <data name="UserAppsPlayStoreDesc" xml:space="preserve">
+    <value>Chọn app bên trái, tick quyền bên phải — mỗi quyền có mô tả và lệnh ADB</value>
+  </data>
+  <data name="Permissions" xml:space="preserve">
+    <value>Quyền chi tiết</value>
+  </data>
+  <data name="PermissionsSelected" xml:space="preserve">
+    <value>quyền đã chọn</value>
+  </data>
+  <data name="QuickPresets" xml:space="preserve">
+    <value>Bộ nhanh</value>
+  </data>
+  <data name="Chat" xml:space="preserve">
+    <value>Chat</value>
+  </data>
+  <data name="Battery" xml:space="preserve">
+    <value>Chống pin</value>
+  </data>
+  <data name="MILock" xml:space="preserve">
+    <value>MIUI Lock</value>
+  </data>
+  <data name="Shizuku" xml:space="preserve">
+    <value>Shizuku</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Thao tác</value>
+  </data>
+  <data name="CheckPermissions" xml:space="preserve">
+    <value>Kiểm tra quyền</value>
+  </data>
+  <data name="OpenAppSettings" xml:space="preserve">
+    <value>Mở cài đặt ứng dụng</value>
+  </data>
+  <data name="GrantSelectedPermissions" xml:space="preserve">
+    <value>Cấp quyền đã chọn</value>
+  </data>
+  <data name="OptimizeNotifications" xml:space="preserve">
+    <value>Tối ưu thông báo</value>
+  </data>
+  <data name="DisableBatteryOptimization" xml:space="preserve">
+    <value>Tắt tối ưu pin</value>
+  </data>
+  <data name="ApplyAll" xml:space="preserve">
+    <value>Áp dụng tất cả</value>
+  </data>
+  <data name="SelectAllPermissions" xml:space="preserve">
+    <value>Chọn tất cả quyền</value>
+  </data>
+  <data name="DeselectAllPermissions" xml:space="preserve">
+    <value>Bỏ chọn tất cả</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Scrcpy Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="ScrcpyDesc" xml:space="preserve">
+    <value>Điều khiển màn hình mượt — H.264, tối đa 120 FPS</value>
+  </data>
+  <data name="KeepScreenOn" xml:space="preserve">
+    <value>Giữ màn hình sáng</value>
+  </data>
+  <data name="LaunchScrcpy" xml:space="preserve">
+    <value>Mở Scrcpy</value>
+  </data>
+  <data name="Screenshot" xml:space="preserve">
+    <value>Chụp ảnh</value>
+  </data>
+  <data name="ScreenshotDesc" xml:space="preserve">
+    <value>Chụp ảnh màn hình thiết bị</value>
+  </data>
+  <data name="ChooseSaveFolder" xml:space="preserve">
+    <value>Chọn thư mục</value>
+  </data>
+  <data name="SaveFolder" xml:space="preserve">
+    <value>Thư mục lưu ảnh (vd: C:\Pictures\MintADB)</value>
+  </data>
+  <data name="TakeScreenshot" xml:space="preserve">
+    <value>Chụp màn hình</value>
+  </data>
+  <data name="ScreenRecord" xml:space="preserve">
+    <value>Quay màn hình</value>
+  </data>
+  <data name="ScreenRecordDesc" xml:space="preserve">
+    <value>Quay video màn hình thiết bị</value>
+  </data>
+  <data name="DurationSeconds" xml:space="preserve">
+    <value>Thời lượng (giây)</value>
+  </data>
+  <data name="RecordScreen" xml:space="preserve">
+    <value>Quay màn hình</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Network Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="NetworkStatus" xml:space="preserve">
+    <value>Trạng thái mạng</value>
+  </data>
+  <data name="ReadNetworkStatus" xml:space="preserve">
+    <value>Đọc trạng thái mạng</value>
+  </data>
+  <data name="WiFi" xml:space="preserve">
+    <value>WiFi</value>
+  </data>
+  <data name="WiFiDesc" xml:space="preserve">
+    <value>Bật/tắt WiFi, quét mạng, kết nối nhanh.</value>
+  </data>
+  <data name="SSID" xml:space="preserve">
+    <value>SSID (tên WiFi)</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Mật khẩu WiFi</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Kết nối</value>
+  </data>
+  <data name="DisconnectWiFi" xml:space="preserve">
+    <value>Ngắt WiFi</value>
+  </data>
+  <data name="CheckWiFi" xml:space="preserve">
+    <value>Kiểm tra WiFi</value>
+  </data>
+  <data name="Bluetooth" xml:space="preserve">
+    <value>Bluetooth</value>
+  </data>
+  <data name="BluetoothDesc" xml:space="preserve">
+    <value>Bật/tắt Bluetooth, quét thiết bị.</value>
+  </data>
+  <data name="ScanBluetooth" xml:space="preserve">
+    <value>Quét Bluetooth</value>
+  </data>
+  <data name="AirplaneMode" xml:space="preserve">
+    <value>Chế độ máy bay</value>
+  </data>
+  <data name="AirplaneModeDesc" xml:space="preserve">
+    <value>Bật/tắt chế độ máy bay — tắt tất cả kết nối.</value>
+  </data>
+  <data name="Hotspot" xml:space="preserve">
+    <value>Hotspot</value>
+  </data>
+  <data name="HotspotDesc" xml:space="preserve">
+    <value>Bật/tắt điểm phát WiFi.</value>
+  </data>
+  <data name="MobileNetwork" xml:space="preserve">
+    <value>Mạng di động</value>
+  </data>
+  <data name="MobileNetworkDesc" xml:space="preserve">
+    <value>Chọn chế độ 3G / LTE / 5G — áp dụng qua preferred_network_mode</value>
+  </data>
+  <data name="Locale" xml:space="preserve">
+    <value>Ngôn ngữ &amp; vùng (Locale)</value>
+  </data>
+  <data name="LocaleDesc" xml:space="preserve">
+    <value>Đặt locale hệ thống — ví dụ vi-VN, en-US, zh-CN (có thể cần reboot)</value>
+  </data>
+  <data name="Custom" xml:space="preserve">
+    <value>Tùy chỉnh</value>
+  </data>
+  <data name="ApplyLocale" xml:space="preserve">
+    <value>Áp dụng locale</value>
+  </data>
+  <data name="CheckLocale" xml:space="preserve">
+    <value>Kiểm tra</value>
+  </data>
+  <data name="BlockMIUIAds" xml:space="preserve">
+    <value>Chặn MIUI</value>
+  </data>
+  <data name="BlockGoogleAds" xml:space="preserve">
+    <value>Chặn Google</value>
+  </data>
+  <data name="BlockAllAds" xml:space="preserve">
+    <value>Chặn tất cả</value>
+  </data>
+  <data name="RestoreMIUIAds" xml:space="preserve">
+    <value>Khôi phục MIUI</value>
+  </data>
+  <data name="RestoreGoogleAds" xml:space="preserve">
+    <value>Khôi phục Google</value>
+  </data>
+  <data name="CheckAdBlockStatus" xml:space="preserve">
+    <value>Kiểm tra</value>
+  </data>
+  <data name="AdBlockDNS" xml:space="preserve">
+    <value>DNS chặn quảng cáo</value>
+  </data>
+  <data name="AdBlockDNSDesc" xml:space="preserve">
+    <value>Private DNS (Android 9+) — chặn quảng cáo &amp; tracker qua DNS</value>
+  </data>
+  <data name="EnableAdBlock" xml:space="preserve">
+    <value>Bật chặn quảng cáo</value>
+  </data>
+  <data name="DefaultDNS" xml:space="preserve">
+    <value>DNS mặc định</value>
+  </data>
+  <data name="CheckDNS" xml:space="preserve">
+    <value>Kiểm tra DNS</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- System Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="BatteryInfo" xml:space="preserve">
+    <value>Thông tin pin</value>
+  </data>
+  <data name="ReadBatteryInfo" xml:space="preserve">
+    <value>Đọc thông tin pin</value>
+  </data>
+  <data name="DisplayInfo" xml:space="preserve">
+    <value>Thông tin màn hình</value>
+  </data>
+  <data name="ReadDisplayInfo" xml:space="preserve">
+    <value>Đọc thông tin màn hình</value>
+  </data>
+  <data name="LockHz" xml:space="preserve">
+    <value>Lock Hz &amp; UI mượt</value>
+  </data>
+  <data name="LockHzDesc" xml:space="preserve">
+    <value>Khóa min = max = peak để UI cuộn mượt, giảm giật khi chuyển app. Chỉ cần ADB — Shizuku giúp khi MIUI chặn.</value>
+  </data>
+  <data name="LockAt" xml:space="preserve">
+    <value>Khóa ở</value>
+  </data>
+  <data name="ReadHz" xml:space="preserve">
+    <value>Đọc Hz</value>
+  </data>
+  <data name="ApplyHzLock" xml:space="preserve">
+    <value>Khóa Hz</value>
+  </data>
+  <data name="SmoothUI" xml:space="preserve">
+    <value>UI mượt</value>
+  </data>
+  <data name="ApplyHzLockFull" xml:space="preserve">
+    <value>Khóa + UI</value>
+  </data>
+  <data name="RestoreAdaptiveHz" xml:space="preserve">
+    <value>Khôi phục adaptive</value>
+  </data>
+  <data name="DeviceInfoTitle" xml:space="preserve">
+    <value>Thông tin máy</value>
+  </data>
+  <data name="DeviceInfoDesc" xml:space="preserve">
+    <value>Thông tin chi tiết về thiết bị</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Tweaks Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="DPI" xml:space="preserve">
+    <value>Điều chỉnh DPI</value>
+  </data>
+  <data name="DPIPresets" xml:space="preserve">
+    <value>Preset DPI</value>
+  </data>
+  <data name="SetDPI" xml:space="preserve">
+    <value>Đặt DPI</value>
+  </data>
+  <data name="ResetDPI" xml:space="preserve">
+    <value>Reset DPI</value>
+  </data>
+  <data name="AnimationSpeed" xml:space="preserve">
+    <value>Tốc độ animation</value>
+  </data>
+  <data name="SetAnimation" xml:space="preserve">
+    <value>Đặt animation</value>
+  </data>
+  <data name="NavigationMode" xml:space="preserve">
+    <value>Chế độ điều hướng</value>
+  </data>
+  <data name="GestureNav" xml:space="preserve">
+    <value>Điều hướng cử chỉ</value>
+  </data>
+  <data name="ThreeButtonNav" xml:space="preserve">
+    <value>Điều hướng 3 nút</value>
+  </data>
+  <data name="StatusBar" xml:space="preserve">
+    <value>Tùy chỉnh thanh trạng thái</value>
+  </data>
+  <data name="StatusBarDesc" xml:space="preserve">
+    <value>Tùy chỉnh hiển thị thanh trạng thái</value>
+  </data>
+  <data name="BatteryPercentage" xml:space="preserve">
+    <value>Hiển thị phần trăm pin</value>
+  </data>
+  <data name="DeveloperOptions" xml:space="preserve">
+    <value>Tùy chọn Nhà phát triển</value>
+  </data>
+  <data name="StayAwake" xml:space="preserve">
+    <value>Giữ màn hình sáng khi sạc</value>
+  </data>
+  <data name="ShowTaps" xml:space="preserve">
+    <value>Hiển thị thao tác chạm</value>
+  </data>
+  <data name="PointerLocation" xml:space="preserve">
+    <value>Hiển thị vị trí con trỏ</value>
+  </data>
+  <data name="FontSize" xml:space="preserve">
+    <value>Kích thước font</value>
+  </data>
+  <data name="ScreenTimeout" xml:space="preserve">
+    <value>Thời gian tắt màn hình</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Advanced Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="DeviceSpoof" xml:space="preserve">
+    <value>Giả mạo thiết bị</value>
+  </data>
+  <data name="DeviceSpoofDesc" xml:space="preserve">
+    <value>Fake ro.product.* để game nhận máy cao cấp hơn</value>
+  </data>
+  <data name="UnlockFPS" xml:space="preserve">
+    <value>Unlock FPS</value>
+  </data>
+  <data name="UnlockFPSDesc" xml:space="preserve">
+    <value>Mở khóa FPS / tần số quét</value>
+  </data>
+  <data name="ShizukuIntegration" xml:space="preserve">
+    <value>Tích hợp Shizuku</value>
+  </data>
+  <data name="ShizukuIntegrationDesc" xml:space="preserve">
+    <value>Shizuku giúp thực thi lệnh mà không cần root</value>
+  </data>
+  <data name="StartShizuku" xml:space="preserve">
+    <value>Khởi động Shizuku</value>
+  </data>
+  <data name="AppOps" xml:space="preserve">
+    <value>Quản lý AppOps</value>
+  </data>
+  <data name="AppOpsDesc" xml:space="preserve">
+    <value>Quản lý quyền chi tiết qua AppOps</value>
+  </data>
+  <data name="CheckAppOps" xml:space="preserve">
+    <value>Kiểm tra AppOps</value>
+  </data>
+  <data name="SetAppOps" xml:space="preserve">
+    <value>Đặt AppOps</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Fastboot Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="FastbootDevices" xml:space="preserve">
+    <value>Thiết bị Fastboot</value>
+  </data>
+  <data name="FlashImage" xml:space="preserve">
+    <value>Flash image</value>
+  </data>
+  <data name="FlashImageDesc" xml:space="preserve">
+    <value>Flash file .img vào partition</value>
+  </data>
+  <data name="ChooseImage" xml:space="preserve">
+    <value>Chọn file .img</value>
+  </data>
+  <data name="Partition" xml:space="preserve">
+    <value>Partition</value>
+  </data>
+  <data name="Flash" xml:space="preserve">
+    <value>Flash</value>
+  </data>
+  <data name="FlashROM" xml:space="preserve">
+    <value>Flash ROM</value>
+  </data>
+  <data name="FlashROMDesc" xml:space="preserve">
+    <value>Flash ROM (kiểu MiFlash) với tự động tìm</value>
+  </data>
+  <data name="ChooseROMFolder" xml:space="preserve">
+    <value>Chọn thư mục ROM</value>
+  </data>
+  <data name="FlashCurrentSlot" xml:space="preserve">
+    <value>Flash slot hiện tại</value>
+  </data>
+  <data name="FlashAndLock" xml:space="preserve">
+    <value>Flash + Lock bootloader</value>
+  </data>
+  <data name="CancelFlash" xml:space="preserve">
+    <value>Hủy flash</value>
+  </data>
+  <data name="FactoryReset" xml:space="preserve">
+    <value>Factory reset</value>
+  </data>
+  <data name="FactoryResetDesc" xml:space="preserve">
+    <value>Xóa sạch dữ liệu</value>
+  </data>
+  <data name="SetActiveSlot" xml:space="preserve">
+    <value>Đặt slot active (A/B)</value>
+  </data>
+  <data name="BootTemp" xml:space="preserve">
+    <value>Boot tạm thời (không flash)</value>
+  </data>
+  <data name="OEMUnlock" xml:space="preserve">
+    <value>Mở khóa bootloader</value>
+  </data>
+  <data name="OEMLock" xml:space="preserve">
+    <value>Khóa bootloader</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Log & Status Messages -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="Scanning" xml:space="preserve">
+    <value>Đang quét...</value>
+  </data>
+  <data name="Running" xml:space="preserve">
+    <value>Đang chạy...</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Thành công</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Thất bại</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Lỗi</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Hoàn tất</value>
+  </data>
+  <data name="NotConnected" xml:space="preserve">
+    <value>Chưa kết nối</value>
+  </data>
+  <data name="Unauthorized" xml:space="preserve">
+    <value>Chưa ủy quyền</value>
+  </data>
+  <data name="Offline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>Sẵn sàng</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Xác nhận</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Có</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Không</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- MessageBox Messages -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="NoDeviceSelected" xml:space="preserve">
+    <value>Chưa chọn thiết bị ADB.</value>
+  </data>
+  <data name="SelectAtLeastOneApp" xml:space="preserve">
+    <value>Chọn ít nhất 1 app.</value>
+  </data>
+  <data name="SelectAtLeastOnePermission" xml:space="preserve">
+    <value>Chọn ít nhất 1 quyền.</value>
+  </data>
+  <data name="ConfirmAction" xml:space="preserve">
+    <value>Xác nhận</value>
+  </data>
+  <data name="DeviceNotReady" xml:space="preserve">
+    <value>Thiết bị chưa sẵn sàng</value>
+  </data>
+  <data name="UnauthorizedMessage" xml:space="preserve">
+    <value>Thiết bị chưa ủy quyền ADB.\n\n1. Rút/cắm lại cáp USB\n2. Trên máy: Cài đặt → Tùy chọn nhà phát triển → bật USB Debugging\n3. Chấp nhận popup «Cho phép gỡ lỗi USB» (tick Luôn cho phép)\n4. Bấm ↻ làm mới danh sách</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Permission Labels -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="Notifications" xml:space="preserve">
+    <value>Thông báo</value>
+  </data>
+  <data name="Autostart" xml:space="preserve">
+    <value>Tự khởi động</value>
+  </data>
+  <data name="Vibrate" xml:space="preserve">
+    <value>Rung</value>
+  </data>
+  <data name="Internet" xml:space="preserve">
+    <value>Internet</value>
+  </data>
+  <data name="Camera" xml:space="preserve">
+    <value>Camera</value>
+  </data>
+  <data name="Microphone" xml:space="preserve">
+    <value>Micro</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Vị trí</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>Danh bạ</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Điện thoại</value>
+  </data>
+  <data name="SMS" xml:space="preserve">
+    <value>SMS</value>
+  </data>
+  <data name="Storage" xml:space="preserve">
+    <value>Bộ nhớ</value>
+  </data>
+  <data name="Files" xml:space="preserve">
+    <value>Tệp</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Welcome Window -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="WelcomeTitle" xml:space="preserve">
+    <value>Hướng dẫn sử dụng</value>
+  </data>
+  <data name="QuickGuide" xml:space="preserve">
+    <value>Hướng dẫn sử dụng nhanh</value>
+  </data>
+  <data name="ConnectPhone" xml:space="preserve">
+    <value>Kết nối điện thoại</value>
+  </data>
+  <data name="ConnectPhoneDesc" xml:space="preserve">
+    <value>Kết nối điện thoại Xiaomi / Redmi / POCO với máy tính qua cáp USB</value>
+  </data>
+  <data name="EnableUSBDebugging" xml:space="preserve">
+    <value>Bật USB Debugging</value>
+  </data>
+  <data name="EnableUSBDebuggingDesc" xml:space="preserve">
+    <value>Vào Cài đặt → Giới thiệu → Nhấn 7 lần vào Số phiên bản → Quay lại Cài đặt → Tùy chọn nhà phát triển → Bật USB Debugging</value>
+  </data>
+  <data name="AllowUSBDebugging" xml:space="preserve">
+    <value>Cho phép gỡ lỗi USB</value>
+  </data>
+  <data name="AllowUSBDebuggingDesc" xml:space="preserve">
+    <value>Khi popup xuất hiện trên điện thoại, tick "Luôn cho phép" rồi nhấn OK</value>
+  </data>
+  <data name="UsefulTips" xml:space="preserve">
+    <value>Mẹo hữu ích</value>
+  </data>
+  <data name="Tip1" xml:space="preserve">
+    <value>Sử dụng tab "Tối ưu" để fix thông báo, debloat, tối ưu ROM China</value>
+  </data>
+  <data name="Tip2" xml:space="preserve">
+    <value>Sử dụng tab "Công cụ" để quản lý ADB, chụp ảnh, quay màn hình</value>
+  </data>
+  <data name="Tip3" xml:space="preserve">
+    <value>Sử dụng "Debloat an toàn" để gỡ app rác ROM mà không ảnh hưởng hệ thống</value>
+  </data>
+  <data name="Tip4" xml:space="preserve">
+    <value>Sử dụng "Backup danh sách" để lưu lại danh sách app đã gỡ</value>
+  </data>
+  <data name="Tip5" xml:space="preserve">
+    <value>Sử dụng "Hoàn tác" để khôi phục app đã gỡ nhầm</value>
+  </data>
+  <data name="Tip6" xml:space="preserve">
+    <value>Luôn backup dữ liệu quan trọng trước khi thao tác với hệ thống</value>
+  </data>
+  <data name="DontShowAgain" xml:space="preserve">
+    <value>Không hiển thị lại</value>
+  </data>
+  <data name="GetStarted" xml:space="preserve">
+    <value>Bắt đầu</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Language -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="Language" xml:space="preserve">
+    <value>Ngôn ngữ</value>
+  </data>
+  <data name="Vietnamese" xml:space="preserve">
+    <value>Tiếng Việt</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Additional Status Messages -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="NoDeviceHint" xml:space="preserve">
+    <value>Không có thiết bị — cắm USB và bật USB Debugging</value>
+  </data>
+  <data name="DeviceNotReadyHint" xml:space="preserve">
+    <value>Thiết bị chưa sẵn sàng — chấp nhận popup «Cho phép gỡ lỗi USB» trên máy, rồi bấm ↻</value>
+  </data>
+  <data name="WaitingForDevice" xml:space="preserve">
+    <value>Đang chờ thiết bị...</value>
+  </data>
+  <data name="DeviceReady" xml:space="preserve">
+    <value>Thiết bị sẵn sàng</value>
+  </data>
+  <data name="ROMInfo" xml:space="preserve">
+    <value>Thông tin ROM</value>
+  </data>
+  <data name="NotScanned" xml:space="preserve">
+    <value>Chưa quét</value>
+  </data>
+  <data name="ScannedFromCache" xml:space="preserve">
+    <value>từ cache</value>
+  </data>
+  <data name="AppsFound" xml:space="preserve">
+    <value>app được tìm thấy</value>
+  </data>
+  <data name="ScanningComplete" xml:space="preserve">
+    <value>Quét xong</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Additional Button Labels -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="Read" xml:space="preserve">
+    <value>Đọc</value>
+  </data>
+  <data name="Write" xml:space="preserve">
+    <value>Ghi</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Áp dụng</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Lưu</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Hủy</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Duyệt</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Additional Status & Info -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="NoAPKInFolder" xml:space="preserve">
+    <value>Không có APK trong thư mục</value>
+  </data>
+  <data name="FolderNotFound" xml:space="preserve">
+    <value>Thư mục không tồn tại</value>
+  </data>
+  <data name="FileNotFound" xml:space="preserve">
+    <value>Không tìm thấy file</value>
+  </data>
+  <data name="InvalidInput" xml:space="preserve">
+    <value>Dữ liệu không hợp lệ</value>
+  </data>
+  <data name="OperationComplete" xml:space="preserve">
+    <value>Thao tác hoàn tất</value>
+  </data>
+  <data name="OperationFailed" xml:space="preserve">
+    <value>Thao tác thất bại</value>
+  </data>
+  <data name="DeviceWillReboot" xml:space="preserve">
+    <value>Thiết bị sẽ tự khởi động lại</value>
+  </data>
+  <data name="WarningMessage" xml:space="preserve">
+    <value>CẢNH BÁO</value>
+  </data>
+  <data name="DestructiveWarning" xml:space="preserve">
+    <value>Hành động không thể hoàn tác</value>
+  </data>
+  <data name="CannotUndo" xml:space="preserve">
+    <value>Không thể hoàn tác</value>
+  </data>
+  <data name="DataWillBeDeleted" xml:space="preserve">
+    <value>Dữ liệu sẽ bị XÓA SẠCH</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Log Prefixes -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="LogOK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="LogFAIL" xml:space="preserve">
+    <value>FAIL</value>
+  </data>
+  <data name="LogWARN" xml:space="preserve">
+    <value>WARN</value>
+  </data>
+  <data name="LogINFO" xml:space="preserve">
+    <value>INFO</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Additional UI Elements -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>Tìm kiếm...</value>
+  </data>
+  <data name="CustomPackage" xml:space="preserve">
+    <value>Package tùy chỉnh (vd: com.example.app)</value>
+  </data>
+  <data name="WiFiSSIDPlaceholder" xml:space="preserve">
+    <value>SSID (tên WiFi)</value>
+  </data>
+  <data name="WiFiPasswordPlaceholder" xml:space="preserve">
+    <value>Mật khẩu WiFi</value>
+  </data>
+  <data name="LocalFilePath" xml:space="preserve">
+    <value>File local (vd: C:\file.apk)</value>
+  </data>
+  <data name="RemoteDevicePath" xml:space="preserve">
+    <value>/sdcard/Download/</value>
+  </data>
+  <data name="RemoteFilePath" xml:space="preserve">
+    <value>/sdcard/Download/file.txt</value>
+  </data>
+  <data name="SaveFolderPath" xml:space="preserve">
+    <value>Thư mục lưu</value>
+  </data>
+  <data name="ScreenshotSavePath" xml:space="preserve">
+    <value>Thư mục lưu ảnh (vd: C:\Pictures\MintADB)</value>
+  </data>
+  <data name="RecordSavePath" xml:space="preserve">
+    <value>Thư mục lưu video (vd: C:\Videos\MintADB)</value>
+  </data>
+  <data name="CustomLocale" xml:space="preserve">
+    <value>vi-VN, en-US…</value>
+  </data>
+  <data name="FastbootImageFile" xml:space="preserve">
+    <value>File image (.img)</value>
+  </data>
+  <data name="ShizukuCustomPerm" xml:space="preserve">
+    <value>Quyền tùy chỉnh</value>
+  </data>
+  <data name="CustomAppOps" xml:space="preserve">
+    <value>AppOps tùy chỉnh</value>
+  </data>
+  <data name="CustomPermission" xml:space="preserve">
+    <value>Quyền tùy chỉnh</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Permission Category Names -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="PermGroupNotifications" xml:space="preserve">
+    <value>Thông báo</value>
+  </data>
+  <data name="PermGroupBackground" xml:space="preserve">
+    <value>Chạy nền</value>
+  </data>
+  <data name="PermGroupBattery" xml:space="preserve">
+    <value>Pin &amp; năng lượng</value>
+  </data>
+  <data name="PermGroupMIUI" xml:space="preserve">
+    <value>MIUI &amp; pin</value>
+  </data>
+  <data name="PermGroupNetwork" xml:space="preserve">
+    <value>Mạng</value>
+  </data>
+  <data name="PermGroupLocation" xml:space="preserve">
+    <value>Vị trí</value>
+  </data>
+  <data name="PermGroupCameraMic" xml:space="preserve">
+    <value>Camera &amp; mic</value>
+  </data>
+  <data name="PermGroupStorage" xml:space="preserve">
+    <value>Lưu trữ</value>
+  </data>
+  <data name="PermGroupDisplay" xml:space="preserve">
+    <value>Hiển thị</value>
+  </data>
+  <data name="PermGroupOther" xml:space="preserve">
+    <value>Khác</value>
+  </data>
+  <data name="PermGroupShizuku" xml:space="preserve">
+    <value>Shizuku (đặc quyền)</value>
+  </data>
+
+</root>

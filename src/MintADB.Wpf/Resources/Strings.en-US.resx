@@ -1,0 +1,1149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Navigation & General -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="NavOptimize" xml:space="preserve">
+    <value>Optimize</value>
+  </data>
+  <data name="NavTools" xml:space="preserve">
+    <value>Tools</value>
+  </data>
+  <data name="Device" xml:space="preserve">
+    <value>Device</value>
+  </data>
+  <data name="RefreshDeviceList" xml:space="preserve">
+    <value>Refresh device list</value>
+  </data>
+  <data name="DeviceInfo" xml:space="preserve">
+    <value>Device Info</value>
+  </data>
+  <data name="Connected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>Disconnected</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="Serial" xml:space="preserve">
+    <value>Serial</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Minimize" xml:space="preserve">
+    <value>Minimize</value>
+  </data>
+  <data name="Maximize" xml:space="preserve">
+    <value>Maximize</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Optimize Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="XiaomiChina" xml:space="preserve">
+    <value>Xiaomi China</value>
+  </data>
+  <data name="OptimizeSubtitle" xml:space="preserve">
+    <value>Optimize China ROM — Global-like experience</value>
+  </data>
+  <data name="ROM" xml:space="preserve">
+    <value>ROM</value>
+  </data>
+  <data name="Scan" xml:space="preserve">
+    <value>Scan</value>
+  </data>
+  <data name="SystemOptions" xml:space="preserve">
+    <value>System Options</value>
+  </data>
+  <data name="DisableAndroidRestrictions" xml:space="preserve">
+    <value>Disable Android restrictions</value>
+  </data>
+  <data name="UnlockXiaomiChinaControl" xml:space="preserve">
+    <value>Unlock Xiaomi China control</value>
+  </data>
+  <data name="AutoGrantPermissions" xml:space="preserve">
+    <value>Auto grant permissions</value>
+  </data>
+  <data name="DisableMIUIOptimization" xml:space="preserve">
+    <value>Disable MIUI Optimization (requires reboot)</value>
+  </data>
+  <data name="ChangeRegionCNtoGlobal" xml:space="preserve">
+    <value>Change region CN → Global (requires reboot)</value>
+  </data>
+  <data name="DisableMIUIAnalytics" xml:space="preserve">
+    <value>Disable MIUI analytics &amp; tracking</value>
+  </data>
+  <data name="Apps" xml:space="preserve">
+    <value>Apps</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Disabled / Removed</value>
+  </data>
+  <data name="PlayStore" xml:space="preserve">
+    <value>Play Store</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="ROMBloat" xml:space="preserve">
+    <value>ROM Bloat</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="ScanApps" xml:space="preserve">
+    <value>Scan Apps</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="DeselectAll" xml:space="preserve">
+    <value>Deselect All</value>
+  </data>
+  <data name="SearchByNameOrPackage" xml:space="preserve">
+    <value>Search by name or package...</value>
+  </data>
+  <data name="RemoveDisable" xml:space="preserve">
+    <value>Remove/Disable</value>
+  </data>
+  <data name="Restore" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="UninstallDisableApps" xml:space="preserve">
+    <value>Uninstall &amp; Disable Apps</value>
+  </data>
+  <data name="UninstallDisableAppsDesc" xml:space="preserve">
+    <value>Select apps from the list or enter custom package. System apps are removed via shell: pm uninstall --user 0. Core apps that can't be removed will be auto-disabled/hidden.</value>
+  </data>
+  <data name="UninstallDisable" xml:space="preserve">
+    <value>Uninstall / Disable (selected)</value>
+  </data>
+  <data name="UninstallSystemShell" xml:space="preserve">
+    <value>System uninstall (shell)</value>
+  </data>
+  <data name="DisableApps" xml:space="preserve">
+    <value>Disable apps (selected)</value>
+  </data>
+  <data name="UninstallAllBloat" xml:space="preserve">
+    <value>Uninstall all ROM bloat</value>
+  </data>
+  <data name="UninstallFromFile" xml:space="preserve">
+    <value>Uninstall from txt file</value>
+  </data>
+  <data name="RestoreApps" xml:space="preserve">
+    <value>Restore Apps</value>
+  </data>
+  <data name="RestoreAppsDesc" xml:space="preserve">
+    <value>Re-enable disabled/hidden apps or reinstall apps removed from user 0.</value>
+  </data>
+  <data name="RestoreSelected" xml:space="preserve">
+    <value>Restore (selected)</value>
+  </data>
+  <data name="EnableSelected" xml:space="preserve">
+    <value>Enable (selected)</value>
+  </data>
+  <data name="QuickActions" xml:space="preserve">
+    <value>Quick Actions</value>
+  </data>
+  <data name="QuickActionsDesc" xml:space="preserve">
+    <value>Select apps from the list → run action.</value>
+  </data>
+  <data name="FixNotifications" xml:space="preserve">
+    <value>Fix Notifications</value>
+  </data>
+  <data name="GrantPermissions" xml:space="preserve">
+    <value>Grant Permissions</value>
+  </data>
+  <data name="FullOptimize" xml:space="preserve">
+    <value>Full Optimize</value>
+  </data>
+  <data name="BackupAppList" xml:space="preserve">
+    <value>Backup App List</value>
+  </data>
+  <data name="RestoreFromBackup" xml:space="preserve">
+    <value>Restore from File</value>
+  </data>
+  <data name="SafeDebloat" xml:space="preserve">
+    <value>Safe Debloat</value>
+  </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="UndoHistory" xml:space="preserve">
+    <value>Recent Undo</value>
+  </data>
+  <data name="ClearHistory" xml:space="preserve">
+    <value>Clear History</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Tools Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="ADBTools" xml:space="preserve">
+    <value>ADB Tools</value>
+  </data>
+  <data name="ADBToolsSubtitle" xml:space="preserve">
+    <value>Full ADB commands — uninstall/disable apps in Optimize tab</value>
+  </data>
+  <data name="RiskLegend" xml:space="preserve">
+    <value>Safe · Info · Warning · Dangerous</value>
+  </data>
+  <data name="Safe" xml:space="preserve">
+    <value>Safe</value>
+  </data>
+  <data name="Info" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Dangerous" xml:space="preserve">
+    <value>Dangerous</value>
+  </data>
+  <data name="Basic" xml:space="preserve">
+    <value>Basic</value>
+  </data>
+  <data name="ToolsApps" xml:space="preserve">
+    <value>Apps</value>
+  </data>
+  <data name="Scrcpy" xml:space="preserve">
+    <value>Scrcpy</value>
+  </data>
+  <data name="Network" xml:space="preserve">
+    <value>Network</value>
+  </data>
+  <data name="SystemInfo" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Tweaks" xml:space="preserve">
+    <value>Tweaks</value>
+  </data>
+  <data name="Advanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
+  <data name="Fastboot" xml:space="preserve">
+    <value>Fastboot</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Basic Tools -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="ADBFastbootDriver" xml:space="preserve">
+    <value>ADB / Fastboot &amp; USB Driver (offline)</value>
+  </data>
+  <data name="DeployTools" xml:space="preserve">
+    <value>Deploy Tools</value>
+  </data>
+  <data name="InstallUSBDriver" xml:space="preserve">
+    <value>Install USB Driver</value>
+  </data>
+  <data name="RestartADB" xml:space="preserve">
+    <value>Restart ADB</value>
+  </data>
+  <data name="DriverFolder" xml:space="preserve">
+    <value>Driver Folder</value>
+  </data>
+  <data name="DeviceManager" xml:space="preserve">
+    <value>Device Manager</value>
+  </data>
+  <data name="CheckVersion" xml:space="preserve">
+    <value>Check Version</value>
+  </data>
+  <data name="Reboot" xml:space="preserve">
+    <value>Reboot</value>
+  </data>
+  <data name="Recovery" xml:space="preserve">
+    <value>Recovery</value>
+  </data>
+  <data name="Bootloader" xml:space="preserve">
+    <value>Bootloader</value>
+  </data>
+  <data name="Sideload" xml:space="preserve">
+    <value>Sideload</value>
+  </data>
+  <data name="EDL" xml:space="preserve">
+    <value>EDL</value>
+  </data>
+  <data name="APKStore" xml:space="preserve">
+    <value>APK Store</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="PushAll" xml:space="preserve">
+    <value>Push All</value>
+  </data>
+  <data name="InstallAll" xml:space="preserve">
+    <value>Install All</value>
+  </data>
+  <data name="Push" xml:space="preserve">
+    <value>Push</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="InstallAPK" xml:space="preserve">
+    <value>Install APK</value>
+  </data>
+  <data name="BackupAPK" xml:space="preserve">
+    <value>Backup APK</value>
+  </data>
+  <data name="OpenApp" xml:space="preserve">
+    <value>Open App</value>
+  </data>
+  <data name="ClearData1App" xml:space="preserve">
+    <value>Clear Data (1 app)</value>
+  </data>
+  <data name="ForceStop1App" xml:space="preserve">
+    <value>Force Stop (1 app)</value>
+  </data>
+  <data name="ClearDataMultiple" xml:space="preserve">
+    <value>Clear Data (multiple)</value>
+  </data>
+  <data name="PushPullFileExplorer" xml:space="preserve">
+    <value>Push / Pull &amp; File Explorer</value>
+  </data>
+  <data name="PushDesc" xml:space="preserve">
+    <value>Push files to device, pull files from device, or list directories.</value>
+  </data>
+  <data name="ChooseFile" xml:space="preserve">
+    <value>Choose File</value>
+  </data>
+  <data name="LocalFile" xml:space="preserve">
+    <value>Local file (e.g. C:\file.apk)</value>
+  </data>
+  <data name="RemotePath" xml:space="preserve">
+    <value>/sdcard/Download/</value>
+  </data>
+  <data name="List" xml:space="preserve">
+    <value>List</value>
+  </data>
+  <data name="PullSavedTo" xml:space="preserve">
+    <value>Pull saved to Desktop\MintADB\Pulls\</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Tools Apps Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="UserAppsPlayStore" xml:space="preserve">
+    <value>User Apps &amp; Play Store</value>
+  </data>
+  <data name="UserAppsPlayStoreDesc" xml:space="preserve">
+    <value>Select apps on the left, check permissions on the right — each permission has a description and ADB command</value>
+  </data>
+  <data name="Permissions" xml:space="preserve">
+    <value>Detailed Permissions</value>
+  </data>
+  <data name="PermissionsSelected" xml:space="preserve">
+    <value>permissions selected</value>
+  </data>
+  <data name="QuickPresets" xml:space="preserve">
+    <value>Quick Presets</value>
+  </data>
+  <data name="Chat" xml:space="preserve">
+    <value>Chat</value>
+  </data>
+  <data name="Battery" xml:space="preserve">
+    <value>Battery</value>
+  </data>
+  <data name="MILock" xml:space="preserve">
+    <value>MIUI Lock</value>
+  </data>
+  <data name="Shizuku" xml:space="preserve">
+    <value>Shizuku</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="CheckPermissions" xml:space="preserve">
+    <value>Check Permissions</value>
+  </data>
+  <data name="OpenAppSettings" xml:space="preserve">
+    <value>Open App Settings</value>
+  </data>
+  <data name="GrantSelectedPermissions" xml:space="preserve">
+    <value>Grant Selected Permissions</value>
+  </data>
+  <data name="OptimizeNotifications" xml:space="preserve">
+    <value>Optimize Notifications</value>
+  </data>
+  <data name="DisableBatteryOptimization" xml:space="preserve">
+    <value>Disable Battery Optimization</value>
+  </data>
+  <data name="ApplyAll" xml:space="preserve">
+    <value>Apply All</value>
+  </data>
+  <data name="SelectAllPermissions" xml:space="preserve">
+    <value>Select All Permissions</value>
+  </data>
+  <data name="DeselectAllPermissions" xml:space="preserve">
+    <value>Deselect All Permissions</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Scrcpy Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="ScrcpyDesc" xml:space="preserve">
+    <value>Smooth screen control — H.264, up to 120 FPS</value>
+  </data>
+  <data name="KeepScreenOn" xml:space="preserve">
+    <value>Keep screen on</value>
+  </data>
+  <data name="LaunchScrcpy" xml:space="preserve">
+    <value>Launch Scrcpy</value>
+  </data>
+  <data name="Screenshot" xml:space="preserve">
+    <value>Screenshot</value>
+  </data>
+  <data name="ScreenshotDesc" xml:space="preserve">
+    <value>Capture device screen</value>
+  </data>
+  <data name="ChooseSaveFolder" xml:space="preserve">
+    <value>Choose Folder</value>
+  </data>
+  <data name="SaveFolder" xml:space="preserve">
+    <value>Save folder (e.g. C:\Pictures\MintADB)</value>
+  </data>
+  <data name="TakeScreenshot" xml:space="preserve">
+    <value>Take Screenshot</value>
+  </data>
+  <data name="ScreenRecord" xml:space="preserve">
+    <value>Screen Record</value>
+  </data>
+  <data name="ScreenRecordDesc" xml:space="preserve">
+    <value>Record device screen video</value>
+  </data>
+  <data name="DurationSeconds" xml:space="preserve">
+    <value>Duration (seconds)</value>
+  </data>
+  <data name="RecordScreen" xml:space="preserve">
+    <value>Record Screen</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Network Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="NetworkStatus" xml:space="preserve">
+    <value>Network Status</value>
+  </data>
+  <data name="ReadNetworkStatus" xml:space="preserve">
+    <value>Read Network Status</value>
+  </data>
+  <data name="WiFi" xml:space="preserve">
+    <value>WiFi</value>
+  </data>
+  <data name="WiFiDesc" xml:space="preserve">
+    <value>Toggle WiFi, scan networks, quick connect.</value>
+  </data>
+  <data name="SSID" xml:space="preserve">
+    <value>SSID (WiFi name)</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>WiFi Password</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="DisconnectWiFi" xml:space="preserve">
+    <value>Disconnect WiFi</value>
+  </data>
+  <data name="CheckWiFi" xml:space="preserve">
+    <value>Check WiFi</value>
+  </data>
+  <data name="Bluetooth" xml:space="preserve">
+    <value>Bluetooth</value>
+  </data>
+  <data name="BluetoothDesc" xml:space="preserve">
+    <value>Toggle Bluetooth, scan devices.</value>
+  </data>
+  <data name="ScanBluetooth" xml:space="preserve">
+    <value>Scan Bluetooth</value>
+  </data>
+  <data name="AirplaneMode" xml:space="preserve">
+    <value>Airplane Mode</value>
+  </data>
+  <data name="AirplaneModeDesc" xml:space="preserve">
+    <value>Toggle airplane mode — disables all connections.</value>
+  </data>
+  <data name="Hotspot" xml:space="preserve">
+    <value>Hotspot</value>
+  </data>
+  <data name="HotspotDesc" xml:space="preserve">
+    <value>Toggle WiFi hotspot.</value>
+  </data>
+  <data name="MobileNetwork" xml:space="preserve">
+    <value>Mobile Network</value>
+  </data>
+  <data name="MobileNetworkDesc" xml:space="preserve">
+    <value>Select 3G / LTE / 5G mode — applies via preferred_network_mode</value>
+  </data>
+  <data name="Locale" xml:space="preserve">
+    <value>Language &amp; Region (Locale)</value>
+  </data>
+  <data name="LocaleDesc" xml:space="preserve">
+    <value>Set system locale — e.g. vi-VN, en-US, zh-CN (may require reboot)</value>
+  </data>
+  <data name="Custom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="ApplyLocale" xml:space="preserve">
+    <value>Apply Locale</value>
+  </data>
+  <data name="CheckLocale" xml:space="preserve">
+    <value>Check</value>
+  </data>
+  <data name="BlockMIUIAds" xml:space="preserve">
+    <value>Block MIUI Ads</value>
+  </data>
+  <data name="BlockGoogleAds" xml:space="preserve">
+    <value>Block Google Ads</value>
+  </data>
+  <data name="BlockAllAds" xml:space="preserve">
+    <value>Block All Ads</value>
+  </data>
+  <data name="RestoreMIUIAds" xml:space="preserve">
+    <value>Restore MIUI Ads</value>
+  </data>
+  <data name="RestoreGoogleAds" xml:space="preserve">
+    <value>Restore Google Ads</value>
+  </data>
+  <data name="CheckAdBlockStatus" xml:space="preserve">
+    <value>Check</value>
+  </data>
+  <data name="AdBlockDNS" xml:space="preserve">
+    <value>Ad Block DNS</value>
+  </data>
+  <data name="AdBlockDNSDesc" xml:space="preserve">
+    <value>Private DNS (Android 9+) — block ads &amp; trackers via DNS</value>
+  </data>
+  <data name="EnableAdBlock" xml:space="preserve">
+    <value>Enable Ad Block</value>
+  </data>
+  <data name="DefaultDNS" xml:space="preserve">
+    <value>Default DNS</value>
+  </data>
+  <data name="CheckDNS" xml:space="preserve">
+    <value>Check DNS</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- System Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="BatteryInfo" xml:space="preserve">
+    <value>Battery Info</value>
+  </data>
+  <data name="ReadBatteryInfo" xml:space="preserve">
+    <value>Read Battery Info</value>
+  </data>
+  <data name="DisplayInfo" xml:space="preserve">
+    <value>Display Info</value>
+  </data>
+  <data name="ReadDisplayInfo" xml:space="preserve">
+    <value>Read Display Info</value>
+  </data>
+  <data name="LockHz" xml:space="preserve">
+    <value>Lock Hz &amp; Smooth UI</value>
+  </data>
+  <data name="LockHzDesc" xml:space="preserve">
+    <value>Lock min = max = peak for smooth UI scrolling, reduce stutter when switching apps. ADB only — Shizuku helps when MIUI blocks.</value>
+  </data>
+  <data name="LockAt" xml:space="preserve">
+    <value>Lock at</value>
+  </data>
+  <data name="ReadHz" xml:space="preserve">
+    <value>Read Hz</value>
+  </data>
+  <data name="ApplyHzLock" xml:space="preserve">
+    <value>Lock Hz</value>
+  </data>
+  <data name="SmoothUI" xml:space="preserve">
+    <value>Smooth UI</value>
+  </data>
+  <data name="ApplyHzLockFull" xml:space="preserve">
+    <value>Lock + UI</value>
+  </data>
+  <data name="RestoreAdaptiveHz" xml:space="preserve">
+    <value>Restore Adaptive</value>
+  </data>
+  <data name="DeviceInfoTitle" xml:space="preserve">
+    <value>Device Info</value>
+  </data>
+  <data name="DeviceInfoDesc" xml:space="preserve">
+    <value>Detailed device information</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Tweaks Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="DPI" xml:space="preserve">
+    <value>DPI Adjustment</value>
+  </data>
+  <data name="DPIPresets" xml:space="preserve">
+    <value>DPI Presets</value>
+  </data>
+  <data name="SetDPI" xml:space="preserve">
+    <value>Set DPI</value>
+  </data>
+  <data name="ResetDPI" xml:space="preserve">
+    <value>Reset DPI</value>
+  </data>
+  <data name="AnimationSpeed" xml:space="preserve">
+    <value>Animation Speed</value>
+  </data>
+  <data name="SetAnimation" xml:space="preserve">
+    <value>Set Animation</value>
+  </data>
+  <data name="NavigationMode" xml:space="preserve">
+    <value>Navigation Mode</value>
+  </data>
+  <data name="GestureNav" xml:space="preserve">
+    <value>Gesture Navigation</value>
+  </data>
+  <data name="ThreeButtonNav" xml:space="preserve">
+    <value>3-Button Navigation</value>
+  </data>
+  <data name="StatusBar" xml:space="preserve">
+    <value>Status Bar Customization</value>
+  </data>
+  <data name="StatusBarDesc" xml:space="preserve">
+    <value>Customize status bar display</value>
+  </data>
+  <data name="BatteryPercentage" xml:space="preserve">
+    <value>Show Battery Percentage</value>
+  </data>
+  <data name="DeveloperOptions" xml:space="preserve">
+    <value>Developer Options</value>
+  </data>
+  <data name="StayAwake" xml:space="preserve">
+    <value>Stay Awake while charging</value>
+  </data>
+  <data name="ShowTaps" xml:space="preserve">
+    <value>Show Taps</value>
+  </data>
+  <data name="PointerLocation" xml:space="preserve">
+    <value>Pointer Location</value>
+  </data>
+  <data name="FontSize" xml:space="preserve">
+    <value>Font Size</value>
+  </data>
+  <data name="ScreenTimeout" xml:space="preserve">
+    <value>Screen Timeout</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Advanced Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="DeviceSpoof" xml:space="preserve">
+    <value>Device Spoof</value>
+  </data>
+  <data name="DeviceSpoofDesc" xml:space="preserve">
+    <value>Fake ro.product.* so games see a higher-end device</value>
+  </data>
+  <data name="UnlockFPS" xml:space="preserve">
+    <value>Unlock FPS</value>
+  </data>
+  <data name="UnlockFPSDesc" xml:space="preserve">
+    <value>Unlock FPS / refresh rate</value>
+  </data>
+  <data name="ShizukuIntegration" xml:space="preserve">
+    <value>Shizuku Integration</value>
+  </data>
+  <data name="ShizukuIntegrationDesc" xml:space="preserve">
+    <value>Shizuku helps execute commands without root</value>
+  </data>
+  <data name="StartShizuku" xml:space="preserve">
+    <value>Start Shizuku</value>
+  </data>
+  <data name="AppOps" xml:space="preserve">
+    <value>AppOps Management</value>
+  </data>
+  <data name="AppOpsDesc" xml:space="preserve">
+    <value>Manage detailed permissions via AppOps</value>
+  </data>
+  <data name="CheckAppOps" xml:space="preserve">
+    <value>Check AppOps</value>
+  </data>
+  <data name="SetAppOps" xml:space="preserve">
+    <value>Set AppOps</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Fastboot Tab -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="FastbootDevices" xml:space="preserve">
+    <value>Fastboot Devices</value>
+  </data>
+  <data name="FlashImage" xml:space="preserve">
+    <value>Flash Image</value>
+  </data>
+  <data name="FlashImageDesc" xml:space="preserve">
+    <value>Flash .img file to partition</value>
+  </data>
+  <data name="ChooseImage" xml:space="preserve">
+    <value>Choose .img file</value>
+  </data>
+  <data name="Partition" xml:space="preserve">
+    <value>Partition</value>
+  </data>
+  <data name="Flash" xml:space="preserve">
+    <value>Flash</value>
+  </data>
+  <data name="FlashROM" xml:space="preserve">
+    <value>Flash ROM</value>
+  </data>
+  <data name="FlashROMDesc" xml:space="preserve">
+    <value>Flash ROM (MiFlash-style) with auto-detect</value>
+  </data>
+  <data name="ChooseROMFolder" xml:space="preserve">
+    <value>Choose ROM Folder</value>
+  </data>
+  <data name="FlashCurrentSlot" xml:space="preserve">
+    <value>Flash Current Slot</value>
+  </data>
+  <data name="FlashAndLock" xml:space="preserve">
+    <value>Flash + Lock Bootloader</value>
+  </data>
+  <data name="CancelFlash" xml:space="preserve">
+    <value>Cancel Flash</value>
+  </data>
+  <data name="FactoryReset" xml:space="preserve">
+    <value>Factory Reset</value>
+  </data>
+  <data name="FactoryResetDesc" xml:space="preserve">
+    <value>Wipe all data</value>
+  </data>
+  <data name="SetActiveSlot" xml:space="preserve">
+    <value>Set Active Slot (A/B)</value>
+  </data>
+  <data name="BootTemp" xml:space="preserve">
+    <value>Boot Temporary (no flash)</value>
+  </data>
+  <data name="OEMUnlock" xml:space="preserve">
+    <value>Unlock Bootloader</value>
+  </data>
+  <data name="OEMLock" xml:space="preserve">
+    <value>Lock Bootloader</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Log & Status Messages -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="Scanning" xml:space="preserve">
+    <value>Scanning...</value>
+  </data>
+  <data name="Running" xml:space="preserve">
+    <value>Running...</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="NotConnected" xml:space="preserve">
+    <value>Not Connected</value>
+  </data>
+  <data name="Unauthorized" xml:space="preserve">
+    <value>Unauthorized</value>
+  </data>
+  <data name="Offline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- MessageBox Messages -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="NoDeviceSelected" xml:space="preserve">
+    <value>No ADB device selected.</value>
+  </data>
+  <data name="SelectAtLeastOneApp" xml:space="preserve">
+    <value>Select at least 1 app.</value>
+  </data>
+  <data name="SelectAtLeastOnePermission" xml:space="preserve">
+    <value>Select at least 1 permission.</value>
+  </data>
+  <data name="ConfirmAction" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="DeviceNotReady" xml:space="preserve">
+    <value>Device not ready</value>
+  </data>
+  <data name="UnauthorizedMessage" xml:space="preserve">
+    <value>Device not authorized for ADB.\n\n1. Unplug/replug USB cable\n2. On device: Settings → Developer Options → enable USB Debugging\n3. Accept "Allow USB Debugging" popup (check Always allow)\n4. Tap ↻ to refresh device list</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Permission Labels -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="Notifications" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="Autostart" xml:space="preserve">
+    <value>Autostart</value>
+  </data>
+  <data name="Vibrate" xml:space="preserve">
+    <value>Vibrate</value>
+  </data>
+  <data name="Internet" xml:space="preserve">
+    <value>Internet</value>
+  </data>
+  <data name="Camera" xml:space="preserve">
+    <value>Camera</value>
+  </data>
+  <data name="Microphone" xml:space="preserve">
+    <value>Microphone</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Contacts" xml:space="preserve">
+    <value>Contacts</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="SMS" xml:space="preserve">
+    <value>SMS</value>
+  </data>
+  <data name="Storage" xml:space="preserve">
+    <value>Storage</value>
+  </data>
+  <data name="Files" xml:space="preserve">
+    <value>Files</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Welcome Window -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="WelcomeTitle" xml:space="preserve">
+    <value>User Guide</value>
+  </data>
+  <data name="QuickGuide" xml:space="preserve">
+    <value>Quick Start Guide</value>
+  </data>
+  <data name="ConnectPhone" xml:space="preserve">
+    <value>Connect Phone</value>
+  </data>
+  <data name="ConnectPhoneDesc" xml:space="preserve">
+    <value>Connect your Xiaomi / Redmi / POCO phone to computer via USB cable</value>
+  </data>
+  <data name="EnableUSBDebugging" xml:space="preserve">
+    <value>Enable USB Debugging</value>
+  </data>
+  <data name="EnableUSBDebuggingDesc" xml:space="preserve">
+    <value>Go to Settings → About → Tap "Build number" 7 times → Go back to Settings → Developer Options → Enable USB Debugging</value>
+  </data>
+  <data name="AllowUSBDebugging" xml:space="preserve">
+    <value>Allow USB Debugging</value>
+  </data>
+  <data name="AllowUSBDebuggingDesc" xml:space="preserve">
+    <value>When popup appears on phone, check "Always allow" then tap OK</value>
+  </data>
+  <data name="UsefulTips" xml:space="preserve">
+    <value>Useful Tips</value>
+  </data>
+  <data name="Tip1" xml:space="preserve">
+    <value>Use "Optimize" tab to fix notifications, debloat, optimize China ROM</value>
+  </data>
+  <data name="Tip2" xml:space="preserve">
+    <value>Use "Tools" tab to manage ADB, take screenshots, record screen</value>
+  </data>
+  <data name="Tip3" xml:space="preserve">
+    <value>Use "Safe Debloat" to remove ROM bloatware without affecting system</value>
+  </data>
+  <data name="Tip4" xml:space="preserve">
+    <value>Use "Backup App List" to save your removed app list</value>
+  </data>
+  <data name="Tip5" xml:space="preserve">
+    <value>Use "Undo" to restore accidentally removed apps</value>
+  </data>
+  <data name="Tip6" xml:space="preserve">
+    <value>Always backup important data before system operations</value>
+  </data>
+  <data name="DontShowAgain" xml:space="preserve">
+    <value>Don't show again</value>
+  </data>
+  <data name="GetStarted" xml:space="preserve">
+    <value>Get Started</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Language -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Vietnamese" xml:space="preserve">
+    <value>Tiếng Việt</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Additional Status Messages -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="NoDeviceHint" xml:space="preserve">
+    <value>No device — plug in USB and enable USB Debugging</value>
+  </data>
+  <data name="DeviceNotReadyHint" xml:space="preserve">
+    <value>Device not ready — accept "Allow USB Debugging" popup on device, then tap ↻</value>
+  </data>
+  <data name="WaitingForDevice" xml:space="preserve">
+    <value>Waiting for device...</value>
+  </data>
+  <data name="DeviceReady" xml:space="preserve">
+    <value>Device ready</value>
+  </data>
+  <data name="ROMInfo" xml:space="preserve">
+    <value>ROM Info</value>
+  </data>
+  <data name="NotScanned" xml:space="preserve">
+    <value>Not scanned</value>
+  </data>
+  <data name="ScannedFromCache" xml:space="preserve">
+    <value>from cache</value>
+  </data>
+  <data name="AppsFound" xml:space="preserve">
+    <value>apps found</value>
+  </data>
+  <data name="ScanningComplete" xml:space="preserve">
+    <value>Scan complete</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Additional Button Labels -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="Read" xml:space="preserve">
+    <value>Read</value>
+  </data>
+  <data name="Write" xml:space="preserve">
+    <value>Write</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Additional Status & Info -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="NoAPKInFolder" xml:space="preserve">
+    <value>No APK in folder</value>
+  </data>
+  <data name="FolderNotFound" xml:space="preserve">
+    <value>Folder not found</value>
+  </data>
+  <data name="FileNotFound" xml:space="preserve">
+    <value>File not found</value>
+  </data>
+  <data name="InvalidInput" xml:space="preserve">
+    <value>Invalid input</value>
+  </data>
+  <data name="OperationComplete" xml:space="preserve">
+    <value>Operation complete</value>
+  </data>
+  <data name="OperationFailed" xml:space="preserve">
+    <value>Operation failed</value>
+  </data>
+  <data name="DeviceWillReboot" xml:space="preserve">
+    <value>Device will reboot automatically</value>
+  </data>
+  <data name="WarningMessage" xml:space="preserve">
+    <value>WARNING</value>
+  </data>
+  <data name="DestructiveWarning" xml:space="preserve">
+    <value>This action cannot be undone</value>
+  </data>
+  <data name="CannotUndo" xml:space="preserve">
+    <value>Cannot be undone</value>
+  </data>
+  <data name="DataWillBeDeleted" xml:space="preserve">
+    <value>ALL DATA WILL BE DELETED</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Log Prefixes -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="LogOK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="LogFAIL" xml:space="preserve">
+    <value>FAIL</value>
+  </data>
+  <data name="LogWARN" xml:space="preserve">
+    <value>WARN</value>
+  </data>
+  <data name="LogINFO" xml:space="preserve">
+    <value>INFO</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Additional UI Elements -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>Search...</value>
+  </data>
+  <data name="CustomPackage" xml:space="preserve">
+    <value>Custom package (e.g. com.example.app)</value>
+  </data>
+  <data name="WiFiSSIDPlaceholder" xml:space="preserve">
+    <value>SSID (WiFi name)</value>
+  </data>
+  <data name="WiFiPasswordPlaceholder" xml:space="preserve">
+    <value>WiFi Password</value>
+  </data>
+  <data name="LocalFilePath" xml:space="preserve">
+    <value>Local file (e.g. C:\file.apk)</value>
+  </data>
+  <data name="RemoteDevicePath" xml:space="preserve">
+    <value>/sdcard/Download/</value>
+  </data>
+  <data name="RemoteFilePath" xml:space="preserve">
+    <value>/sdcard/Download/file.txt</value>
+  </data>
+  <data name="SaveFolderPath" xml:space="preserve">
+    <value>Save folder</value>
+  </data>
+  <data name="ScreenshotSavePath" xml:space="preserve">
+    <value>Screenshot save folder (e.g. C:\Pictures\MintADB)</value>
+  </data>
+  <data name="RecordSavePath" xml:space="preserve">
+    <value>Recording save folder (e.g. C:\Videos\MintADB)</value>
+  </data>
+  <data name="CustomLocale" xml:space="preserve">
+    <value>vi-VN, en-US...</value>
+  </data>
+  <data name="FastbootImageFile" xml:space="preserve">
+    <value>Image file (.img)</value>
+  </data>
+  <data name="ShizukuCustomPerm" xml:space="preserve">
+    <value>Custom permission</value>
+  </data>
+  <data name="CustomAppOps" xml:space="preserve">
+    <value>Custom AppOps</value>
+  </data>
+  <data name="CustomPermission" xml:space="preserve">
+    <value>Custom permission</value>
+  </data>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Permission Category Names -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <data name="PermGroupNotifications" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="PermGroupBackground" xml:space="preserve">
+    <value>Background</value>
+  </data>
+  <data name="PermGroupBattery" xml:space="preserve">
+    <value>Battery &amp; Power</value>
+  </data>
+  <data name="PermGroupMIUI" xml:space="preserve">
+    <value>MIUI &amp; Battery</value>
+  </data>
+  <data name="PermGroupNetwork" xml:space="preserve">
+    <value>Network</value>
+  </data>
+  <data name="PermGroupLocation" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="PermGroupCameraMic" xml:space="preserve">
+    <value>Camera &amp; Mic</value>
+  </data>
+  <data name="PermGroupStorage" xml:space="preserve">
+    <value>Storage</value>
+  </data>
+  <data name="PermGroupDisplay" xml:space="preserve">
+    <value>Display</value>
+  </data>
+  <data name="PermGroupOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="PermGroupShizuku" xml:space="preserve">
+    <value>Shizuku (Privileged)</value>
+  </data>
+
+</root>

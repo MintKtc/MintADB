@@ -103,21 +103,36 @@ public sealed partial class AdbService
         string serial, string ns, string key, string value, CancellationToken ct = default)
     {
         var escaped = value.Replace("'", "'\\''");
+
+        // global/secure gần như luôn cần WRITE_SECURE_SETTINGS trên HyperOS — grant trước
+        if (ns is "global" or "secure" or "system")
+        {
+            if (_settingsElevatedSerials.Add(serial))
+                await TryElevateSettingsAccessAsync(serial, ct);
+        }
+
         var r = await TrySettingsPutCoreAsync(serial, ns, key, escaped, ct);
         if (r.Ok) return r;
 
-        // Cấp WRITE_SETTINGS / WRITE_SECURE_SETTINGS cho shell rồi thử lại
-        var needElevate = _settingsElevatedSerials.Add(serial)
-                          || r.Combined.Contains("WRITE_SETTINGS", StringComparison.OrdinalIgnoreCase)
-                          || r.Combined.Contains("WRITE_SECURE_SETTINGS", StringComparison.OrdinalIgnoreCase)
-                          || r.Combined.Contains("SecurityException", StringComparison.OrdinalIgnoreCase);
-        if (needElevate)
+        // Cấp lại nếu bị chặn (SecurityException / Permission denial)
+        var denied = r.Combined.Contains("WRITE_SETTINGS", StringComparison.OrdinalIgnoreCase)
+                     || r.Combined.Contains("WRITE_SECURE_SETTINGS", StringComparison.OrdinalIgnoreCase)
+                     || r.Combined.Contains("SecurityException", StringComparison.OrdinalIgnoreCase)
+                     || r.Combined.Contains("Permission denial", StringComparison.OrdinalIgnoreCase);
+        if (denied)
             await TryElevateSettingsAccessAsync(serial, ct);
 
         r = await TrySettingsPutCoreAsync(serial, ns, key, escaped, ct);
         if (r.Ok) return r;
 
-        return await ShellAsync($"su -c \"settings put {ns} {key} '{escaped}'\"", serial, ct);
+        // Root
+        r = await ShellAsync($"su -c \"settings put {ns} {key} '{escaped}'\"", serial, ct);
+        if (r.Ok) return r;
+
+        // content provider fallback (HyperOS đôi khi chặn settings CLI)
+        return await ShellAsync(
+            $"content insert --uri content://settings/{ns} --bind name:s:{key} --bind value:s:{escaped}",
+            serial, ct);
     }
 
     private async Task<ProcessResult> TrySettingsPutCoreAsync(
@@ -125,34 +140,36 @@ public sealed partial class AdbService
     {
         var r = await ShellAsync($"settings put {ns} {key} '{escaped}'", serial, ct);
         if (r.Ok) return r;
-        return await ShellAsync($"cmd settings put {ns} {key} '{escaped}'", serial, ct);
+        r = await ShellAsync($"cmd settings put {ns} {key} '{escaped}'", serial, ct);
+        if (r.Ok) return r;
+        // package grant form used by some tools
+        await ShellAsync("cmd package grant com.android.shell android.permission.WRITE_SECURE_SETTINGS", serial, ct);
+        await ShellAsync("cmd package grant com.android.shell android.permission.WRITE_SETTINGS", serial, ct);
+        return await ShellAsync($"settings put {ns} {key} '{escaped}'", serial, ct);
     }
 
     private async Task TryElevateSettingsAccessAsync(string serial, CancellationToken ct)
     {
-        // system.* cần WRITE_SETTINGS; secure/global cần WRITE_SECURE_SETTINGS
-        await ShellAsync("pm grant com.android.shell android.permission.WRITE_SETTINGS", serial, ct);
-        await ShellAsync("pm grant com.android.shell android.permission.WRITE_SECURE_SETTINGS", serial, ct);
-        await ShellAsync("cmd appops set com.android.shell WRITE_SETTINGS allow", serial, ct);
-        await ShellAsync("cmd appops set com.android.shell WRITE_SECURE_SETTINGS allow", serial, ct);
-        await ShellAsync("appops set com.android.shell WRITE_SETTINGS allow", serial, ct);
-        await ShellAsync("appops set com.android.shell WRITE_SECURE_SETTINGS allow", serial, ct);
+        // system.* → WRITE_SETTINGS; secure/global → WRITE_SECURE_SETTINGS
+        string[] grants =
+        [
+            "pm grant com.android.shell android.permission.WRITE_SECURE_SETTINGS",
+            "pm grant com.android.shell android.permission.WRITE_SETTINGS",
+            "cmd package grant com.android.shell android.permission.WRITE_SECURE_SETTINGS",
+            "cmd package grant com.android.shell android.permission.WRITE_SETTINGS",
+            "cmd appops set com.android.shell WRITE_SECURE_SETTINGS allow",
+            "cmd appops set com.android.shell WRITE_SETTINGS allow",
+            "appops set com.android.shell WRITE_SECURE_SETTINGS allow",
+            "appops set com.android.shell WRITE_SETTINGS allow",
+            // Root / Magisk
+            "su -c 'pm grant com.android.shell android.permission.WRITE_SECURE_SETTINGS'",
+            "su -c 'pm grant com.android.shell android.permission.WRITE_SETTINGS'",
+            "su -c 'cmd appops set com.android.shell WRITE_SECURE_SETTINGS allow'",
+            "su -c 'cmd appops set com.android.shell WRITE_SETTINGS allow'",
+        ];
 
-        // Root fallback (Magisk / SU)
-        await ShellAsync("su -c 'pm grant com.android.shell android.permission.WRITE_SETTINGS'", serial, ct);
-        await ShellAsync("su -c 'pm grant com.android.shell android.permission.WRITE_SECURE_SETTINGS'", serial, ct);
-        await ShellAsync("su -c 'cmd appops set com.android.shell WRITE_SETTINGS allow'", serial, ct);
-        await ShellAsync("su -c 'cmd appops set com.android.shell WRITE_SECURE_SETTINGS allow'", serial, ct);
-
-        if (Shizuku is null) return;
-
-        var status = await Shizuku.GetStatusAsync(serial, ct);
-        if (!status.Running) return;
-
-        await ShellAsync("pm grant com.android.shell android.permission.WRITE_SETTINGS", serial, ct);
-        await ShellAsync("pm grant com.android.shell android.permission.WRITE_SECURE_SETTINGS", serial, ct);
-        await ShellAsync("cmd appops set com.android.shell WRITE_SETTINGS allow", serial, ct);
-        await ShellAsync("cmd appops set com.android.shell WRITE_SECURE_SETTINGS allow", serial, ct);
+        foreach (var cmd in grants)
+            await ShellAsync(cmd, serial, ct);
     }
 
     public async Task<(int Ok, int Fail)> ApplySettingsBatchAsync(

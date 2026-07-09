@@ -29,13 +29,28 @@ public partial class MainWindow
         ShowAppSubPage(0);
     }
 
-    private void InitInactiveStateFilter()
+    private void InitInactiveStateFilter() => RebuildInactiveStateFilter();
+
+    private void RebuildInactiveStateFilter()
     {
-        InactiveStateFilter.Items.Add(new InactiveStateComboItem(null, "Tất cả trạng thái"));
+        if (InactiveStateFilter is null) return;
+
+        var selected = InactiveStateFilter.SelectedItem as InactiveStateComboItem;
+        InactiveStateFilter.Items.Clear();
+        InactiveStateFilter.Items.Add(new InactiveStateComboItem(
+            null, MintADB.Wpf.Resources.Loc.Get("AllStates", "Tất cả trạng thái")));
         foreach (InactiveAppState state in Enum.GetValues<InactiveAppState>().OrderBy(s => s.SortOrder()))
             InactiveStateFilter.Items.Add(new InactiveStateComboItem(state, state.Label()));
         InactiveStateFilter.DisplayMemberPath = nameof(InactiveStateComboItem.Label);
-        InactiveStateFilter.SelectedIndex = 0;
+
+        if (selected is not null)
+        {
+            var match = InactiveStateFilter.Items.Cast<InactiveStateComboItem>()
+                .FirstOrDefault(i => Equals(i.State, selected.State));
+            InactiveStateFilter.SelectedItem = match ?? InactiveStateFilter.Items[0];
+        }
+        else
+            InactiveStateFilter.SelectedIndex = 0;
     }
 
     private void ShowAppSubPage(int page)

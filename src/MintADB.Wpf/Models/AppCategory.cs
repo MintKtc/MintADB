@@ -1,3 +1,5 @@
+using MintADB.Wpf.Resources;
+
 namespace MintADB.Wpf.Models;
 
 public enum AppCategory
@@ -12,10 +14,10 @@ public static class AppCategoryExtensions
 {
     public static string Label(this AppCategory c) => c switch
     {
-        AppCategory.System => "Hệ thống",
-        AppCategory.PlayStore => "Play Store",
-        AppCategory.UserInstalled => "User tự cài",
-        AppCategory.RomBloat => "Rác ROM",
+        AppCategory.System => Loc.Get("System", "Hệ thống"),
+        AppCategory.PlayStore => Loc.Get("PlayStore", "Play Store"),
+        AppCategory.UserInstalled => Loc.Get("CatUserInstalled", "User tự cài"),
+        AppCategory.RomBloat => Loc.Get("ROMBloat", "Rác ROM"),
         _ => c.ToString(),
     };
 

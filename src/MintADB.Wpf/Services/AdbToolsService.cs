@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.IO;
 using MintADB.Wpf.Models;
 
@@ -382,15 +382,61 @@ public sealed class AdbToolsService(AdbService adb)
 
     public async Task<ProcessResult> SetPrivateDnsAsync(string serial, string hostname, CancellationToken ct = default)
     {
-        var mode = await adb.ShellAsync("settings put global private_dns_mode hostname", serial, ct);
-        if (!mode.Ok) return mode;
-        return await adb.ShellAsync($"settings put global private_dns_specifier {hostname}", serial, ct);
+        hostname = hostname.Trim();
+        if (hostname.Length == 0)
+            return new ProcessResult(1, "", "Hostname DNS trống");
+
+        // global.* cần WRITE_SECURE_SETTINGS — dùng SettingsPutAsync (tự grant + appops + su)
+        var mode = await adb.SettingsPutAsync(serial, "global", "private_dns_mode", "hostname", ct);
+        var spec = await adb.SettingsPutAsync(serial, "global", "private_dns_specifier", hostname, ct);
+
+        if (mode.Ok && spec.Ok)
+            return new ProcessResult(0, $"mode=hostname host={hostname}", "");
+
+        // Fallback: content provider (một số HyperOS chặn settings put)
+        var c1 = await adb.ShellAsync(
+            "content insert --uri content://settings/global --bind name:s:private_dns_mode --bind value:s:hostname",
+            serial, ct);
+        var hq = AdbService.ShellSingleQuote(hostname);
+        var c2 = await adb.ShellAsync(
+            $"content insert --uri content://settings/global --bind name:s:private_dns_specifier --bind value:s:{hq}",
+            serial, ct);
+
+        // Xác minh
+        var status = await GetPrivateDnsStatusAsync(serial, ct);
+        if (status.Contains("hostname", StringComparison.OrdinalIgnoreCase)
+            && status.Contains(hostname, StringComparison.OrdinalIgnoreCase))
+            return new ProcessResult(0, status, "");
+
+        var detail = string.Join("\n", new[] { mode.Combined, spec.Combined, c1.Combined, c2.Combined }
+            .Where(s => !string.IsNullOrWhiteSpace(s)));
+        return new ProcessResult(
+            1,
+            "",
+            "Không đặt Private DNS (cần WRITE_SECURE_SETTINGS).\n"
+            + "Thử: bật USB debugging (Security settings) / root / Shizuku.\n"
+            + detail);
     }
 
     public async Task<ProcessResult> ClearPrivateDnsAsync(string serial, CancellationToken ct = default)
     {
-        await adb.ShellAsync("settings put global private_dns_specifier \"\"", serial, ct);
-        return await adb.ShellAsync("settings put global private_dns_mode off", serial, ct);
+        await adb.SettingsPutAsync(serial, "global", "private_dns_specifier", "", ct);
+        var mode = await adb.SettingsPutAsync(serial, "global", "private_dns_mode", "off", ct);
+        if (mode.Ok) return mode;
+
+        await adb.ShellAsync(
+            "content insert --uri content://settings/global --bind name:s:private_dns_mode --bind value:s:off",
+            serial, ct);
+        await adb.ShellAsync(
+            "content insert --uri content://settings/global --bind name:s:private_dns_specifier --bind value:s:",
+            serial, ct);
+
+        var status = await GetPrivateDnsStatusAsync(serial, ct);
+        if (status.Contains("mode=off", StringComparison.OrdinalIgnoreCase)
+            || status.Contains("mode=null", StringComparison.OrdinalIgnoreCase))
+            return new ProcessResult(0, status, "");
+
+        return mode;
     }
 
     public async Task<string> GetPrivateDnsStatusAsync(string serial, CancellationToken ct = default)
@@ -406,11 +452,11 @@ public sealed class AdbToolsService(AdbService adb)
         string serial, int mode, int simSlot = 0, CancellationToken ct = default)
     {
         var key = MobileNetworkMode.SettingsKey(simSlot);
-        var r = await adb.ShellAsync($"settings put global {key} {mode}", serial, ct);
+        var r = await adb.SettingsPutAsync(serial, "global", key, mode.ToString(), ct);
         if (!r.Ok) return r;
 
         if (simSlot == 0)
-            await adb.ShellAsync($"settings put global preferred_network_mode1 {mode}", serial, ct);
+            await adb.SettingsPutAsync(serial, "global", "preferred_network_mode1", mode.ToString(), ct);
 
         await adb.ShellAsync("svc data disable", serial, ct);
         await Task.Delay(800, ct);

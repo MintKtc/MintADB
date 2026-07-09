@@ -1,4 +1,5 @@
 using System.Windows;
+using MintADB.Wpf.Resources;
 
 namespace MintADB.Wpf;
 
@@ -10,6 +11,9 @@ public partial class App : Application
     {
         BootstrapOnly = false;
         base.OnStartup(e);
+
+        // Áp dụng VI/EN đã lưu trước khi tạo cửa sổ (dictionary + culture + resx)
+        LanguageManager.ApplySavedLanguage();
 
         var main = new MainWindow();
         main.Show();
