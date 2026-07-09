@@ -2,7 +2,6 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
-using MintADB.Wpf.Helpers;
 using MintADB.Wpf.Models;
 using MintADB.Wpf.Services;
 
@@ -156,6 +155,33 @@ public partial class MainWindow
     private async void RemoveOrDisable_Click(object sender, RoutedEventArgs e)
         => await RemovePackagesWithConfirm(GetSelectedPackages(), "Gỡ / tắt app đã chọn");
 
+    private async void UninstallSystemShell_Click(object sender, RoutedEventArgs e)
+    {
+        // Ưu tiên app đã chọn; nếu không có thì lấy app Hệ thống / Rác ROM đã chọn trong list + package tùy chỉnh
+        var selected = GetSelectedPackages();
+        if (selected.Count == 0)
+        {
+            selected = _apps
+                .Where(a => a.Selected && (a.IsSystem || a.Category is AppCategory.System or AppCategory.RomBloat))
+                .Select(a => a.Package)
+                .ToList();
+        }
+
+        if (selected.Count == 0)
+        {
+            MessageBox.Show(
+                "Chọn app hệ thống / rác ROM trong danh sách, hoặc nhập package vào ô tùy chỉnh.\n\n"
+                + "Lệnh shell: pm uninstall --user 0 <package>",
+                "MintADB");
+            return;
+        }
+
+        await RemovePackagesWithConfirm(
+            selected,
+            $"Gỡ hệ thống qua shell ({selected.Count} app)",
+            shellOnly: true);
+    }
+
     private async void UninstallAllBloat_Click(object sender, RoutedEventArgs e)
     {
         var bloat = _apps.Where(a => a.Category == AppCategory.RomBloat).Select(a => a.Package).ToList();
@@ -165,7 +191,7 @@ public partial class MainWindow
             return;
         }
 
-        await RemovePackagesWithConfirm(bloat, $"Gỡ tất cả {bloat.Count} app rác ROM");
+        await RemovePackagesWithConfirm(bloat, $"Gỡ tất cả {bloat.Count} app rác ROM", shellOnly: true);
     }
 
     private async void RemoveSingleApp_Click(object sender, RoutedEventArgs e)
@@ -174,27 +200,25 @@ public partial class MainWindow
         var serial = RequireDevice();
         if (serial is null) return;
 
+        var isSystem = app.IsSystem || app.Category is AppCategory.System or AppCategory.RomBloat;
+        var modeHint = isSystem
+            ? "\n\nApp hệ thống → shell: pm uninstall --user 0"
+            : "";
+
         if (MessageBox.Show(
-                $"Gỡ / tắt {app.Name}?\n{app.Package}",
+                $"Gỡ / tắt {app.Name}?\n{app.Package}{modeHint}",
                 "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
             return;
 
-        if (DebloatBlacklist.IsProtected(app.Package))
-        {
-            MessageBox.Show(
-                $"Không thể gỡ {app.Package}.\n\n{DebloatBlacklist.GetReason(app.Package)}",
-                "MintADB", MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
         await RunWithBusyAsync(async () =>
         {
-            await RemovePackageAsync(serial, app.Package);
+            await RemovePackageAsync(serial, app.Package, shellOnly: isSystem);
             RecordRemoveAction(new List<string> { app.Package });
         });
     }
 
-    private async Task RemovePackagesWithConfirm(IReadOnlyList<string> packages, string title)
+    private async Task RemovePackagesWithConfirm(
+        IReadOnlyList<string> packages, string title, bool shellOnly = false)
     {
         var serial = RequireDevice();
         if (serial is null) return;
@@ -205,57 +229,53 @@ public partial class MainWindow
             return;
         }
 
-        var blocked = DebloatBlacklist.FilterProtected(packages);
-        var allowed = packages.Where(p => !DebloatBlacklist.IsProtected(p)).ToList();
+        var method = shellOnly
+            ? "Chỉ dùng shell:\n"
+              + "· pm uninstall --user 0 <package>\n"
+              + "· cmd package uninstall --user 0\n"
+              + "· (nếu có root) su -c pm uninstall\n\n"
+              + "Không gỡ được → disable / ẩn.\n"
+            : "App hệ thống: shell pm uninstall --user 0.\n"
+              + "App user: adb uninstall.\n"
+              + "App lõi không gỡ được sẽ tự disable/ẩn.\n";
 
-        if (blocked.Count > 0)
-        {
-            var lines = string.Join("\n", blocked.Select(p => $"· {p} — {DebloatBlacklist.GetReason(p)}"));
-            AppendLog($"[SKIP] {blocked.Count} gói bảo vệ (bootloop):");
-            foreach (var pkg in blocked)
-                AppendLog($"  · {pkg} — {DebloatBlacklist.GetReason(pkg)}");
-
-            if (allowed.Count == 0)
-            {
-                MessageBox.Show(
-                    "Không có app nào an toàn để gỡ.\n\nCác gói sau bị chặn vì có thể bootloop:\n" + lines,
-                    "MintADB", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (MessageBox.Show(
-                    $"Bỏ qua {blocked.Count} gói hệ thống nguy hiểm, tiếp tục gỡ {allowed.Count} app còn lại?",
-                    "MintADB", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
-                return;
-        }
-        else if (MessageBox.Show(
-                $"{title} ({allowed.Count} app)?\n\n"
-                + "App hệ thống: pm uninstall --user 0.\n"
-                + "App lõi không gỡ được sẽ tự disable/ẩn.\n"
-                + "Gói Security/Updater/Launcher không bao giờ bị gỡ tự động.",
+        if (MessageBox.Show(
+                $"{title} ({packages.Count} app)?\n\n"
+                + method
+                + "Không chặn gói nào — gỡ nhầm app lõi có thể bootloop.",
                 "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
             return;
 
         await RunWithBusyAsync(async () =>
         {
-            foreach (var pkg in allowed)
-                await RemovePackageAsync(serial, pkg);
-            RecordRemoveAction(allowed);
+            foreach (var pkg in packages)
+                await RemovePackageAsync(serial, pkg, shellOnly);
+            RecordRemoveAction(packages.ToList());
         });
     }
 
-    private async Task RemovePackageAsync(string serial, string package)
+    private async Task RemovePackageAsync(string serial, string package, bool shellOnly = false)
     {
-        if (DebloatBlacklist.IsProtected(package))
+        if (!AdbService.IsValidPackage(package))
         {
-            AppendLog($"[SKIP] {package} — {DebloatBlacklist.GetReason(package)}");
+            AppendLog($"[FAIL] Package không hợp lệ: {package}");
             return;
         }
 
-        var r = await Tools.UninstallAsync(serial, package);
+        PackageRemoveResult r;
+        if (shellOnly)
+        {
+            AppendLog($"[shell] pm uninstall --user 0 {package}");
+            r = await Tools.UninstallViaShellAsync(serial, package, fallbackDisable: true);
+        }
+        else
+        {
+            r = await Tools.UninstallAsync(serial, package);
+        }
+
         AppendLog(r.Outcome switch
         {
-            PackageRemoveOutcome.Uninstalled => $"[OK] Đã gỡ {package}",
+            PackageRemoveOutcome.Uninstalled => $"[OK] Đã gỡ {package}" + (shellOnly ? " (shell)" : ""),
             PackageRemoveOutcome.Disabled => $"[WARN] {package}: không gỡ được → đã vô hiệu hóa",
             PackageRemoveOutcome.Hidden => $"[WARN] {package}: không gỡ được → đã ẩn",
             _ => $"[FAIL] {package}: {r.Detail}",

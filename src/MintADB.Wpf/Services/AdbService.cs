@@ -106,7 +106,12 @@ public sealed partial class AdbService
         var r = await TrySettingsPutCoreAsync(serial, ns, key, escaped, ct);
         if (r.Ok) return r;
 
-        if (_settingsElevatedSerials.Add(serial))
+        // Cấp WRITE_SETTINGS / WRITE_SECURE_SETTINGS cho shell rồi thử lại
+        var needElevate = _settingsElevatedSerials.Add(serial)
+                          || r.Combined.Contains("WRITE_SETTINGS", StringComparison.OrdinalIgnoreCase)
+                          || r.Combined.Contains("WRITE_SECURE_SETTINGS", StringComparison.OrdinalIgnoreCase)
+                          || r.Combined.Contains("SecurityException", StringComparison.OrdinalIgnoreCase);
+        if (needElevate)
             await TryElevateSettingsAccessAsync(serial, ct);
 
         r = await TrySettingsPutCoreAsync(serial, ns, key, escaped, ct);
@@ -125,17 +130,29 @@ public sealed partial class AdbService
 
     private async Task TryElevateSettingsAccessAsync(string serial, CancellationToken ct)
     {
+        // system.* cần WRITE_SETTINGS; secure/global cần WRITE_SECURE_SETTINGS
+        await ShellAsync("pm grant com.android.shell android.permission.WRITE_SETTINGS", serial, ct);
         await ShellAsync("pm grant com.android.shell android.permission.WRITE_SECURE_SETTINGS", serial, ct);
+        await ShellAsync("cmd appops set com.android.shell WRITE_SETTINGS allow", serial, ct);
         await ShellAsync("cmd appops set com.android.shell WRITE_SECURE_SETTINGS allow", serial, ct);
+        await ShellAsync("appops set com.android.shell WRITE_SETTINGS allow", serial, ct);
+        await ShellAsync("appops set com.android.shell WRITE_SECURE_SETTINGS allow", serial, ct);
+
+        // Root fallback (Magisk / SU)
+        await ShellAsync("su -c 'pm grant com.android.shell android.permission.WRITE_SETTINGS'", serial, ct);
+        await ShellAsync("su -c 'pm grant com.android.shell android.permission.WRITE_SECURE_SETTINGS'", serial, ct);
+        await ShellAsync("su -c 'cmd appops set com.android.shell WRITE_SETTINGS allow'", serial, ct);
+        await ShellAsync("su -c 'cmd appops set com.android.shell WRITE_SECURE_SETTINGS allow'", serial, ct);
 
         if (Shizuku is null) return;
 
         var status = await Shizuku.GetStatusAsync(serial, ct);
         if (!status.Running) return;
 
+        await ShellAsync("pm grant com.android.shell android.permission.WRITE_SETTINGS", serial, ct);
         await ShellAsync("pm grant com.android.shell android.permission.WRITE_SECURE_SETTINGS", serial, ct);
+        await ShellAsync("cmd appops set com.android.shell WRITE_SETTINGS allow", serial, ct);
         await ShellAsync("cmd appops set com.android.shell WRITE_SECURE_SETTINGS allow", serial, ct);
-        await ShellAsync("su -c 'pm grant com.android.shell android.permission.WRITE_SECURE_SETTINGS'", serial, ct);
     }
 
     public async Task<(int Ok, int Fail)> ApplySettingsBatchAsync(

@@ -823,16 +823,17 @@ public partial class MainWindow : Window
         {
             foreach (var app in bloat)
             {
-                var r = await Tools.UninstallAsync(serial, app.Package);
+                AppendLog($"[shell] pm uninstall --user 0 {app.Package}");
+                var r = await Tools.UninstallViaShellAsync(serial, app.Package, fallbackDisable: true);
                 AppendLog(r.Outcome switch
                 {
-                    PackageRemoveOutcome.Uninstalled => $"[OK] Đã gỡ {app.Name}",
+                    PackageRemoveOutcome.Uninstalled => $"[OK] Đã gỡ {app.Name} (shell)",
                     PackageRemoveOutcome.Disabled => $"[WARN] {app.Name}: disable",
                     PackageRemoveOutcome.Hidden => $"[WARN] {app.Name}: ẩn",
                     _ => $"[FAIL] {app.Name}: {r.Detail}",
                 });
             }
-            AppendLog($"[Debloat] Hoàn tất: gỡ {bloat.Count} app rác ROM");
+            AppendLog($"[Debloat] Hoàn tất: gỡ {bloat.Count} app rác ROM qua shell");
         });
     }
 

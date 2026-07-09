@@ -547,13 +547,17 @@
                         <TextBlock Text="Gỡ &amp; tắt app" Style="{StaticResource MacGroupLabelDanger}"/>
                         <Border Style="{StaticResource MacGroupBoxDanger}" Margin="0,0,0,16" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Chọn app trong danh sách hoặc bấm Gỡ/tắt trên từng dòng. App lõi sẽ tự disable/ẩn."
+                                <TextBlock Text="Chọn app trong danh sách hoặc gõ package tùy chỉnh. App hệ thống gỡ bằng shell: pm uninstall --user 0. App lõi không gỡ được sẽ tự disable/ẩn."
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
                                 <WrapPanel>
                                     <Button x:Name="BtnRemoveOrDisable" Content="Gỡ / tắt (đã chọn)"
                                             Click="RemoveOrDisable_Click"
                                             Style="{StaticResource MacBtnDestructive}"/>
+                                    <Button x:Name="BtnUninstallSystemShell" Content="Gỡ hệ thống (shell)"
+                                            Click="UninstallSystemShell_Click"
+                                            Style="{StaticResource MacBtnDestructive}"
+                                            ToolTip="Gỡ app hệ thống/rác ROM bằng adb shell: pm uninstall --user 0 (không cần root)"/>
                                     <Button x:Name="BtnDisableApps" Content="Tắt app (đã chọn)"
                                             Click="DisableApps_Click"
                                             Style="{StaticResource MacBtnSecondary}"/>

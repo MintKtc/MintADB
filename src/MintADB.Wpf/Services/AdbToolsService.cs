@@ -84,43 +84,132 @@ public sealed class AdbToolsService(AdbService adb)
     public async Task<PackageRemoveResult> UninstallAsync(
         string serial, string package, bool keepData = false, CancellationToken ct = default)
     {
-        static bool IsPmSuccess(ProcessResult r) =>
-            r.Ok || r.Combined.Contains("Success", StringComparison.OrdinalIgnoreCase);
+        if (!AdbService.IsValidPackage(package))
+            return new PackageRemoveResult(PackageRemoveOutcome.Failed, "Package name không hợp lệ");
 
-        static bool IsShellFailure(string text) =>
-            text.Contains("Error", StringComparison.OrdinalIgnoreCase)
-            || text.Contains("Exception", StringComparison.OrdinalIgnoreCase)
-            || text.Contains("not found", StringComparison.OrdinalIgnoreCase)
-            || text.Contains("Failure", StringComparison.OrdinalIgnoreCase);
+        // Ưu tiên gỡ bằng shell (app hệ thống / rác ROM: pm uninstall --user 0)
+        var shell = await UninstallViaShellAsync(serial, package, keepData, allowRoot: true, ct: ct);
+        if (shell.Outcome == PackageRemoveOutcome.Uninstalled)
+            return shell;
 
-        // App hệ thống / rác ROM Xiaomi: gỡ khỏi user 0 (không cần root)
-        var user0 = keepData
-            ? $"pm uninstall -k --user 0 {package}"
-            : $"pm uninstall --user 0 {package}";
-        var r = await adb.ShellAsync(user0, serial, ct);
-        if (IsPmSuccess(r))
-            return new PackageRemoveResult(PackageRemoveOutcome.Uninstalled, r.Combined);
-
-        // App cài từ Play / APK người dùng
-        var args = keepData
-            ? new[] { "shell", "pm", "uninstall", "-k", package }
-            : new[] { "uninstall", package };
-        r = await adb.RunAsync(args, serial, ct);
-        if (IsPmSuccess(r))
-            return new PackageRemoveResult(PackageRemoveOutcome.Uninstalled, r.Combined);
+        // App user: adb uninstall (xóa hoàn toàn khỏi thiết bị)
+        if (!keepData)
+        {
+            var r = await adb.RunAsync(["uninstall", package], serial, ct);
+            if (IsPmSuccess(r))
+                return new PackageRemoveResult(PackageRemoveOutcome.Uninstalled, r.Combined);
+        }
 
         // App lõi không gỡ được → vô hiệu hóa
-        var disabled = await adb.ShellAsync($"pm disable-user --user 0 {package}", serial, ct);
+        var q = AdbService.ShellSingleQuote(package);
+        var disabled = await adb.ShellAsync($"pm disable-user --user 0 {q}", serial, ct);
         if (disabled.Ok && !IsShellFailure(disabled.Combined))
             return new PackageRemoveResult(PackageRemoveOutcome.Disabled, disabled.Combined);
 
         // Fallback cuối: ẩn khỏi launcher
-        var hidden = await adb.ShellAsync($"pm hide --user 0 {package}", serial, ct);
+        var hidden = await adb.ShellAsync($"pm hide --user 0 {q}", serial, ct);
+        if (hidden.Ok && !IsShellFailure(hidden.Combined))
+            return new PackageRemoveResult(PackageRemoveOutcome.Hidden, hidden.Combined);
+
+        return new PackageRemoveResult(
+            PackageRemoveOutcome.Failed,
+            string.IsNullOrWhiteSpace(shell.Detail) ? disabled.Combined : shell.Detail);
+    }
+
+    /// <summary>
+    /// Gỡ app (kể cả hệ thống) chỉ qua <c>adb shell</c> — không dùng <c>adb uninstall</c>.
+    /// Chuỗi lệnh: <c>pm uninstall --user 0</c> → <c>cmd package uninstall</c> → multi-user → (tuỳ chọn) root.
+    /// Nếu không gỡ được: disable-user / hide.
+    /// </summary>
+    public async Task<PackageRemoveResult> UninstallViaShellAsync(
+        string serial,
+        string package,
+        bool keepData = false,
+        bool allowRoot = true,
+        bool fallbackDisable = false,
+        CancellationToken ct = default)
+    {
+        if (!AdbService.IsValidPackage(package))
+            return new PackageRemoveResult(PackageRemoveOutcome.Failed, "Package name không hợp lệ");
+
+        var q = AdbService.ShellSingleQuote(package);
+        var keep = keepData ? "-k " : "";
+
+        // 1) Gỡ khỏi user 0 — cách chuẩn cho app hệ thống / preinstall (không cần root)
+        var r = await adb.ShellAsync($"pm uninstall {keep}--user 0 {q}", serial, ct);
+        if (IsPmSuccess(r))
+            return new PackageRemoveResult(PackageRemoveOutcome.Uninstalled, r.Combined);
+
+        // 2) API package manager mới hơn
+        r = await adb.ShellAsync($"cmd package uninstall {keep}--user 0 {q}", serial, ct);
+        if (IsPmSuccess(r))
+            return new PackageRemoveResult(PackageRemoveOutcome.Uninstalled, r.Combined);
+
+        // 3) Thử user khác (work profile) — bỏ qua user 0 vì đã thử
+        foreach (var userId in await ListUserIdsAsync(serial, ct))
+        {
+            if (userId == 0) continue;
+            r = await adb.ShellAsync($"pm uninstall {keep}--user {userId} {q}", serial, ct);
+            if (IsPmSuccess(r))
+                return new PackageRemoveResult(PackageRemoveOutcome.Uninstalled, r.Combined);
+        }
+
+        // 4) Root (Magisk): gỡ khi shell thường bị chặn
+        if (allowRoot)
+        {
+            r = await adb.ShellAsync($"su -c pm uninstall {keep}--user 0 {q}", serial, ct);
+            if (IsPmSuccess(r))
+                return new PackageRemoveResult(PackageRemoveOutcome.Uninstalled, r.Combined);
+        }
+
+        if (!fallbackDisable)
+            return new PackageRemoveResult(PackageRemoveOutcome.Failed, r.Combined);
+
+        var disabled = await adb.ShellAsync($"pm disable-user --user 0 {q}", serial, ct);
+        if (disabled.Ok && !IsShellFailure(disabled.Combined))
+            return new PackageRemoveResult(PackageRemoveOutcome.Disabled, disabled.Combined);
+
+        var hidden = await adb.ShellAsync($"pm hide --user 0 {q}", serial, ct);
         if (hidden.Ok && !IsShellFailure(hidden.Combined))
             return new PackageRemoveResult(PackageRemoveOutcome.Hidden, hidden.Combined);
 
         return new PackageRemoveResult(PackageRemoveOutcome.Failed, r.Combined);
     }
+
+    private async Task<IReadOnlyList<int>> ListUserIdsAsync(string serial, CancellationToken ct)
+    {
+        var r = await adb.ShellAsync("pm list users", serial, ct);
+        if (string.IsNullOrWhiteSpace(r.Combined))
+            return [0];
+
+        var ids = new List<int>();
+        foreach (var line in r.Combined.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
+        {
+            // UserInfo{0:Owner:c13} / UserInfo{10:Work:...}
+            var start = line.IndexOf('{');
+            var colon = line.IndexOf(':', start + 1);
+            if (start < 0 || colon <= start) continue;
+            if (int.TryParse(line.AsSpan(start + 1, colon - start - 1), out var id) && !ids.Contains(id))
+                ids.Add(id);
+        }
+
+        if (ids.Count == 0)
+            ids.Add(0);
+        return ids;
+    }
+
+    private static bool IsPmSuccess(ProcessResult r) =>
+        r.Combined.Contains("Success", StringComparison.OrdinalIgnoreCase)
+        && !r.Combined.Contains("Failure", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsShellFailure(string text) =>
+        text.Contains("Error", StringComparison.OrdinalIgnoreCase)
+        || text.Contains("Exception", StringComparison.OrdinalIgnoreCase)
+        || text.Contains("Failure", StringComparison.OrdinalIgnoreCase)
+        || text.Contains("SecurityException", StringComparison.OrdinalIgnoreCase)
+        || text.Contains("DELETE_FAILED", StringComparison.OrdinalIgnoreCase)
+        || (text.Contains("not found", StringComparison.OrdinalIgnoreCase)
+            && !text.Contains("Success", StringComparison.OrdinalIgnoreCase));
 
     public Task<ProcessResult> DisablePackageAsync(string serial, string package, CancellationToken ct = default)
         => adb.ShellAsync($"pm disable-user --user 0 {package}", serial, ct);
@@ -360,15 +449,46 @@ public sealed class AdbToolsService(AdbService adb)
         var lang = parts[0];
         var country = parts[1];
 
-        var primary = await adb.ShellAsync($"settings put system system_locales {normalized}", serial, ct);
+        // 1) settings put system — tự cấp WRITE_SETTINGS cho com.android.shell
+        var primary = await adb.SettingsPutAsync(serial, "system", "system_locales", normalized, ct);
 
+        // 2) cmd locale (Android 13+ / HyperOS — thường không cần WRITE_SETTINGS)
+        var cmdLocale = await adb.ShellAsync($"cmd locale set-locale {normalized}", serial, ct);
+        if (IsLocaleCommandFailed(cmdLocale))
+            cmdLocale = await adb.ShellAsync($"cmd locale set-locales {normalized}", serial, ct);
+
+        // 3) persist props (cần setprop / root trên một số máy)
         await adb.ShellAsync($"setprop persist.sys.locale {normalized}", serial, ct);
         await adb.ShellAsync($"setprop persist.sys.language {lang}", serial, ct);
         await adb.ShellAsync($"setprop persist.sys.country {country}", serial, ct);
-        await adb.ShellAsync($"cmd locale set-locale {normalized}", serial, ct);
+        await adb.ShellAsync($"su -c 'setprop persist.sys.locale {normalized}'", serial, ct);
+        await adb.ShellAsync($"su -c 'setprop persist.sys.language {lang}'", serial, ct);
+        await adb.ShellAsync($"su -c 'setprop persist.sys.country {country}'", serial, ct);
+
         await adb.ShellAsync("am broadcast -a android.intent.action.LOCALE_CHANGED", serial, ct);
 
-        return primary;
+        if (primary.Ok || !IsLocaleCommandFailed(cmdLocale))
+            return new ProcessResult(0, normalized, CombineDetails(primary, cmdLocale));
+
+        return new ProcessResult(
+            1,
+            "",
+            "Không đặt được locale. Thử: bật USB debugging (Security settings), root, hoặc Shizuku.\n"
+            + CombineDetails(primary, cmdLocale));
+    }
+
+    private static bool IsLocaleCommandFailed(ProcessResult r) =>
+        r.Combined.Contains("SecurityException", StringComparison.OrdinalIgnoreCase)
+        || r.Combined.Contains("Exception", StringComparison.OrdinalIgnoreCase)
+        || r.Combined.Contains("Unknown command", StringComparison.OrdinalIgnoreCase)
+        || r.Combined.Contains("WRITE_SETTINGS", StringComparison.OrdinalIgnoreCase)
+        || (!r.Ok && !string.IsNullOrWhiteSpace(r.Combined));
+
+    private static string CombineDetails(ProcessResult a, ProcessResult b)
+    {
+        var parts = new[] { a.Combined, b.Combined }
+            .Where(s => !string.IsNullOrWhiteSpace(s));
+        return string.Join("\n", parts);
     }
 
     public async Task<string> GetSystemLocaleStatusAsync(string serial, CancellationToken ct = default)
