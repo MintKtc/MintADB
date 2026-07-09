@@ -656,13 +656,19 @@ public sealed class AdbToolsService(AdbService adb)
 
     public bool TryLaunchScrcpy(string serial, int maxSize, bool stayAwake, out string message)
     {
+        ScrcpyLocator.ClearCache();
+        // Repair local deploy if user reinstalled / uninstalled cleaned platform-tools.
+        try { PlatformToolsLocator.EnsureScrcpyDeployed(); } catch { /* best-effort */ }
+
         var scrcpy = ScrcpyLocator.Find(adb.AdbPath);
         if (scrcpy is null)
         {
             message = "Không tìm thấy scrcpy.exe.\n\n"
-                      + "Gợi ý:\n"
-                      + "· Đặt biến SCRCPY_PATH trỏ tới scrcpy.exe\n"
-                      + "· Hoặc copy scrcpy vào cạnh adb.exe\n\n"
+                      + "Cài lại bằng bộ cài MintADB v1.0.1 trở lên (có kèm scrcpy):\n"
+                      + "  release\\MintADB-Setup-v1.0.1-win-x64.exe\n\n"
+                      + "Hoặc:\n"
+                      + "· Đặt biến SCRCPY_PATH trỏ tới scrcpy.exe (cùng thư mục có scrcpy-server)\n"
+                      + "· Copy cả thư mục scrcpy vào PlatformTools\\scrcpy\\\n\n"
                       + "Đã tìm:\n"
                       + ScrcpyLocator.SearchSummary(adb.AdbPath);
             return false;

@@ -100,15 +100,88 @@ public static class PlatformToolsLocator
             Directory.CreateDirectory(InstalledToolsDir);
             CopyDirectory(BundledToolsDir, InstalledToolsDir);
 
+            // Ensure scrcpy package is present after deploy (mirror needs it next to tools).
+            EnsureScrcpyDeployed();
+
             var marker = Path.Combine(InstalledToolsDir, ".mintadb-installed.txt");
             await File.WriteAllTextAsync(marker,
                 $"MintADB platform-tools\nInstalled: {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n", ct);
 
-            return (true, $"Đã triển khai ADB/Fastboot vào:\n{InstalledToolsDir}");
+            ScrcpyLocator.ClearCache();
+            var scrcpyOk = ScrcpyLocator.Find(Path.Combine(InstalledToolsDir, "adb.exe")) is not null;
+            var msg = $"Đã triển khai ADB/Fastboot vào:\n{InstalledToolsDir}";
+            if (!scrcpyOk)
+                msg += "\n[WARN] scrcpy chưa có — mirror màn hình sẽ lỗi cho đến khi cài lại bản có scrcpy.";
+
+            return (true, msg);
         }
         catch (Exception ex)
         {
             return (false, ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Copy PlatformTools\scrcpy (or flat scrcpy.exe package) into the local deploy dir if missing.
+    /// </summary>
+    public static void EnsureScrcpyDeployed()
+    {
+        var destSub = Path.Combine(InstalledToolsDir, "scrcpy");
+        var destFlat = Path.Combine(InstalledToolsDir, "scrcpy.exe");
+        if (ScrcpyLocator.IsUsable(Path.Combine(destSub, "scrcpy.exe"))
+            || ScrcpyLocator.IsUsable(destFlat))
+            return;
+
+        var sources = new[]
+        {
+            Path.Combine(BundledToolsDir, "scrcpy"),
+            Path.Combine(AppContext.BaseDirectory, "PlatformTools", "scrcpy"),
+            Path.Combine(AppContext.BaseDirectory, "scrcpy"),
+        };
+
+        foreach (var src in sources)
+        {
+            var srcExe = Path.Combine(src, "scrcpy.exe");
+            if (!File.Exists(srcExe)) continue;
+            Directory.CreateDirectory(destSub);
+            CopyDirectory(src, destSub);
+            // Also place a usable flat copy next to adb for older locators.
+            if (ScrcpyLocator.IsUsable(Path.Combine(destSub, "scrcpy.exe")))
+            {
+                try
+                {
+                    foreach (var file in Directory.EnumerateFiles(destSub))
+                    {
+                        var name = Path.GetFileName(file);
+                        if (name.Equals("adb.exe", StringComparison.OrdinalIgnoreCase)
+                            || name.StartsWith("AdbWin", StringComparison.OrdinalIgnoreCase))
+                            continue; // do not overwrite platform-tools adb with scrcpy's bundled adb
+                        File.Copy(file, Path.Combine(InstalledToolsDir, name), overwrite: true);
+                    }
+                }
+                catch
+                {
+                    // Subfolder copy is enough.
+                }
+            }
+
+            ScrcpyLocator.ClearCache();
+            return;
+        }
+
+        // Flat layout: PlatformTools\scrcpy.exe + scrcpy-server
+        var flatBundled = Path.Combine(BundledToolsDir, "scrcpy.exe");
+        if (ScrcpyLocator.IsUsable(flatBundled))
+        {
+            foreach (var name in new[] { "scrcpy.exe", "scrcpy-server", "SDL3.dll",
+                         "avcodec-62.dll", "avformat-62.dll", "avutil-60.dll",
+                         "swresample-6.dll", "libusb-1.0.dll" })
+            {
+                var f = Path.Combine(BundledToolsDir, name);
+                if (File.Exists(f))
+                    File.Copy(f, Path.Combine(InstalledToolsDir, name), overwrite: true);
+            }
+            ScrcpyLocator.ClearCache();
         }
     }
 

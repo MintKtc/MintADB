@@ -38,7 +38,8 @@ public sealed class InstallBootstrapService(AdbService adb)
         }
     }
 
-    private const int CurrentVersion = 1;
+    // Bump when deploy layout changes (e.g. scrcpy must be re-copied after upgrade).
+    private const int CurrentVersion = 2;
 
     public async Task<BootstrapResult> RunAsync(
         bool offerDriverInstall,
@@ -64,7 +65,15 @@ public sealed class InstallBootstrapService(AdbService adb)
         {
             toolsMessage = "Thieu PlatformTools cạnh app.";
             log?.Invoke($"[WARN] {toolsMessage}");
+            // Still try to repair scrcpy from any remaining local copy.
+            PlatformToolsLocator.EnsureScrcpyDeployed();
         }
+
+        ScrcpyLocator.ClearCache();
+        var scrcpy = ScrcpyLocator.Find(adb.AdbPath);
+        log?.Invoke(scrcpy is not null
+            ? $"[OK] scrcpy: {scrcpy}"
+            : "[WARN] scrcpy chua co — can cai ban MintADB co kem scrcpy (v1.0.1+).");
 
         adb.ReloadPaths();
 
