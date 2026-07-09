@@ -3,8 +3,8 @@ dist/
 **/bin/
 **/obj/
 
-# Release installer binaries (build locally → release\)
-release/*.exe
+# Release: large .exe tracked via Git LFS (see .gitattributes)
+# release/*.zip still ignored unless needed
 release/*.zip
 !release/README.md
 
