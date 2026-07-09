@@ -12,7 +12,9 @@ release/*.zip
 DisplayHz/
 DeviceSpoof/
 Recordings/
-Screenshots/
+# Runtime device captures (Desktop\MintADB\Screenshots) — keep docs/screenshots for README
+/Screenshots/
+**/Desktop/MintADB/Screenshots/
 DisplayHzBackup.json
 
 # Large bundled binaries (see docs/BUNDLED-ASSETS.md)

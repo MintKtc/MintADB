@@ -14,6 +14,16 @@ Desktop ADB toolkit for **Xiaomi / HyperOS** — optimize, debloat, lock refresh
 
 Công cụ ADB desktop cho **Xiaomi / HyperOS** — tối ưu, debloat, khóa Hz, spoof thiết bị, Shizuku, fastboot và nhiều tiện ích khác.
 
+### Screenshots / Ảnh chụp màn hình
+
+| Optimize / Tối ưu | Tools / Công cụ | System / Hệ thống |
+|:---:|:---:|:---:|
+| ![Optimize](docs/screenshots/01-main-optimize.png) | ![Tools](docs/screenshots/02-tools.png) | ![System](docs/screenshots/03-system.png) |
+
+| Scrcpy | Fastboot |
+|:---:|:---:|
+| ![Scrcpy](docs/screenshots/04-scrcpy.png) | ![Fastboot](docs/screenshots/05-fastboot.png) |
+
 ---
 
 ## English
@@ -86,10 +96,9 @@ Công cụ ADB desktop cho **Xiaomi / HyperOS** — tối ưu, debloat, khóa Hz
 
 ### Download
 
-[Releases](https://github.com/MintKtc/MintADB/releases):
+[Releases](https://github.com/MintKtc/MintADB/releases/tag/v1.0.2):
 
-- `MintADB-Setup-v1.0.0-win-x64.exe` — installer (recommended)
-- `MintADB-v1.0.0-win-x64.zip` — portable
+- `MintADB-Setup-v1.0.2-win-x64.exe` — installer (recommended, includes scrcpy)
 
 ### Development
 
@@ -193,10 +202,9 @@ Fork → branch → PR. Report issues on [GitHub Issues](https://github.com/Mint
 
 ### Tải bản build
 
-[Releases](https://github.com/MintKtc/MintADB/releases):
+[Releases](https://github.com/MintKtc/MintADB/releases/tag/v1.0.2):
 
-- `MintADB-Setup-v1.0.0-win-x64.exe` — installer (khuyến nghị)
-- `MintADB-v1.0.0-win-x64.zip` — portable
+- `MintADB-Setup-v1.0.2-win-x64.exe` — installer (khuyến nghị, kèm scrcpy)
 
 ### Phát triển
 
