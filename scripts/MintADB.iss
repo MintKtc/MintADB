@@ -3,7 +3,7 @@
 ; Requires: dist\MintADB\ from publish.ps1 first
 
 #define AppName "MintADB"
-#define AppVersion "1.0.0"
+#define AppVersion "1.0.1"
 #define AppPublisher "MINT_HD"
 #define AppExe "MintADB.exe"
 #define PublishDir "..\dist\MintADB"
@@ -35,6 +35,9 @@ WizardStyle=modern
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 PrivilegesRequired=admin
+; Close adb/scrcpy/MintADB holding files during upgrade
+CloseApplications=yes
+RestartApplications=no
 SetupIconFile={#AppIcon}
 UninstallDisplayIcon={app}\{#AppExe}
 

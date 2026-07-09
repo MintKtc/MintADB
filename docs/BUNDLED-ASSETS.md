@@ -20,6 +20,30 @@ Required: `adb.exe`, `fastboot.exe`, `AdbWinApi.dll`, `AdbWinUsbApi.dll`.
 
 ---
 
+## scrcpy (~20–30 MB, required for screen mirror)
+
+**EN:** Download [scrcpy for Windows 64-bit](https://github.com/Genymobile/scrcpy/releases/latest) (`scrcpy-win64-*.zip`) and extract so that `scrcpy.exe` is at:
+
+**VI:** Tải [scrcpy win64](https://github.com/Genymobile/scrcpy/releases/latest) (`scrcpy-win64-*.zip`) và giải nén để có `scrcpy.exe` tại:
+
+```
+src/MintADB.Wpf/PlatformTools/scrcpy/scrcpy.exe
+```
+
+Also accepted by the app (first match wins):
+
+```
+PlatformTools/scrcpy.exe          (same folder as adb.exe)
+PlatformTools/scrcpy/scrcpy.exe   (recommended)
+SCRCPY_PATH env var               (full path to scrcpy.exe)
+Desktop\MintADB\scrcpy\scrcpy.exe
+Desktop\scrcpy\scrcpy.exe
+```
+
+`publish.ps1` can auto-download this folder when missing.
+
+---
+
 ## Drivers (~9 MB)
 
 **EN:** Download [Google USB Driver](https://developer.android.com/studio/run/win-usb) and place in:

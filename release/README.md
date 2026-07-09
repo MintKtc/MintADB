@@ -3,18 +3,20 @@
 Thư mục **mặc định** chứa file cài đặt sau khi build:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\publish.ps1 -Profile installer -Version 1.0.0
+powershell -ExecutionPolicy Bypass -File scripts\publish.ps1 -Profile installer -Version 1.0.1
 ```
 
 ## Output
 
 | File | Mô tả |
 |------|--------|
-| `MintADB-Setup-v1.0.0-win-x64.exe` | Installer Windows x64 (self-contained) |
+| `MintADB-Setup-v1.0.1-win-x64.exe` | Installer Windows x64 (self-contained) + scrcpy 4.0 |
+| `MintADB-Setup-v1.0.0-win-x64.exe` | Bản cũ (không kèm scrcpy) |
 
 **Cài mặc định trên PC:** `C:\Program Files\MintADB`
 
 ## Ghi chú
 
-- File `.exe` **không** commit lên Git (dung lượng lớn) — tải từ [GitHub Releases](https://github.com/MintKtc/MintADB/releases).
+- File `.exe` lớn được track bằng **Git LFS** (`release/*.exe`).
 - Bản portable (thư mục chạy trực tiếp): `..\dist\MintADB\`
+- scrcpy nằm trong `PlatformTools\scrcpy\` sau khi cài (publish.ps1 tự bundle).
