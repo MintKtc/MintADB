@@ -3,6 +3,11 @@ dist/
 **/bin/
 **/obj/
 
+# Release installer binaries (build locally → release\)
+release/*.exe
+release/*.zip
+!release/README.md
+
 # User / runtime data
 DisplayHz/
 DeviceSpoof/

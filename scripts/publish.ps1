@@ -88,6 +88,12 @@ if ($Profile -eq 'installer') {
         "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe"
     ) | Where-Object { Test-Path $_ } | Select-Object -First 1
 
+    # Thư mục mặc định giao installer cho user / upload release
+    $ReleaseDir = Join-Path $Root 'release'
+    if (-not (Test-Path $ReleaseDir)) {
+        New-Item -ItemType Directory -Path $ReleaseDir -Force | Out-Null
+    }
+
     if (-not $iscc) {
         Write-Host '[WARN] Inno Setup not found. Install from https://jrsoftware.org/isinfo.php' -ForegroundColor Yellow
         Write-Host '       Then run: iscc scripts\MintADB.iss'
@@ -97,8 +103,11 @@ if ($Profile -eq 'installer') {
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         $setup = Get-ChildItem (Join-Path $Dist 'MintADB-Setup-*.exe') | Sort-Object LastWriteTime -Descending | Select-Object -First 1
         if ($setup) {
+            $dest = Join-Path $ReleaseDir $setup.Name
+            Copy-Item $setup.FullName $dest -Force
             $setupMb = [math]::Round($setup.Length / 1MB, 1)
             Write-Host "[OK] Installer $($setup.FullName) ($setupMb megabytes)" -ForegroundColor Green
+            Write-Host "[OK] Default folder: $dest" -ForegroundColor Green
         }
     }
 }

@@ -22,9 +22,11 @@ VersionInfoDescription=MintADB — ADB tool for Xiaomi / HyperOS by MINT_HD
 VersionInfoCopyright=Copyright (C) 2026 MINT_HD
 VersionInfoProductName={#AppName}
 VersionInfoProductVersion={#AppVersion}
+; Cài mặc định: C:\Program Files\MintADB
 DefaultDirName={autopf}\{#AppName}
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes
+; Build ra dist\ — publish.ps1 copy sang release\
 OutputDir=..\dist
 OutputBaseFilename=MintADB-Setup-v{#AppVersion}-win-x64
 Compression=lzma2/ultra64
