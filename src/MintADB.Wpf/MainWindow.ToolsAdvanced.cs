@@ -284,22 +284,6 @@ public partial class MainWindow
         });
     }
 
-    private async void ListRemote_Click(object sender, RoutedEventArgs e)
-    {
-        var serial = RequireDevice();
-        if (serial is null) return;
-
-        var path = GetBoxText(ListRemoteBox);
-        if (string.IsNullOrEmpty(path)) path = "/sdcard/";
-
-        await RunToolAsync("List remote", async () =>
-        {
-            var r = await Tools.ListRemoteAsync(serial, path);
-            AppendLog($"--- ls {path} ---");
-            AppendLog(string.IsNullOrWhiteSpace(r.Combined) ? "(trống)" : r.Combined);
-        });
-    }
-
     private async void BackupApk_Click(object sender, RoutedEventArgs e)
         => await RunOnSelectedPackages("Backup APK", async (serial, pkg) =>
         {

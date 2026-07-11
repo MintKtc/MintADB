@@ -450,9 +450,9 @@ public partial class MainWindow
 
         await RunToolAsync("File Explorer", async () =>
         {
-            var content = await Tools.ListDirectoryAsync(serial, path);
+            var r = await Tools.ListRemoteAsync(serial, path);
             AppendLog($"--- {path} ---");
-            AppendLog(content);
+            AppendLog(string.IsNullOrWhiteSpace(r.Combined) ? "(trống)" : r.Combined);
         });
     }
 

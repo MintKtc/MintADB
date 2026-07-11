@@ -199,8 +199,8 @@ public partial class MainWindow
             AppendLog(ok ? $"[Setup] {message}" : $"[Setup] Lỗi: {message}");
 
             ReloadPlatformTools();
-            await _adb.RunGlobalAsync(["kill-server"]);
-            await _adb.RunGlobalAsync(["start-server"]);
+            await _adb.KillServerAsync();
+            await _adb.StartServerAsync();
             await RefreshPlatformToolsStatusAsync();
 
             MessageBox.Show(
@@ -267,8 +267,8 @@ public partial class MainWindow
         try
         {
             AppendLog("[Setup] Khởi động lại ADB server...");
-            await _adb.RunGlobalAsync(["kill-server"]);
-            var r = await _adb.RunGlobalAsync(["start-server"]);
+            await _adb.KillServerAsync();
+            var r = await _adb.StartServerAsync();
             AppendLog(r.Ok ? "[OK] ADB server đã khởi động" : $"[FAIL] {r.Combined}");
             await RefreshPlatformToolsStatusAsync(runDriverCheck: true);
             await RefreshDevicesAsync();

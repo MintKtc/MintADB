@@ -74,6 +74,39 @@ public sealed partial class AdbService
     public Task<ProcessResult> ShellAsync(string command, string? serial = null, CancellationToken ct = default)
         => RunAsync(["shell", command], serial, ct);
 
+    /// <summary>Shared shell for WLAN IPv4 (Network / quick info).</summary>
+    public const string WlanIpShell =
+        "ip -f inet addr show wlan0 2>/dev/null | grep inet | awk '{print $2}' | cut -d/ -f1";
+
+    public Task<ProcessResult> KillServerAsync(CancellationToken ct = default)
+        => RunGlobalAsync(["kill-server"], ct);
+
+    public Task<ProcessResult> StartServerAsync(CancellationToken ct = default)
+        => RunGlobalAsync(["start-server"], ct);
+
+    public Task<ProcessResult> PmGrantAsync(
+        string serial, string package, string permission, CancellationToken ct = default)
+        => ShellAsync($"pm grant {package} {permission}", serial, ct);
+
+    public Task<ProcessResult> PmRevokeAsync(
+        string serial, string package, string permission, CancellationToken ct = default)
+        => ShellAsync($"pm revoke {package} {permission}", serial, ct);
+
+    public Task<ProcessResult> AppOpsSetAsync(
+        string serial, string package, string op, string mode, CancellationToken ct = default)
+        => ShellAsync($"cmd appops set {package} {op} {mode}", serial, ct);
+
+    /// <summary>Legacy <c>appops set</c> (no <c>cmd</c>) for older ROMs.</summary>
+    public Task<ProcessResult> AppOpsSetLegacyAsync(
+        string serial, string package, string op, string mode, CancellationToken ct = default)
+        => ShellAsync($"appops set {package} {op} {mode}", serial, ct);
+
+    public async Task<string> GetWlanIpAsync(string serial, CancellationToken ct = default)
+    {
+        var r = await ShellAsync(WlanIpShell, serial, ct);
+        return r.Output.Trim();
+    }
+
     public async Task<string> GetPropAsync(string serial, string prop, CancellationToken ct = default)
     {
         var r = await ShellAsync($"getprop {prop}", serial, ct);

@@ -170,17 +170,11 @@ public sealed class XiaomiCnOptimizer(AdbService adb)
 
         // ── PHASE 2: Grant permissions ──
         log?.Invoke("[Phase 2] Grant permissions...");
-        foreach (var perm in GrantPermissions)
-        {
-            var r = await adb.ShellAsync($"pm grant {pkg} {perm}", serial, ct);
-            if (r.Ok || r.Combined.Contains("already", StringComparison.OrdinalIgnoreCase))
-                log?.Invoke($"  [OK] {perm.Split('.')[^1]}");
-        }
+        await GrantRuntimePermissionsCoreAsync(serial, pkg, GrantPermissions, indent: true, log, ct);
 
         // ── PHASE 3: MIUI whitelists ──
         log?.Invoke("[Phase 3] MIUI whitelists...");
-        foreach (var key in MiuiPkgWhitelists)
-            await AppendWhitelistAsync(serial, key, [pkg], log, ct);
+        await ApplyMiuiPkgWhitelistsAsync(serial, pkg, log, ct);
 
         if (app.Processes.Length > 0)
             await AppendWhitelistAsync(serial, "power_proc_white_list", app.Processes, log, ct);
@@ -189,33 +183,15 @@ public sealed class XiaomiCnOptimizer(AdbService adb)
 
         // ── PHASE 4: DeviceIdle + Standby ──
         log?.Invoke("[Phase 4] DeviceIdle + Standby...");
-        var idle = await adb.ShellAsync($"cmd deviceidle whitelist +{pkg}", serial, ct);
-        log?.Invoke($"  [{(idle.Ok ? "OK" : "FAIL")}] deviceidle whitelist");
-
-        var bucket = await adb.ShellAsync($"am set-standby-bucket {pkg} active", serial, ct);
-        log?.Invoke($"  [{(bucket.Ok ? "OK" : "FAIL")}] standby-bucket active");
+        await ApplyDeviceIdleAndStandbyAsync(serial, pkg, tryDumpsys: false, indent: true, log, ct);
 
         // ── PHASE 5: AppOps ──
         log?.Invoke("[Phase 5] AppOps...");
-        foreach (var mode in AppOpsModes)
-        {
-            var r = await adb.ShellAsync($"cmd appops set {pkg} {mode} allow", serial, ct);
-            log?.Invoke($"  [{(r.Ok ? "OK" : "WARN")}] {mode}");
-        }
+        await ApplyAppOpsAllowAsync(serial, pkg, AppOpsModes, indent: true, log, ct);
 
         // ── PHASE 6: MIUI Autostart ──
         log?.Invoke("[Phase 6] MIUI autostart...");
-        var broadcasts = new (string Label, string Cmd)[]
-        {
-            ("POWER_HIDE_MODE", $"am broadcast -a miui.intent.action.POWER_HIDE_MODE_APP_LIST --es package_name {pkg} --ez enable true"),
-            ("OP_AUTO_START allow", $"am broadcast -a miui.intent.action.OP_AUTO_START --es auto_start_service_pkg {pkg} --ez allow true"),
-            ("OP_AUTO_START enable", $"am broadcast -a miui.intent.action.OP_AUTO_START --es auto_start_service_pkg {pkg} --ez enable true"),
-        };
-        foreach (var (label, cmd) in broadcasts)
-        {
-            var r = await adb.ShellAsync(cmd, serial, ct);
-            log?.Invoke($"  [{(r.Ok ? "OK" : "WARN")}] {label}");
-        }
+        await ApplyMiuiAutostartBroadcastsAsync(serial, pkg, indent: true, log, ct);
 
         // ── PHASE 7: Tắt MIUI restrictions ──
         log?.Invoke("[Phase 7] Tắt MIUI restrictions...");
@@ -252,60 +228,107 @@ public sealed class XiaomiCnOptimizer(AdbService adb)
 
         log?.Invoke($"--- Tắt tối ưu pin: {package} ---");
 
-        foreach (var key in MiuiPkgWhitelists)
-            await AppendWhitelistAsync(serial, key, [package], log, ct);
+        await ApplyMiuiPkgWhitelistsAsync(serial, package, log, ct);
+        await ApplyDeviceIdleAndStandbyAsync(serial, package, tryDumpsys: true, indent: false, log, ct);
 
-        var idle = await adb.ShellAsync($"dumpsys deviceidle whitelist +{package}", serial, ct);
-        log?.Invoke($"[{(idle.Ok ? "OK" : "FAIL")}] deviceidle whitelist");
+        await ApplyAppOpsAllowAsync(
+            serial, package,
+            ["IGNORE_BATTERY_OPTIMIZATIONS", "RUN_IN_BACKGROUND", "RUN_ANY_IN_BACKGROUND", "WAKE_LOCK"],
+            indent: false, log, ct);
 
-        var idleCmd = await adb.ShellAsync($"cmd deviceidle whitelist +{package}", serial, ct);
-        log?.Invoke($"[{(idleCmd.Ok ? "OK" : "WARN")}] cmd deviceidle whitelist");
+        var grantBat = await adb.PmGrantAsync(
+            serial, package, "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS", ct);
+        log?.Invoke(grantBat.Ok || grantBat.Combined.Contains("already", StringComparison.OrdinalIgnoreCase)
+            ? "[OK] REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
+            : "[WARN] REQUEST_IGNORE_BATTERY_OPTIMIZATIONS");
 
-        var bucket = await adb.ShellAsync($"am set-standby-bucket {package} active", serial, ct);
-        log?.Invoke($"[{(bucket.Ok ? "OK" : "FAIL")}] standby-bucket active");
-
-        foreach (var mode in new[] { "IGNORE_BATTERY_OPTIMIZATIONS", "RUN_IN_BACKGROUND", "RUN_ANY_IN_BACKGROUND", "WAKE_LOCK" })
-        {
-            var r = await adb.ShellAsync($"cmd appops set {package} {mode} allow", serial, ct);
-            log?.Invoke($"[{(r.Ok ? "OK" : "WARN")}] appops {mode}");
-        }
-
-        await adb.ShellAsync($"pm grant {package} android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS", serial, ct);
-        log?.Invoke("[OK] REQUEST_IGNORE_BATTERY_OPTIMIZATIONS");
-
-        await ApplyMiuiAutoStartAsync(serial, package, log, ct);
+        // Autostart only (broadcast + BOOT) — không lặp whitelist/idle đã làm ở trên
+        await ApplyMiuiAutoStartAsync(serial, package, log, ct, includeWhitelistAndIdle: false);
     }
 
     private async Task ApplyMiuiAutoStartAsync(
-        string serial, string package, Action<string>? log, CancellationToken ct)
+        string serial, string package, Action<string>? log, CancellationToken ct,
+        bool includeWhitelistAndIdle = true)
     {
-        foreach (var key in MiuiPkgWhitelists)
-            await AppendWhitelistAsync(serial, key, [package], log, ct);
+        if (includeWhitelistAndIdle)
+        {
+            await ApplyMiuiPkgWhitelistsAsync(serial, package, log, ct);
+            await ApplyDeviceIdleAndStandbyAsync(serial, package, tryDumpsys: false, indent: false, log, ct);
+        }
 
-        var boot = await adb.ShellAsync(
-            $"pm grant {package} android.permission.RECEIVE_BOOT_COMPLETED", serial, ct);
+        var boot = await adb.PmGrantAsync(
+            serial, package, "android.permission.RECEIVE_BOOT_COMPLETED", ct);
         log?.Invoke(boot.Ok || boot.Combined.Contains("already", StringComparison.OrdinalIgnoreCase)
             ? "[OK] RECEIVE_BOOT_COMPLETED"
             : "[WARN] RECEIVE_BOOT_COMPLETED");
 
+        await ApplyMiuiAutostartBroadcastsAsync(serial, package, indent: false, log, ct);
+    }
+
+    private async Task ApplyMiuiPkgWhitelistsAsync(
+        string serial, string package, Action<string>? log, CancellationToken ct)
+    {
+        foreach (var key in MiuiPkgWhitelists)
+            await AppendWhitelistAsync(serial, key, [package], log, ct);
+    }
+
+    private async Task ApplyDeviceIdleAndStandbyAsync(
+        string serial, string package, bool tryDumpsys, bool indent, Action<string>? log, CancellationToken ct)
+    {
+        var p = indent ? "  " : "";
+        if (tryDumpsys)
+        {
+            var idle = await adb.ShellAsync($"dumpsys deviceidle whitelist +{package}", serial, ct);
+            log?.Invoke($"{p}[{(idle.Ok ? "OK" : "FAIL")}] deviceidle whitelist");
+        }
+
+        var idleCmd = await adb.ShellAsync($"cmd deviceidle whitelist +{package}", serial, ct);
+        log?.Invoke($"{p}[{(idleCmd.Ok ? "OK" : "WARN")}] cmd deviceidle whitelist");
+
+        var bucket = await adb.ShellAsync($"am set-standby-bucket {package} active", serial, ct);
+        log?.Invoke($"{p}[{(bucket.Ok ? "OK" : "FAIL")}] standby-bucket active");
+    }
+
+    private async Task ApplyAppOpsAllowAsync(
+        string serial, string package, IEnumerable<string> modes, bool indent,
+        Action<string>? log, CancellationToken ct)
+    {
+        var p = indent ? "  " : "";
+        foreach (var mode in modes)
+        {
+            var r = await adb.AppOpsSetAsync(serial, package, mode, "allow", ct);
+            log?.Invoke($"{p}[{(r.Ok ? "OK" : "WARN")}] appops {mode}");
+        }
+    }
+
+    private async Task ApplyMiuiAutostartBroadcastsAsync(
+        string serial, string package, bool indent, Action<string>? log, CancellationToken ct)
+    {
+        var p = indent ? "  " : "";
         var broadcasts = new (string Label, string Cmd)[]
         {
             ("POWER_HIDE_MODE", $"am broadcast -a miui.intent.action.POWER_HIDE_MODE_APP_LIST --es package_name {package} --ez enable true"),
             ("OP_AUTO_START allow", $"am broadcast -a miui.intent.action.OP_AUTO_START --es auto_start_service_pkg {package} --ez allow true"),
             ("OP_AUTO_START enable", $"am broadcast -a miui.intent.action.OP_AUTO_START --es auto_start_service_pkg {package} --ez enable true"),
         };
-
         foreach (var (label, cmd) in broadcasts)
         {
             var r = await adb.ShellAsync(cmd, serial, ct);
-            log?.Invoke($"[{(r.Ok ? "OK" : "WARN")}] MIUI autostart · {label}");
+            log?.Invoke($"{p}[{(r.Ok ? "OK" : "WARN")}] MIUI autostart · {label}");
         }
+    }
 
-        var bucket = await adb.ShellAsync($"am set-standby-bucket {package} active", serial, ct);
-        log?.Invoke($"[{(bucket.Ok ? "OK" : "FAIL")}] standby-bucket active");
-
-        var idleCmd = await adb.ShellAsync($"cmd deviceidle whitelist +{package}", serial, ct);
-        log?.Invoke($"[{(idleCmd.Ok ? "OK" : "WARN")}] deviceidle whitelist");
+    private async Task GrantRuntimePermissionsCoreAsync(
+        string serial, string package, IEnumerable<string> perms, bool indent,
+        Action<string>? log, CancellationToken ct)
+    {
+        var p = indent ? "  " : "";
+        foreach (var perm in perms)
+        {
+            var r = await adb.PmGrantAsync(serial, package, perm, ct);
+            if (r.Ok || r.Combined.Contains("already", StringComparison.OrdinalIgnoreCase))
+                log?.Invoke($"{p}[OK] {perm.Split('.')[^1]}");
+        }
     }
 
     public async Task GrantPermissionsAsync(
@@ -318,19 +341,8 @@ public sealed class XiaomiCnOptimizer(AdbService adb)
         }
 
         log?.Invoke($"--- Cấp quyền: {package} ---");
-
-        foreach (var perm in GrantPermissions)
-        {
-            var r = await adb.ShellAsync($"pm grant {package} {perm}", serial, ct);
-            if (r.Ok || r.Combined.Contains("already", StringComparison.OrdinalIgnoreCase))
-                log?.Invoke($"[OK] {perm.Split('.')[^1]}");
-        }
-
-        foreach (var mode in AppOpsModes)
-        {
-            await adb.ShellAsync($"cmd appops set {package} {mode} allow", serial, ct);
-            log?.Invoke($"[OK] appops {mode}");
-        }
+        await GrantRuntimePermissionsCoreAsync(serial, package, GrantPermissions, indent: false, log, ct);
+        await ApplyAppOpsAllowAsync(serial, package, AppOpsModes, indent: false, log, ct);
     }
 
     public async Task FullOptimizeAsync(

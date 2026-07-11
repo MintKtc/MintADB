@@ -16,7 +16,7 @@ public sealed class NetworkService(AdbService adb)
     {
         var enabled = await GetWifiEnabledAsync(serial, ct);
         var ssid = (await adb.ShellAsync("dumpsys wifi | grep \"mWifiInfo\" | head -1", serial, ct)).Output.Trim();
-        var ip = (await adb.ShellAsync("ip -f inet addr show wlan0 2>/dev/null | grep inet | awk '{print $2}' | cut -d/ -f1", serial, ct)).Output.Trim();
+        var ip = await adb.GetWlanIpAsync(serial, ct);
         var signal = (await adb.ShellAsync("dumpsys wifi | grep \"mWifiInfo\" | grep -o \"RSSI: [0-9-]*\"", serial, ct)).Output.Trim();
 
         var result = $"WiFi: {(enabled ? "ON" : "OFF")}";
@@ -150,8 +150,8 @@ public sealed class NetworkService(AdbService adb)
             if (dataMatch.Success) lines.Add($"Data: {(dataMatch.Groups[1].Value == "0" ? "In service" : "Out of service")}");
         }
 
-        // IP
-        var ip = (await adb.ShellAsync("ip -f inet addr show wlan0 2>/dev/null | grep inet | awk '{print $2}' | cut -d/ -f1", serial, ct)).Output.Trim();
+        // IP (shared helper — same shell as GetWifiStatus)
+        var ip = await adb.GetWlanIpAsync(serial, ct);
         if (!string.IsNullOrEmpty(ip)) lines.Add($"IP: {ip}");
 
         return string.Join("\n", lines);

@@ -7,23 +7,16 @@ namespace MintADB.Wpf.Services;
 public sealed class AdbToolsService(AdbService adb)
 {
     public string AdbPath => adb.AdbPath;
-    private static readonly string[] InfoProps =
-    [
-        "ro.product.manufacturer", "ro.product.brand", "ro.product.model",
-        "ro.build.display.id", "ro.build.version.release", "ro.build.version.sdk",
-        "ro.miui.ui.version.name", "ro.mi.os.version.name",
-        "ro.miui.region", "ro.serialno", "ro.bootloader", "ro.debuggable",
-    ];
 
     public static string MintAdbDir => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "MintADB");
 
     // ── Server / device ──
     public Task<ProcessResult> KillServerAsync(CancellationToken ct = default)
-        => adb.RunGlobalAsync(["kill-server"], ct);
+        => adb.KillServerAsync(ct);
 
     public Task<ProcessResult> StartServerAsync(CancellationToken ct = default)
-        => adb.RunGlobalAsync(["start-server"], ct);
+        => adb.StartServerAsync(ct);
 
     public Task<ProcessResult> WaitForDeviceAsync(string? serial = null, CancellationToken ct = default)
         => adb.RunAsync(["wait-for-device"], serial, ct);
@@ -100,20 +93,14 @@ public sealed class AdbToolsService(AdbService adb)
                 return new PackageRemoveResult(PackageRemoveOutcome.Uninstalled, r.Combined);
         }
 
-        // App lõi không gỡ được → vô hiệu hóa
-        var q = AdbService.ShellSingleQuote(package);
-        var disabled = await adb.ShellAsync($"pm disable-user --user 0 {q}", serial, ct);
-        if (disabled.Ok && !IsShellFailure(disabled.Combined))
-            return new PackageRemoveResult(PackageRemoveOutcome.Disabled, disabled.Combined);
-
-        // Fallback cuối: ẩn khỏi launcher
-        var hidden = await adb.ShellAsync($"pm hide --user 0 {q}", serial, ct);
-        if (hidden.Ok && !IsShellFailure(hidden.Combined))
-            return new PackageRemoveResult(PackageRemoveOutcome.Hidden, hidden.Combined);
+        // App lõi không gỡ được → disable / hide (một chỗ dùng chung với UninstallViaShell)
+        var fallback = await DisableOrHidePackageAsync(serial, package, ct);
+        if (fallback.Outcome != PackageRemoveOutcome.Failed)
+            return fallback;
 
         return new PackageRemoveResult(
             PackageRemoveOutcome.Failed,
-            string.IsNullOrWhiteSpace(shell.Detail) ? disabled.Combined : shell.Detail);
+            string.IsNullOrWhiteSpace(shell.Detail) ? fallback.Detail : shell.Detail);
     }
 
     /// <summary>
@@ -165,6 +152,17 @@ public sealed class AdbToolsService(AdbService adb)
         if (!fallbackDisable)
             return new PackageRemoveResult(PackageRemoveOutcome.Failed, r.Combined);
 
+        var fallback = await DisableOrHidePackageAsync(serial, package, ct);
+        return fallback.Outcome != PackageRemoveOutcome.Failed
+            ? fallback
+            : new PackageRemoveResult(PackageRemoveOutcome.Failed, r.Combined);
+    }
+
+    /// <summary>Shared fallback: disable-user → hide.</summary>
+    private async Task<PackageRemoveResult> DisableOrHidePackageAsync(
+        string serial, string package, CancellationToken ct)
+    {
+        var q = AdbService.ShellSingleQuote(package);
         var disabled = await adb.ShellAsync($"pm disable-user --user 0 {q}", serial, ct);
         if (disabled.Ok && !IsShellFailure(disabled.Combined))
             return new PackageRemoveResult(PackageRemoveOutcome.Disabled, disabled.Combined);
@@ -173,7 +171,7 @@ public sealed class AdbToolsService(AdbService adb)
         if (hidden.Ok && !IsShellFailure(hidden.Combined))
             return new PackageRemoveResult(PackageRemoveOutcome.Hidden, hidden.Combined);
 
-        return new PackageRemoveResult(PackageRemoveOutcome.Failed, r.Combined);
+        return new PackageRemoveResult(PackageRemoveOutcome.Failed, disabled.Combined);
     }
 
     private async Task<IReadOnlyList<int>> ListUserIdsAsync(string serial, CancellationToken ct)
@@ -251,13 +249,13 @@ public sealed class AdbToolsService(AdbService adb)
         => adb.ShellAsync($"monkey -p {package} -c android.intent.category.LAUNCHER 1", serial, ct);
 
     public Task<ProcessResult> GrantPermissionAsync(string serial, string package, string permission, CancellationToken ct = default)
-        => adb.ShellAsync($"pm grant {package} {permission}", serial, ct);
+        => adb.PmGrantAsync(serial, package, permission, ct);
 
     public Task<ProcessResult> RevokePermissionAsync(string serial, string package, string permission, CancellationToken ct = default)
-        => adb.ShellAsync($"pm revoke {package} {permission}", serial, ct);
+        => adb.PmRevokeAsync(serial, package, permission, ct);
 
     public Task<ProcessResult> SetAppOpsAsync(string serial, string package, string op, string mode, CancellationToken ct = default)
-        => adb.ShellAsync($"cmd appops set {package} {op} {mode}", serial, ct);
+        => adb.AppOpsSetAsync(serial, package, op, mode, ct);
 
     public Task<ProcessResult> DumpPackageAsync(string serial, string package, CancellationToken ct = default)
         => adb.ShellAsync($"dumpsys package {package}", serial, ct);
@@ -288,8 +286,12 @@ public sealed class AdbToolsService(AdbService adb)
     public Task<ProcessResult> PullAsync(string serial, string remotePath, string localPath, CancellationToken ct = default)
         => adb.RunAsync(["pull", remotePath, localPath], serial, ct);
 
+    /// <summary>List remote directory (<c>ls -la</c>). Single API for file explorer.</summary>
     public Task<ProcessResult> ListRemoteAsync(string serial, string remotePath, CancellationToken ct = default)
-        => adb.ShellAsync($"ls -la {remotePath}", serial, ct);
+    {
+        var path = string.IsNullOrWhiteSpace(remotePath) ? "/sdcard" : remotePath.Trim();
+        return adb.ShellAsync($"ls -la {AdbService.ShellSingleQuote(path)}", serial, ct);
+    }
 
     // ── Screen ──
     public async Task<string?> CaptureScreenshotAsync(string serial, string? saveDir = null, CancellationToken ct = default)
@@ -300,12 +302,8 @@ public sealed class AdbToolsService(AdbService adb)
         var remote = "/sdcard/mintadb_screen.png";
         var local = Path.Combine(saveDir, $"screen_{DateTime.Now:yyyyMMdd_HHmmss}.png");
 
-        var cap = await adb.ShellAsync($"screencap -p {remote}", serial, ct);
-        if (!cap.Ok) return null;
-
-        var pull = await adb.RunAsync(["pull", remote, local], serial, ct);
-        await adb.ShellAsync($"rm -f {remote}", serial, ct);
-        return pull.Ok && File.Exists(local) ? local : null;
+        var r = await CaptureToFileAsync(serial, remote, local, isVideo: false, seconds: 0, ct);
+        return r.Ok && File.Exists(local) ? local : null;
     }
 
     public async Task<string?> RecordScreenAsync(string serial, int seconds = 15, string? saveDir = null, CancellationToken ct = default)
@@ -316,17 +314,26 @@ public sealed class AdbToolsService(AdbService adb)
         var remote = $"/sdcard/mintadb_rec_{DateTime.Now:yyyyMMdd_HHmmss}.mp4";
         var local = Path.Combine(saveDir, Path.GetFileName(remote));
 
-        await adb.ShellAsync($"screenrecord --time-limit {seconds} {remote}", serial, ct);
-        var pull = await adb.RunAsync(["pull", remote, local], serial, ct);
-        await adb.ShellAsync($"rm -f {remote}", serial, ct);
-        return pull.Ok && File.Exists(local) ? local : null;
+        var r = await CaptureToFileAsync(serial, remote, local, isVideo: true, seconds, ct);
+        return r.Ok && File.Exists(local) ? local : null;
     }
 
-    public Task<ProcessResult> SetDensityAsync(string serial, int dpi, CancellationToken ct = default)
-        => adb.ShellAsync($"wm density {dpi}", serial, ct);
+    /// <summary>screencap/screenrecord → pull → rm (one pipeline).</summary>
+    private async Task<ProcessResult> CaptureToFileAsync(
+        string serial, string remote, string local, bool isVideo, int seconds, CancellationToken ct)
+    {
+        ProcessResult cap;
+        if (isVideo)
+            cap = await adb.ShellAsync($"screenrecord --time-limit {seconds} {remote}", serial, ct);
+        else
+            cap = await adb.ShellAsync($"screencap -p {remote}", serial, ct);
 
-    public Task<ProcessResult> ResetDensityAsync(string serial, CancellationToken ct = default)
-        => adb.ShellAsync("wm density reset", serial, ct);
+        if (!cap.Ok && !isVideo) return cap;
+
+        var pull = await PullAsync(serial, remote, local, ct);
+        await adb.ShellAsync($"rm -f {remote}", serial, ct);
+        return pull;
+    }
 
     public Task<ProcessResult> SetSizeAsync(string serial, int w, int h, CancellationToken ct = default)
         => adb.ShellAsync($"wm size {w}x{h}", serial, ct);
@@ -342,19 +349,6 @@ public sealed class AdbToolsService(AdbService adb)
 
     public Task<byte[]?> CaptureScreenshotRawAsync(string serial, CancellationToken ct = default)
         => adb.ExecOutAsync(["exec-out", "screencap"], serial, ct);
-
-    public async Task<string> GetScreenInfoAsync(string serial, CancellationToken ct = default)
-    {
-        var lines = new List<string>();
-        foreach (var cmd in new[] { "wm size", "wm density" })
-        {
-            var r = await adb.ShellAsync(cmd, serial, ct);
-            if (r.Ok && !string.IsNullOrWhiteSpace(r.Output))
-                lines.Add(r.Output.Trim());
-        }
-
-        return lines.Count > 0 ? string.Join(" · ", lines) : "Không đọc được thông tin màn hình";
-    }
 
     // ── Network ──
     public Task<ProcessResult> TcpipAsync(string serial, int port = 5555, CancellationToken ct = default)
@@ -634,26 +628,6 @@ public sealed class AdbToolsService(AdbService adb)
     public Task<ProcessResult> RunShellAsync(string serial, string command, CancellationToken ct = default)
         => adb.ShellAsync(command, serial, ct);
 
-    public async Task<string> GetDeviceInfoAsync(string serial, CancellationToken ct = default)
-    {
-        var lines = new List<string>();
-        foreach (var prop in InfoProps)
-        {
-            var val = await adb.GetPropAsync(serial, prop, ct);
-            if (!string.IsNullOrWhiteSpace(val))
-                lines.Add($"{prop}: {val}");
-        }
-
-        foreach (var cmd in new[] { "wm size", "wm density" })
-        {
-            var r = await adb.ShellAsync(cmd, serial, ct);
-            if (r.Ok && !string.IsNullOrWhiteSpace(r.Output))
-                lines.Add($"{cmd}: {r.Output.Trim()}");
-        }
-
-        return string.Join(Environment.NewLine, lines);
-    }
-
     public bool TryLaunchScrcpy(string serial, int maxSize, bool stayAwake, out string message)
     {
         ScrcpyLocator.ClearCache();
@@ -747,82 +721,13 @@ public sealed class AdbToolsService(AdbService adb)
         }
     }
 
-    // ── Quick Device Info ──
-    public async Task<string> GetQuickDeviceInfoAsync(string serial, CancellationToken ct = default)
-    {
-        var lines = new List<string>();
-
-        var model = await adb.GetPropAsync(serial, "ro.product.model", ct);
-        var brand = await adb.GetPropAsync(serial, "ro.product.brand", ct);
-        var android = await adb.GetPropAsync(serial, "ro.build.version.release", ct);
-        var sdk = await adb.GetPropAsync(serial, "ro.build.version.sdk", ct);
-        var build = await adb.GetPropAsync(serial, "ro.build.display.id", ct);
-
-        lines.Add($"Model: {brand} {model}");
-        lines.Add($"Android: {android} (SDK {sdk})");
-        lines.Add($"Build: {build}");
-
-        // Battery
-        var battery = await adb.ShellAsync("dumpsys battery | grep -E 'level:|status:'", serial, ct);
-        foreach (var line in battery.Output.Split('\n', '\r'))
-        {
-            var trimmed = line.Trim();
-            if (trimmed.StartsWith("level:"))
-                lines.Add($"Battery: {trimmed.Split(':')[1].Trim()}%");
-            else if (trimmed.StartsWith("status:"))
-            {
-                var code = trimmed.Split(':')[1].Trim();
-                var status = code switch { "2" => "Charging", "3" => "Discharging", "5" => "Full", _ => code };
-                lines.Add($"Status: {status}");
-            }
-        }
-
-        // IP
-        var ip = await adb.ShellAsync("ip -f inet addr show wlan0 2>/dev/null | grep inet | awk '{print $2}' | cut -d/ -f1", serial, ct);
-        if (!string.IsNullOrWhiteSpace(ip.Output))
-            lines.Add($"IP: {ip.Output.Trim()}");
-
-        return string.Join("\n", lines);
-    }
-
-    // ── Screenshot ──
-    public async Task<ProcessResult> ScreenshotAsync(string serial, string localPath, CancellationToken ct = default)
-    {
-        var remotePath = "/sdcard/mintadb_screenshot.png";
-        var capture = await adb.ShellAsync($"screencap -p {remotePath}", serial, ct);
-        if (!capture.Ok) return capture;
-
-        var pull = await PullAsync(serial, remotePath, localPath, ct);
-        await adb.ShellAsync($"rm {remotePath}", serial, ct);
-        return pull;
-    }
-
-    // ── Screen Record ──
-    public async Task<ProcessResult> ScreenRecordAsync(string serial, string localPath, int seconds = 30, CancellationToken ct = default)
-    {
-        var remotePath = "/sdcard/mintadb_record.mp4";
-        var record = await adb.ShellAsync($"screenrecord --time-limit {seconds} {remotePath}", serial, ct);
-        if (!record.Ok) return record;
-
-        var pull = await PullAsync(serial, remotePath, localPath, ct);
-        await adb.ShellAsync($"rm {remotePath}", serial, ct);
-        return pull;
-    }
-
-    // ── File Explorer ──
-    public async Task<string> ListDirectoryAsync(string serial, string path, CancellationToken ct = default)
-    {
-        var r = await adb.ShellAsync($"ls -la \"{path}\"", serial, ct);
-        return r.Output;
-    }
-
     // ── Batch Operations ──
     public async Task<ProcessResult> ClearAppDataBatchAsync(string serial, IEnumerable<string> packages, CancellationToken ct = default)
     {
         var results = new List<string>();
         foreach (var pkg in packages)
         {
-            var r = await adb.ShellAsync($"pm clear {pkg}", serial, ct);
+            var r = await ClearAppDataAsync(serial, pkg, ct);
             results.Add($"{pkg}: {(r.Ok ? "OK" : "FAIL")}");
         }
         return new ProcessResult(0, string.Join("\n", results), "");
@@ -833,7 +738,7 @@ public sealed class AdbToolsService(AdbService adb)
         var results = new List<string>();
         foreach (var pkg in packages)
         {
-            var r = await adb.ShellAsync($"am force-stop {pkg}", serial, ct);
+            var r = await ForceStopAsync(serial, pkg, ct);
             results.Add($"{pkg}: {(r.Ok ? "OK" : "FAIL")}");
         }
         return new ProcessResult(0, string.Join("\n", results), "");

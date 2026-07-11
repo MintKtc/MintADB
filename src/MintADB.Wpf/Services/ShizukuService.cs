@@ -76,15 +76,15 @@ public sealed class ShizukuService(AdbService adb)
 
     public Task<ProcessResult> GrantPermissionAsync(
         string serial, string targetPackage, string permission, CancellationToken ct = default)
-        => adb.ShellAsync($"pm grant {targetPackage} {permission}", serial, ct);
+        => adb.PmGrantAsync(serial, targetPackage, permission, ct);
 
     public Task<ProcessResult> RevokePermissionAsync(
         string serial, string targetPackage, string permission, CancellationToken ct = default)
-        => adb.ShellAsync($"pm revoke {targetPackage} {permission}", serial, ct);
+        => adb.PmRevokeAsync(serial, targetPackage, permission, ct);
 
     public Task<ProcessResult> SetAppOpAsync(
         string serial, string targetPackage, string op, string mode, CancellationToken ct = default)
-        => adb.ShellAsync($"cmd appops set {targetPackage} {op} {mode}", serial, ct);
+        => adb.AppOpsSetAsync(serial, targetPackage, op, mode, ct);
 
     public async Task<IReadOnlyList<(string Label, bool Ok, string Detail)>> GrantPrivilegedBundleAsync(
         string serial, string targetPackage, CancellationToken ct = default)

@@ -419,9 +419,9 @@ public partial class MainWindow
     private async void ToolFixNotifications_Click(object sender, RoutedEventArgs e)
         => await RunToolAppActionAsync("Tối ưu thông báo", async (serial, app) =>
         {
+            // Chỉ fix thông báo — battery dùng nút riêng / Apply All (tránh lặp deviceidle/appops)
             var preset = UserAppOptimizerService.ToPreset(app);
             await UserAppOptimizer.OptimizeNotificationsAsync(serial, preset, AppendLog);
-            await UserAppOptimizer.DisableBatteryOptimizationAsync(serial, app.Package, AppendLog);
         });
 
     private async void ToolOpenAppSettings_Click(object sender, RoutedEventArgs e)

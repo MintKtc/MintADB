@@ -36,7 +36,7 @@ public sealed class UserAppOptimizerService(AdbService adb, XiaomiCnOptimizer op
 
             if (perm.Kind == PermissionGrantKind.Runtime)
             {
-                var r = await adb.ShellAsync($"pm grant {package} {perm.Value}", serial, ct);
+                var r = await adb.PmGrantAsync(serial, package, perm.Value, ct);
                 var ok = r.Ok || r.Combined.Contains("already", StringComparison.OrdinalIgnoreCase);
                 var reason = "";
                 if (!ok)
@@ -56,11 +56,11 @@ public sealed class UserAppOptimizerService(AdbService adb, XiaomiCnOptimizer op
 
             if (perm.Kind == PermissionGrantKind.AppOp)
             {
-                var r = await adb.ShellAsync($"cmd appops set {package} {perm.Value} allow", serial, ct);
+                var r = await adb.AppOpsSetAsync(serial, package, perm.Value, "allow", ct);
                 var ok = r.Ok || r.Combined.Contains("Success", StringComparison.OrdinalIgnoreCase);
                 if (!ok)
                 {
-                    var r2 = await adb.ShellAsync($"appops set {package} {perm.Value} allow", serial, ct);
+                    var r2 = await adb.AppOpsSetLegacyAsync(serial, package, perm.Value, "allow", ct);
                     ok = r2.Ok || r2.Combined.Contains("Success", StringComparison.OrdinalIgnoreCase);
                 }
                 log?.Invoke($"[{(ok ? "OK" : "FAIL")}] {perm.Label} (AppOps){(ok ? "" : " — không hỗ trợ AppOps này")}");

@@ -81,8 +81,8 @@ public sealed class InstallBootstrapService(AdbService adb)
         var toolsReady = false;
         try
         {
-            await adb.RunGlobalAsync(["kill-server"], ct);
-            var server = await adb.RunGlobalAsync(["start-server"], ct);
+            await adb.KillServerAsync(ct);
+            var server = await adb.StartServerAsync(ct);
             log?.Invoke(server.Ok ? "[OK] ADB server da khoi dong" : $"[WARN] ADB server: {server.Combined}");
 
             adbVersion = await adb.GetVersionAsync(ct);

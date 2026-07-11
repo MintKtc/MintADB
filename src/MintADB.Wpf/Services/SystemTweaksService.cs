@@ -5,6 +5,11 @@ namespace MintADB.Wpf.Services;
 
 public sealed class SystemTweaksService(AdbService adb)
 {
+    private AdbToolsService? _tools;
+    private DisplayPerformanceService? _display;
+    private AdbToolsService Tools => _tools ??= new AdbToolsService(adb);
+    private DisplayPerformanceService Display => _display ??= new DisplayPerformanceService(adb);
+
     // ===== DPI =====
     public async Task<int> GetCurrentDensityAsync(string serial, CancellationToken ct = default)
     {
@@ -150,12 +155,17 @@ public sealed class SystemTweaksService(AdbService adb)
                 fail++;
             }
         }
-        var dns = await adb.SettingsPutAsync(serial, "global", "private_dns_mode", "hostname", ct);
+        // Dùng chung SetPrivateDnsAsync (settings + content fallback)
+        var dns = await Tools.SetPrivateDnsAsync(serial, "dns.adguard.com", ct);
         if (dns.Ok)
         {
-            await adb.SettingsPutAsync(serial, "global", "private_dns_specifier", "dns.adguard.com", ct);
             log?.Invoke("[OK] Private DNS → dns.adguard.com (chặn OTA domain)");
             ok++;
+        }
+        else
+        {
+            log?.Invoke($"[WARN] Private DNS: {dns.Combined}");
+            fail++;
         }
         return (ok, fail);
     }
@@ -301,35 +311,26 @@ public sealed class SystemTweaksService(AdbService adb)
         }
     }
 
-    // ===== Screen Refresh Rate (Hz) =====
-    public async Task<string> GetRefreshRateStatusAsync(string serial, CancellationToken ct = default)
-    {
-        var r = await adb.ShellAsync("dumpsys display | grep -E 'mActiveMode|refreshRate'", serial, ct);
-        var modes = await adb.ShellAsync("dumpsys display | grep -E 'modeId|refreshRate' | head -20", serial, ct);
-        var current = await adb.SettingsGetAsync(serial, "system", "peak_refresh_rate", ct);
-        var min = await adb.SettingsGetAsync(serial, "system", "min_refresh_rate", ct);
+    // ===== Screen Refresh Rate (Hz) — source of truth: DisplayPerformanceService =====
+    public Task<string> GetRefreshRateStatusAsync(string serial, CancellationToken ct = default)
+        => Display.ReadHzStatusAsync(serial, ct);
 
-        var result = $"peak={(current ?? "?")} · min={(min ?? "?")}";
-        if (!string.IsNullOrWhiteSpace(modes.Output))
-        {
-            var match = Regex.Match(modes.Output, @"refreshRate[=:]\s*([\d.]+)");
-            if (match.Success) result += $" · current={match.Groups[1].Value}Hz";
-        }
-        return result;
-    }
-
+    /// <summary>Khóa Hz đầy đủ (min=max=peak + MIUI tweaks). UI Tweaks và Lock Hz dùng chung.</summary>
     public async Task<ProcessResult> SetRefreshRateAsync(string serial, int hz, CancellationToken ct = default)
     {
-        await adb.SettingsPutAsync(serial, "system", "peak_refresh_rate", hz.ToString(), ct);
-        await adb.SettingsPutAsync(serial, "system", "min_refresh_rate", hz.ToString(), ct);
-        return await adb.ShellAsync($"settings put system user_refresh_rate {hz}", serial, ct);
+        var (ok, fail) = await Display.ApplyLockHzAsync(serial, hz, miuiTweaks: true, log: null, ct);
+        return new ProcessResult(
+            fail == 0 ? 0 : 1,
+            fail == 0 ? $"Hz locked → {hz}" : $"ok={ok} fail={fail}",
+            fail == 0 ? "" : $"ok={ok} fail={fail}");
     }
 
     public async Task<ProcessResult> SetRefreshRateRangeAsync(string serial, int minHz, int maxHz, CancellationToken ct = default)
     {
-        await adb.SettingsPutAsync(serial, "system", "min_refresh_rate", minHz.ToString(), ct);
-        await adb.SettingsPutAsync(serial, "system", "peak_refresh_rate", maxHz.ToString(), ct);
-        return await adb.ShellAsync($"settings put system user_refresh_rate {maxHz}", serial, ct);
+        // Range ≠ full lock: chỉ set min/peak system + user (không adaptive lock)
+        await adb.SettingsPutAsync(serial, "system", "min_refresh_rate", minHz.ToString(CultureInfo.InvariantCulture), ct);
+        await adb.SettingsPutAsync(serial, "system", "peak_refresh_rate", maxHz.ToString(CultureInfo.InvariantCulture), ct);
+        return await adb.SettingsPutAsync(serial, "system", "user_refresh_rate", maxHz.ToString(CultureInfo.InvariantCulture), ct);
     }
 
     // ===== Font Scale =====
