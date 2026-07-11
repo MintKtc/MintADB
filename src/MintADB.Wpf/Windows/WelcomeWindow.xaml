@@ -1,7 +1,7 @@
 <Window x:Class="MintADB.Wpf.Windows.WelcomeWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MintADB - Hướng dẫn sử dụng" Width="600" Height="500"
+        Title="{DynamicResource WelcomeTitle}" Width="600" Height="520"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         Background="#1a1a2e" Foreground="White">
     <Grid Margin="24">
@@ -14,7 +14,7 @@
         <!-- Header -->
         <StackPanel Grid.Row="0" Margin="0,0,0,20">
             <TextBlock Text="MintADB" FontSize="28" FontWeight="Bold" Foreground="#00C9A7"/>
-            <TextBlock Text="Hướng dẫn sử dụng nhanh" FontSize="14" Foreground="#888" Margin="0,4,0,0"/>
+            <TextBlock Text="{DynamicResource QuickGuide}" FontSize="14" Foreground="#888" Margin="0,4,0,0"/>
         </StackPanel>
 
         <!-- Content -->
@@ -28,12 +28,12 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18" Background="#00C9A7" VerticalAlignment="Top">
-                            <TextBlock Text="1" FontSize="16" FontWeight="Bold" Foreground="#000" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="1" FontSize="16" FontWeight="Bold" Foreground="#000"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <StackPanel Grid.Column="1" Margin="12,0,0,0">
-                            <TextBlock Text="Kết nối điện thoại" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="• Bật USB Debugging trong Cài đặt → Tùy chọn nhà phát triển" Foreground="#aaa" TextWrapping="Wrap"/>
-                            <TextBlock Text="• Cắm cáp USB và chọn 'Cho phép gỡ lỗi'" Foreground="#aaa" TextWrapping="Wrap"/>
+                            <TextBlock Text="{DynamicResource ConnectPhone}" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="{DynamicResource ConnectPhoneDesc}" Foreground="#aaa" TextWrapping="Wrap" Margin="0,4,0,0"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -46,12 +46,12 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18" Background="#00C9A7" VerticalAlignment="Top">
-                            <TextBlock Text="2" FontSize="16" FontWeight="Bold" Foreground="#000" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="2" FontSize="16" FontWeight="Bold" Foreground="#000"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <StackPanel Grid.Column="1" Margin="12,0,0,0">
-                            <TextBlock Text="Tab Tối ưu (Xiaomi China)" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="• Quét ROM → Chọn app → Fix thông báo / Cấp quyền" Foreground="#aaa" TextWrapping="Wrap"/>
-                            <TextBlock Text="• Full Optimize: Tắt hạn chế + Mở khóa + Đổi region" Foreground="#aaa" TextWrapping="Wrap"/>
+                            <TextBlock Text="{DynamicResource EnableUSBDebugging}" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="{DynamicResource EnableUSBDebuggingDesc}" Foreground="#aaa" TextWrapping="Wrap" Margin="0,4,0,0"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -64,31 +64,12 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18" Background="#00C9A7" VerticalAlignment="Top">
-                            <TextBlock Text="3" FontSize="16" FontWeight="Bold" Foreground="#000" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="3" FontSize="16" FontWeight="Bold" Foreground="#000"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <StackPanel Grid.Column="1" Margin="12,0,0,0">
-                            <TextBlock Text="Tab Công cụ" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="• Cơ bản: Cài APK, Push/Pull file, Reboot" Foreground="#aaa" TextWrapping="Wrap"/>
-                            <TextBlock Text="• Hệ thống: Xem Pin, Màn hình, CPU, RAM, Storage" Foreground="#aaa" TextWrapping="Wrap"/>
-                            <TextBlock Text="• Tinh chỉnh: DPI, Animation, Hz, Font" Foreground="#aaa" TextWrapping="Wrap"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <!-- Step 4 -->
-                <Border Background="#16213e" CornerRadius="8" Padding="16" Margin="0,0,0,12">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18" Background="#00C9A7" VerticalAlignment="Top">
-                            <TextBlock Text="4" FontSize="16" FontWeight="Bold" Foreground="#000" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <StackPanel Grid.Column="1" Margin="12,0,0,0">
-                            <TextBlock Text="Fastboot" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="• Flash ROM, Unlock/Lock bootloader" Foreground="#aaa" TextWrapping="Wrap"/>
-                            <TextBlock Text="• Boot tạm thời, Factory reset" Foreground="#aaa" TextWrapping="Wrap"/>
+                            <TextBlock Text="{DynamicResource AllowUSBDebugging}" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="{DynamicResource AllowUSBDebuggingDesc}" Foreground="#aaa" TextWrapping="Wrap" Margin="0,4,0,0"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -96,10 +77,13 @@
                 <!-- Tips -->
                 <Border Background="#2A2418" CornerRadius="8" Padding="16" Margin="0,0,0,12">
                     <StackPanel>
-                        <TextBlock Text="💡 Mẹo hữu ích" FontSize="14" FontWeight="SemiBold" Foreground="#FFD060"/>
-                        <TextBlock Text="• Luôn backup trước khi flash ROM" Foreground="#aaa" TextWrapping="Wrap" Margin="0,4,0,0"/>
-                        <TextBlock Text="• Dùng 'Debloat an toàn' thay vì gỡ thủ công" Foreground="#aaa" TextWrapping="Wrap"/>
-                        <TextBlock Text="• Tab Hệ thống xem thông tin chi tiết thiết bị" Foreground="#aaa" TextWrapping="Wrap"/>
+                        <TextBlock Text="{DynamicResource UsefulTips}" FontSize="14" FontWeight="SemiBold" Foreground="#FFD060"/>
+                        <TextBlock Text="{DynamicResource Tip1}" Foreground="#aaa" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                        <TextBlock Text="{DynamicResource Tip2}" Foreground="#aaa" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                        <TextBlock Text="{DynamicResource Tip3}" Foreground="#aaa" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                        <TextBlock Text="{DynamicResource Tip4}" Foreground="#aaa" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                        <TextBlock Text="{DynamicResource Tip5}" Foreground="#aaa" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                        <TextBlock Text="{DynamicResource Tip6}" Foreground="#aaa" TextWrapping="Wrap" Margin="0,2,0,0"/>
                     </StackPanel>
                 </Border>
             </StackPanel>
@@ -107,8 +91,10 @@
 
         <!-- Footer -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-            <CheckBox x:Name="DontShowAgain" Content="Không hiển thị lại" VerticalAlignment="Center" Margin="0,0,16,0" Foreground="#aaa"/>
-            <Button Content="Bắt đầu" Click="Start_Click" MinWidth="100" Padding="16,8" FontSize="14" FontWeight="SemiBold">
+            <CheckBox x:Name="DontShowAgain" Content="{DynamicResource DontShowAgain}"
+                      VerticalAlignment="Center" Margin="0,0,16,0" Foreground="#aaa"/>
+            <Button Content="{DynamicResource GetStarted}" Click="Start_Click" MinWidth="100" Padding="16,8"
+                    FontSize="14" FontWeight="SemiBold">
                 <Button.Style>
                     <Style TargetType="Button">
                         <Setter Property="Background" Value="#00C9A7"/>
@@ -117,7 +103,8 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="8"
+                                            Padding="{TemplateBinding Padding}">
                                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                 </ControlTemplate>

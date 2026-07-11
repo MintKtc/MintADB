@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using MintADB.Wpf.Helpers;
+using MintADB.Wpf.Resources;
 using MintADB.Wpf.Services;
 
 namespace MintADB.Wpf;
@@ -17,7 +18,7 @@ public partial class MainWindow
         var serial = RequireDevice();
         if (serial is null) return;
 
-        HzLockStatusText.Text = "Đang đọc...";
+        HzLockStatusText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var text = await DisplayPerf.ReadHzStatusAsync(serial);

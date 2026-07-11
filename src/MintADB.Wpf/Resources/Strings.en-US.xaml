@@ -234,6 +234,67 @@
     <sys:String x:Key="FontSize">Font Size</sys:String>
     <sys:String x:Key="ScreenTimeout">Screen Timeout</sys:String>
 
+    <!-- Tweaks extended (i18n) -->
+    <sys:String x:Key="SystemTweaksTitle">System Tweaks</sys:String>
+    <sys:String x:Key="SystemTweaksSubtitle">DPI, animation, navigation, OTA, audio, Google Services</sys:String>
+    <sys:String x:Key="ScreenDpiTitle">Screen DPI</sys:String>
+    <sys:String x:Key="DpiDesc">Pixel density — higher DPI makes UI larger; lower DPI makes UI smaller.</sys:String>
+    <sys:String x:Key="TapReadHint">Tap Read</sys:String>
+    <sys:String x:Key="QuickSelect">Quick select:</sys:String>
+    <sys:String x:Key="OrCustom">Or custom:</sys:String>
+    <sys:String x:Key="AnimationSpeedDesc">0.5x is faster, 1x is default, 10x is slow (for demos).</sys:String>
+    <sys:String x:Key="Speed">Speed</sys:String>
+    <sys:String x:Key="AnimationOff">Off (0x)</sys:String>
+    <sys:String x:Key="AnimationDefault">1x (default)</sys:String>
+    <sys:String x:Key="ReadAnimation">Read animation</sys:String>
+    <sys:String x:Key="NavigationImmersive">Navigation &amp; Immersive</sys:String>
+    <sys:String x:Key="NavigationModeDesc">Switch between gesture and 3-button navigation. Immersive hides the navigation bar.</sys:String>
+    <sys:String x:Key="ImmersiveMode">Immersive mode (hide navigation bar)</sys:String>
+    <sys:String x:Key="BlockOtaTitle">Block OTA</sys:String>
+    <sys:String x:Key="BlockOtaDesc">Disable system update packages and set Private DNS to block Xiaomi OTA domains.</sys:String>
+    <sys:String x:Key="BlockOta">Block OTA</sys:String>
+    <sys:String x:Key="UnblockOta">Restore OTA</sys:String>
+    <sys:String x:Key="TapCheckHint">Tap Check</sys:String>
+    <sys:String x:Key="BluetoothAudio">Bluetooth Audio</sys:String>
+    <sys:String x:Key="BluetoothAudioDesc">Select Bluetooth codec and absolute volume sync.</sys:String>
+    <sys:String x:Key="AbsoluteVolume">Absolute volume (sync volume)</sys:String>
+    <sys:String x:Key="ReadAudio">Read audio</sys:String>
+    <sys:String x:Key="CodecDefaultAuto">Default (auto)</sys:String>
+    <sys:String x:Key="GoogleServicesTitle">Google Services</sys:String>
+    <sys:String x:Key="GoogleServicesDesc">Check and enable Google Services (GMS) on China ROM.</sys:String>
+    <sys:String x:Key="EnableGoogle">Enable Google</sys:String>
+    <sys:String x:Key="FontSizeDesc">Change system font size — smaller or larger.</sys:String>
+    <sys:String x:Key="ScreenTimeoutDesc">Set screen timeout before the display turns off.</sys:String>
+    <sys:String x:Key="Timeout1Min">1 min</sys:String>
+    <sys:String x:Key="Timeout5Min">5 min</sys:String>
+    <sys:String x:Key="Timeout10Min">10 min</sys:String>
+    <sys:String x:Key="Timeout30Min">30 min</sys:String>
+    <sys:String x:Key="TimeoutInfinite">Never</sys:String>
+    <sys:String x:Key="DevOptionsDesc">Quick toggles for Developer Options.</sys:String>
+    <sys:String x:Key="ReadAll">Read All</sys:String>
+    <sys:String x:Key="TapReadAllHint">Tap Read All</sys:String>
+    <sys:String x:Key="ShowClock">Show clock</sys:String>
+    <sys:String x:Key="ShowBattery">Show battery</sys:String>
+    <sys:String x:Key="ShowSignal">Show signal</sys:String>
+    <sys:String x:Key="BatteryPercentDesc">Show or hide battery percentage on the status bar.</sys:String>
+    <sys:String x:Key="ShowPercent">Show %</sys:String>
+    <sys:String x:Key="HidePercent">Hide %</sys:String>
+    <sys:String x:Key="WifiOnOff">Wi‑Fi ON/OFF</sys:String>
+    <sys:String x:Key="BluetoothOnOff">Bluetooth ON/OFF</sys:String>
+    <sys:String x:Key="AirplaneOnOff">Airplane mode ON/OFF</sys:String>
+    <sys:String x:Key="HotspotOnOff">Hotspot ON/OFF</sys:String>
+    <sys:String x:Key="ScanWifi">Scan</sys:String>
+    <sys:String x:Key="FakeDeviceProps">Fake device info (ro.product.*)</sys:String>
+    <sys:String x:Key="UnlockFpsHz">Unlock FPS / refresh rate</sys:String>
+    <sys:String x:Key="TargetHz">Target Hz</sys:String>
+    <sys:String x:Key="DisableGameBooster">Disable game booster / Hz saving (MIUI)</sys:String>
+    <sys:String x:Key="ReadCurrentDevice">Read current device</sys:String>
+    <sys:String x:Key="DeviceSpoofHeader">Fake flagship device</sys:String>
+    <sys:String x:Key="DeviceSpoofHeaderDesc">Fake ro.product.* needs Magisk + resetprop (root). Unlock FPS only needs ADB — Shizuku helps when settings are blocked.</sys:String>
+    <sys:String x:Key="FlagshipProfile">Flagship profile</sys:String>
+    <sys:String x:Key="CheckingCapabilities">Checking capabilities…</sys:String>
+    <sys:String x:Key="ReadingStatus">Reading…</sys:String>
+
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <!-- Advanced Tab -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -319,21 +380,21 @@
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <sys:String x:Key="WelcomeTitle">User Guide</sys:String>
     <sys:String x:Key="QuickGuide">Quick Start Guide</sys:String>
-    <sys:String x:Key="ConnectPhone">Connect Phone</sys:String>
-    <sys:String x:Key="ConnectPhoneDesc">Connect your Xiaomi / Redmi / POCO phone to computer via USB cable</sys:String>
-    <sys:String x:Key="EnableUSBDebugging">Enable USB Debugging</sys:String>
-    <sys:String x:Key="EnableUSBDebuggingDesc">Go to Settings → About → Tap "Build number" 7 times → Go back to Settings → Developer Options → Enable USB Debugging</sys:String>
-    <sys:String x:Key="AllowUSBDebugging">Allow USB Debugging</sys:String>
-    <sys:String x:Key="AllowUSBDebuggingDesc">When popup appears on phone, check "Always allow" then tap OK</sys:String>
-    <sys:String x:Key="UsefulTips">Useful Tips</sys:String>
-    <sys:String x:Key="Tip1">Use "Optimize" tab to fix notifications, debloat, optimize China ROM</sys:String>
-    <sys:String x:Key="Tip2">Use "Tools" tab to manage ADB, take screenshots, record screen</sys:String>
-    <sys:String x:Key="Tip3">"Safe Debloat" uses built-in Hyper script (embedded) — APK backup to Desktop\MintADB\DebloatBackup</sys:String>
-    <sys:String x:Key="Tip4">Use "Backup App List" to save your removed app list</sys:String>
-    <sys:String x:Key="Tip5">Use "Undo" to restore accidentally removed apps</sys:String>
-    <sys:String x:Key="Tip6">Always backup important data before system operations</sys:String>
+    <sys:String x:Key="ConnectPhone">Connect your phone</sys:String>
+    <sys:String x:Key="ConnectPhoneDesc">Connect your Xiaomi / Redmi / POCO to the PC with a USB cable.</sys:String>
+    <sys:String x:Key="EnableUSBDebugging">Enable USB debugging</sys:String>
+    <sys:String x:Key="EnableUSBDebuggingDesc">Settings → About phone → tap Build number 7 times → Developer options → enable USB debugging.</sys:String>
+    <sys:String x:Key="AllowUSBDebugging">Allow USB debugging</sys:String>
+    <sys:String x:Key="AllowUSBDebuggingDesc">On the phone popup, check Always allow from this computer, then tap OK / Allow.</sys:String>
+    <sys:String x:Key="UsefulTips">Useful tips</sys:String>
+    <sys:String x:Key="Tip1">· Optimize — fix notifications, debloat, and tune China ROM toward Global behavior.</sys:String>
+    <sys:String x:Key="Tip2">· Tools — ADB utilities, screenshot, screen record, network, and system info.</sys:String>
+    <sys:String x:Key="Tip3">· Safe Debloat uses the built-in Hyper script; APK backups go to Desktop\MintADB\DebloatBackup.</sys:String>
+    <sys:String x:Key="Tip4">· Backup App List saves packages you removed for later restore.</sys:String>
+    <sys:String x:Key="Tip5">· Undo can reverse recent uninstall/disable actions.</sys:String>
+    <sys:String x:Key="Tip6">· Always back up important data before flash or factory reset.</sys:String>
     <sys:String x:Key="DontShowAgain">Don't show again</sys:String>
-    <sys:String x:Key="GetStarted">Get Started</sys:String>
+    <sys:String x:Key="GetStarted">Get started</sys:String>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <!-- Language -->

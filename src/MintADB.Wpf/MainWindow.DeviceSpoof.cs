@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using MintADB.Wpf.Helpers;
 using MintADB.Wpf.Models;
+using MintADB.Wpf.Resources;
 using MintADB.Wpf.Services;
 
 namespace MintADB.Wpf;
@@ -83,7 +84,7 @@ public partial class MainWindow
         var serial = RequireDevice();
         if (serial is null) return;
 
-        DeviceSpoofInfoText.Text = "Đang đọc...";
+        DeviceSpoofInfoText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var text = await DeviceSpoof.FormatCurrentDeviceAsync(serial);

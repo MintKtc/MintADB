@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using MintADB.Wpf.Resources;
 using MintADB.Wpf.Services;
 
 namespace MintADB.Wpf;
@@ -370,7 +371,7 @@ public partial class MainWindow
         var serial = RequireDevice();
         if (serial is null) return;
 
-        FontScaleStatusText.Text = "Đang đọc...";
+        FontScaleStatusText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var status = await SystemTweaks.GetFontScaleStatusAsync(serial);
@@ -412,7 +413,7 @@ public partial class MainWindow
         var serial = RequireDevice();
         if (serial is null) return;
 
-        ScreenTimeoutStatusText.Text = "Đang đọc...";
+        ScreenTimeoutStatusText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var status = await SystemTweaks.GetScreenTimeoutStatusAsync(serial);
@@ -460,7 +461,7 @@ public partial class MainWindow
         var serial = RequireDevice();
         if (serial is null) return;
 
-        DevOptionsStatusText.Text = "Đang đọc...";
+        DevOptionsStatusText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var stay = await SystemTweaks.GetStayAwakeStatusAsync(serial);
@@ -530,7 +531,7 @@ public partial class MainWindow
         var serial = RequireDevice();
         if (serial is null) return;
 
-        StatusBarStatusText.Text = "Đang đọc...";
+        StatusBarStatusText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var status = await SystemTweaks.GetStatusBarStatusAsync(serial);
@@ -568,7 +569,7 @@ public partial class MainWindow
         var serial = RequireDevice();
         if (serial is null) return;
 
-        BatteryPercentStatusText.Text = "Đang đọc...";
+        BatteryPercentStatusText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var status = await SystemTweaks.GetBatteryPercentStatusAsync(serial);

@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
 using MintADB.Wpf.Models;
+using MintADB.Wpf.Resources;
 using MintADB.Wpf.Services;
 
 namespace MintADB.Wpf;
@@ -34,7 +35,7 @@ public partial class MainWindow
 
         SetActionButtonsEnabled(false);
         ResetBatteryVisual();
-        BatteryInfoText.Text = "Đang đọc...";
+        BatteryInfoText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var info = await Hardware.GetBatteryInfoAsync(serial);
@@ -59,7 +60,7 @@ public partial class MainWindow
 
         SetActionButtonsEnabled(false);
         ResetDisplayVisual();
-        DisplayInfoText.Text = "Đang đọc...";
+        DisplayInfoText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var info = await Hardware.GetDisplayInfoAsync(serial);
@@ -84,7 +85,7 @@ public partial class MainWindow
 
         SetActionButtonsEnabled(false);
         ResetDeviceVisual();
-        SysDeviceInfoText.Text = "Đang đọc...";
+        SysDeviceInfoText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var info = await Hardware.GetDeviceInfoAsync(serial);
@@ -110,7 +111,7 @@ public partial class MainWindow
         if (serial is null) return;
 
         SetActionButtonsEnabled(false);
-        StorageInfoText.Text = "Đang đọc...";
+        StorageInfoText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var info = await Hardware.GetStorageInfoAsync(serial);
@@ -136,7 +137,7 @@ public partial class MainWindow
         if (serial is null) return;
 
         SetActionButtonsEnabled(false);
-        RamInfoText.Text = "Đang đọc...";
+        RamInfoText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var info = await Hardware.GetRamInfoAsync(serial);
@@ -162,7 +163,7 @@ public partial class MainWindow
         if (serial is null) return;
 
         SetActionButtonsEnabled(false);
-        CpuInfoText.Text = "Đang đọc...";
+        CpuInfoText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var info = await Hardware.GetCpuInfoAsync(serial);
@@ -185,7 +186,7 @@ public partial class MainWindow
         if (serial is null) return;
 
         SetActionButtonsEnabled(false);
-        GpuInfoText.Text = "Đang đọc...";
+        GpuInfoText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var info = await Hardware.GetGpuInfoAsync(serial);
@@ -208,7 +209,7 @@ public partial class MainWindow
         if (serial is null) return;
 
         SetActionButtonsEnabled(false);
-        TouchInfoText.Text = "Đang đọc...";
+        TouchInfoText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             var info = await Hardware.GetTouchInfoAsync(serial);
@@ -596,7 +597,7 @@ public partial class MainWindow
         var serial = RequireDevice();
         if (serial is null) return;
 
-        NetworkStatusText.Text = "Đang đọc...";
+        NetworkStatusText.Text = Loc.Get("ReadingStatus", "Reading…");
         try
         {
             // Full status (WiFi + BT + airplane + hotspot + mobile + IP)

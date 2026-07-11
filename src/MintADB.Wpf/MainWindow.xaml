@@ -1507,7 +1507,7 @@
                         <TextBlock Text="{DynamicResource NetworkStatus}" Style="{StaticResource MacGroupLabelInfo}"/>
                         <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <TextBlock x:Name="NetworkStatusText" Text="Tap «Read» to view status"
+                                <TextBlock x:Name="NetworkStatusText" Text="{DynamicResource TapReadHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" TextWrapping="Wrap" Margin="0,0,0,10"/>
                                 <UniformGrid Columns="1">
@@ -1524,7 +1524,7 @@
                                 <TextBlock Text="{DynamicResource WiFiDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <CheckBox x:Name="WifiToggle" Content="WiFi ON/OFF"
+                                <CheckBox x:Name="WifiToggle" Content="{DynamicResource WifiOnOff}"
                                           Margin="0,0,0,8" Click="ToggleWifi_Click"/>
                                 <Grid Margin="0,0,0,8">
                                     <Grid.ColumnDefinitions>
@@ -1532,7 +1532,7 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBox x:Name="WifiSsidBox" Grid.Column="0" Tag="{DynamicResource SSID}"/>
-                                    <Button x:Name="BtnScanWifi" Grid.Column="1" Content="Quét"
+                                    <Button x:Name="BtnScanWifi" Grid.Column="1" Content="{DynamicResource ScanWifi}"
                                             Click="ScanWifi_Click" Style="{StaticResource MacToolbarBtn}" Margin="8,0,0,0"/>
                                 </Grid>
                                 <Grid Margin="0,0,0,8">
@@ -1560,7 +1560,7 @@
                                 <TextBlock Text="{DynamicResource BluetoothDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <CheckBox x:Name="BluetoothToggle" Content="Bluetooth ON/OFF"
+                                <CheckBox x:Name="BluetoothToggle" Content="{DynamicResource BluetoothOnOff}"
                                           Margin="0,0,0,8" Click="ToggleBluetooth_Click"/>
                                 <UniformGrid Columns="1">
                                     <Button x:Name="BtnScanBluetooth" Content="{DynamicResource ScanBluetooth}"
@@ -1576,7 +1576,7 @@
                                 <TextBlock Text="{DynamicResource AirplaneModeDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <CheckBox x:Name="AirplaneToggle" Content="Airplane mode ON/OFF"
+                                <CheckBox x:Name="AirplaneToggle" Content="{DynamicResource AirplaneOnOff}"
                                           Margin="0,0,0,0" Click="ToggleAirplane_Click"/>
                             </StackPanel>
                         </Border>
@@ -1588,7 +1588,7 @@
                                 <TextBlock Text="{DynamicResource HotspotDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <CheckBox x:Name="HotspotToggle" Content="Hotspot ON/OFF"
+                                <CheckBox x:Name="HotspotToggle" Content="{DynamicResource HotspotOnOff}"
                                           Margin="0,0,0,0" Click="ToggleHotspot_Click"/>
                             </StackPanel>
                         </Border>
@@ -1973,7 +1973,7 @@
                                 <TextBlock Text="Internal storage and SD Card info."
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,8"/>
-                                <TextBlock x:Name="StorageInfoText" Text="Tap «Read» to view storage info"
+                                <TextBlock x:Name="StorageInfoText" Text="{DynamicResource TapReadHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" TextWrapping="Wrap" Margin="0,0,0,8"/>
                                 <UniformGrid Columns="1">
@@ -1990,7 +1990,7 @@
                                 <TextBlock Text="RAM and swap info."
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,8"/>
-                                <TextBlock x:Name="RamInfoText" Text="Tap «Read» to view RAM info"
+                                <TextBlock x:Name="RamInfoText" Text="{DynamicResource TapReadHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" TextWrapping="Wrap" Margin="0,0,0,8"/>
                                 <UniformGrid Columns="1">
@@ -2007,7 +2007,7 @@
                                 <TextBlock Text="Processor info."
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,8"/>
-                                <TextBlock x:Name="CpuInfoText" Text="Tap «Read» to view CPU info"
+                                <TextBlock x:Name="CpuInfoText" Text="{DynamicResource TapReadHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" TextWrapping="Wrap" Margin="0,0,0,8"/>
                                 <UniformGrid Columns="1">
@@ -2024,7 +2024,7 @@
                                 <TextBlock Text="Graphics info."
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,8"/>
-                                <TextBlock x:Name="GpuInfoText" Text="Tap «Read» to view GPU info"
+                                <TextBlock x:Name="GpuInfoText" Text="{DynamicResource TapReadHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" TextWrapping="Wrap" Margin="0,0,0,8"/>
                                 <UniformGrid Columns="1">
@@ -2041,7 +2041,7 @@
                                 <TextBlock Text="Touch info."
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,8"/>
-                                <TextBlock x:Name="TouchInfoText" Text="Tap «Read» to view touch info"
+                                <TextBlock x:Name="TouchInfoText" Text="{DynamicResource TapReadHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" TextWrapping="Wrap" Margin="0,0,0,8"/>
                                 <UniformGrid Columns="1">
@@ -2056,23 +2056,23 @@
                         <!-- ── Tweaks ── -->
                         <StackPanel x:Name="ToolPageTweaks" Visibility="Collapsed">
 
-                        <TextBlock Text="System Tweaks" Style="{StaticResource MacPageTitle}"/>
-                        <TextBlock Text="DPI, Animation, Navigation, OTA, Audio, Google Services"
+                        <TextBlock Text="{DynamicResource SystemTweaksTitle}" Style="{StaticResource MacPageTitle}"/>
+                        <TextBlock Text="{DynamicResource SystemTweaksSubtitle}"
                                    Style="{StaticResource MacPageSubtitle}" Margin="0,4,0,14"/>
 
                         <!-- DPI -->
-                        <TextBlock Text="Screen DPI" Style="{StaticResource MacGroupLabelInfo}"/>
+                        <TextBlock Text="{DynamicResource ScreenDpiTitle}" Style="{StaticResource MacGroupLabelInfo}"/>
                         <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Pixel density — larger UI (high DPI) or smaller UI (low DPI)."
+                                <TextBlock Text="{DynamicResource DpiDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,8"/>
-                                <TextBlock x:Name="DensityStatusText" Text="Tap «Read» to view current DPI"
+                                <TextBlock x:Name="DensityStatusText" Text="{DynamicResource TapReadHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
 
                                 <!-- Preset buttons -->
-                                <TextBlock Text="Quick select:" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <TextBlock Text="{DynamicResource QuickSelect}" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                 <UniformGrid Columns="6" Margin="0,0,0,10">
                                     <Button Content="320" Tag="320" Click="DensityPreset_Click"
                                             Style="{StaticResource MacToolbarBtn}" MinWidth="70" Margin="0,0,4,4"/>
@@ -2089,7 +2089,7 @@
                                 </UniformGrid>
 
                                 <!-- Custom input -->
-                                <TextBlock Text="Or custom:" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <TextBlock Text="{DynamicResource OrCustom}" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                 <Grid Margin="0,0,0,10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -2097,29 +2097,29 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBox x:Name="DensityCustomBox" Grid.Column="0" Tag="440"
                                              Margin="0,0,8,0"/>
-                                    <Button x:Name="BtnApplyDensity" Grid.Column="1" Content="{StaticResource Apply}"
+                                    <Button x:Name="BtnApplyDensity" Grid.Column="1" Content="{DynamicResource Apply}"
                                             Click="ApplyDensity_Click" Style="{StaticResource MacToolbarBtn}"
                                             MinWidth="90"/>
                                 </Grid>
 
                                 <!-- Action buttons -->
                                 <UniformGrid Columns="2">
-                                    <Button x:Name="BtnReadDensity" Content="{StaticResource Read}"
+                                    <Button x:Name="BtnReadDensity" Content="{DynamicResource Read}"
                                             Click="ReadDensity_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button x:Name="BtnResetDensity" Content="{StaticResource ResetBtn}"
+                                    <Button x:Name="BtnResetDensity" Content="{DynamicResource ResetBtn}"
                                             Click="ResetDensity_Click" Style="{StaticResource MacToolBtn}" Margin="4,0,0,0"/>
                                 </UniformGrid>
                             </StackPanel>
                         </Border>
 
                         <!-- Animation -->
-                        <TextBlock Text="Tốc độ Animation" Style="{StaticResource MacGroupLabelSafe}"/>
+                        <TextBlock Text="{DynamicResource AnimationSpeed}" Style="{StaticResource MacGroupLabelSafe}"/>
                         <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Tăng tốc animation — 0.5x nhanh hơn, 1x mặc định, 10x chậm/xem hiệu ứng."
+                                <TextBlock Text="{DynamicResource AnimationSpeedDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="AnimationStatusText" Text="Nhấn «Đọc»"
+                                <TextBlock x:Name="AnimationStatusText" Text="{DynamicResource TapReadHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
                                 <Grid Margin="0,0,0,10">
@@ -2128,79 +2128,79 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Tốc độ" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{DynamicResource Speed}" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                     <ComboBox x:Name="AnimationSpeedCombo" Grid.Column="1" Margin="8,0,10,0" SelectedIndex="2">
-                                        <ComboBoxItem Content="Tắt (0x)" Tag="0"/>
+                                        <ComboBoxItem Content="{DynamicResource AnimationOff}" Tag="0"/>
                                         <ComboBoxItem Content="0.5x" Tag="0.5"/>
-                                        <ComboBoxItem Content="1x (mặc định)" Tag="1.0"/>
+                                        <ComboBoxItem Content="{DynamicResource AnimationDefault}" Tag="1.0"/>
                                         <ComboBoxItem Content="1.5x" Tag="1.5"/>
                                         <ComboBoxItem Content="2x" Tag="2"/>
                                         <ComboBoxItem Content="5x" Tag="5"/>
                                         <ComboBoxItem Content="10x" Tag="10"/>
                                     </ComboBox>
-                                    <Button x:Name="BtnApplyAnimation" Grid.Column="2" Content="Áp dụng"
+                                    <Button x:Name="BtnApplyAnimation" Grid.Column="2" Content="{DynamicResource Apply}"
                                             Click="ApplyAnimationSpeed_Click" Style="{StaticResource MacToolbarBtn}"
                                             MinWidth="90"/>
                                 </Grid>
                                 <UniformGrid Columns="1">
-                                    <Button x:Name="BtnReadAnimation" Content="Đọc animation"
+                                    <Button x:Name="BtnReadAnimation" Content="{DynamicResource ReadAnimation}"
                                             Click="ReadAnimationStatus_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="120"/>
                                 </UniformGrid>
                             </StackPanel>
                         </Border>
 
                         <!-- Navigation -->
-                        <TextBlock Text="Điều hướng &amp; Immersive" Style="{StaticResource MacGroupLabelWarn}"/>
+                        <TextBlock Text="{DynamicResource NavigationImmersive}" Style="{StaticResource MacGroupLabelWarn}"/>
                         <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Chuyển giữa cử chỉ / 3 nút. Immersive ẩn thanh điều hướng."
+                                <TextBlock Text="{DynamicResource NavigationModeDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="NavStatusText" Text="Nhấn «Đọc»"
+                                <TextBlock x:Name="NavStatusText" Text="{DynamicResource TapReadHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
                                 <UniformGrid Columns="3" Margin="0,0,0,8">
-                                    <Button x:Name="BtnReadNav" Content="Đọc"
+                                    <Button x:Name="BtnReadNav" Content="{DynamicResource Read}"
                                             Click="ReadNavigationStatus_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button x:Name="BtnGestureNav" Content="Cử chỉ"
+                                    <Button x:Name="BtnGestureNav" Content="{DynamicResource GestureNav}"
                                             Click="SetGestureNav_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button x:Name="BtnThreeButtonNav" Content="3 nút"
+                                    <Button x:Name="BtnThreeButtonNav" Content="{DynamicResource ThreeButtonNav}"
                                             Click="SetThreeButtonNav_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
                                 </UniformGrid>
-                                <CheckBox x:Name="ImmersiveToggle" Content="Immersive mode (ẩn thanh điều hướng)"
+                                <CheckBox x:Name="ImmersiveToggle" Content="{DynamicResource ImmersiveMode}"
                                           Margin="0,0,0,4" Click="ToggleImmersiveMode_Click"/>
                             </StackPanel>
                         </Border>
 
                         <!-- OTA -->
-                        <TextBlock Text="Chặn OTA" Style="{StaticResource MacGroupLabelDanger}"/>
+                        <TextBlock Text="{DynamicResource BlockOtaTitle}" Style="{StaticResource MacGroupLabelDanger}"/>
                         <Border Style="{StaticResource MacGroupBoxDanger}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Tắt gói cập nhật hệ thống + Private DNS chặn domain OTA Xiaomi."
+                                <TextBlock Text="{DynamicResource BlockOtaDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="OtaStatusText" Text="Nhấn «Kiểm tra»"
+                                <TextBlock x:Name="OtaStatusText" Text="{DynamicResource TapCheckHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacGreenBrush}" Margin="0,0,0,10"/>
                                 <UniformGrid Columns="3">
-                                    <Button x:Name="BtnReadOta" Content="Kiểm tra"
+                                    <Button x:Name="BtnReadOta" Content="{DynamicResource CheckLocale}"
                                             Click="ReadOtaStatus_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button x:Name="BtnBlockOta" Content="Chặn OTA"
+                                    <Button x:Name="BtnBlockOta" Content="{DynamicResource BlockOta}"
                                             Click="BlockOta_Click" Style="{StaticResource MacBtnPrimary}" Margin="0,0,4,0"/>
-                                    <Button x:Name="BtnUnblockOta" Content="Khôi phục"
+                                    <Button x:Name="BtnUnblockOta" Content="{DynamicResource UnblockOta}"
                                             Click="UnblockOta_Click" Style="{StaticResource MacBtnSecondary}" Margin="4,0,0,0"/>
                                 </UniformGrid>
                             </StackPanel>
                         </Border>
 
                         <!-- Audio -->
-                        <TextBlock Text="Âm thanh Bluetooth" Style="{StaticResource MacGroupLabelInfo}"/>
+                        <TextBlock Text="{DynamicResource BluetoothAudio}" Style="{StaticResource MacGroupLabelInfo}"/>
                         <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Select Bluetooth codec, toggle absolute volume, A2DP offload."
+                                <TextBlock Text="{DynamicResource BluetoothAudioDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="AudioStatusText" Text="Tap «Read»"
+                                <TextBlock x:Name="AudioStatusText" Text="{DynamicResource TapReadHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
                                 <Grid Margin="0,0,0,8">
@@ -2218,35 +2218,35 @@
                                         <ComboBoxItem Content="LDAC" Tag="ldac"/>
                                         <ComboBoxItem Content="aptX Adaptive" Tag="aptxadaptive"/>
                                         <ComboBoxItem Content="LC3" Tag="lc3"/>
-                                        <ComboBoxItem Content="Default (auto)" Tag=""/>
+                                        <ComboBoxItem Content="{DynamicResource CodecDefaultAuto}" Tag=""/>
                                     </ComboBox>
-                                    <Button x:Name="BtnApplyCodec" Grid.Column="2" Content="{StaticResource Apply}"
+                                    <Button x:Name="BtnApplyCodec" Grid.Column="2" Content="{DynamicResource Apply}"
                                             Click="ApplyBluetoothCodec_Click" Style="{StaticResource MacToolbarBtn}"
                                             MinWidth="90"/>
                                 </Grid>
-                                <CheckBox x:Name="AbsVolumeToggle" Content="Absolute volume (sync volume)"
+                                <CheckBox x:Name="AbsVolumeToggle" Content="{DynamicResource AbsoluteVolume}"
                                           Margin="0,0,0,6" Click="ToggleAbsoluteVolume_Click" IsChecked="True"/>
                                 <UniformGrid Columns="1">
-                                    <Button x:Name="BtnReadAudio" Content="Read audio"
+                                    <Button x:Name="BtnReadAudio" Content="{DynamicResource ReadAudio}"
                                             Click="ReadAudioStatus_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="120"/>
                                 </UniformGrid>
                             </StackPanel>
                         </Border>
 
                         <!-- Google Services -->
-                        <TextBlock Text="Google Services" Style="{StaticResource MacGroupLabelSafe}"/>
+                        <TextBlock Text="{DynamicResource GoogleServicesTitle}" Style="{StaticResource MacGroupLabelSafe}"/>
                         <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Check &amp; enable Google Services (GMS) on China ROM."
+                                <TextBlock Text="{DynamicResource GoogleServicesDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="GoogleServicesText" Text="Tap «Check»"
+                                <TextBlock x:Name="GoogleServicesText" Text="{DynamicResource TapCheckHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacGreenBrush}" Margin="0,0,0,10"/>
                                 <UniformGrid Columns="2">
                                     <Button x:Name="BtnCheckGoogle" Content="{DynamicResource CheckLocale}"
                                             Click="GoogleServicesStatus_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button x:Name="BtnEnableGoogle" Content="Enable Google"
+                                    <Button x:Name="BtnEnableGoogle" Content="{DynamicResource EnableGoogle}"
                                             Click="EnableGoogleServices_Click" Style="{StaticResource MacBtnPrimary}" Margin="4,0,0,0"/>
                                 </UniformGrid>
                             </StackPanel>
@@ -2256,14 +2256,14 @@
                         <TextBlock Text="{DynamicResource FontSize}" Style="{StaticResource MacGroupLabelSafe}"/>
                         <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Change system font size — smaller or larger."
+                                <TextBlock Text="{DynamicResource FontSizeDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="FontScaleStatusText" Text="Tap «Read»"
+                                <TextBlock x:Name="FontScaleStatusText" Text="{DynamicResource TapReadHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
                                 <UniformGrid Columns="6">
-                                    <Button x:Name="BtnReadFont" Content="{StaticResource Read}"
+                                    <Button x:Name="BtnReadFont" Content="{DynamicResource Read}"
                                             Click="ReadFontScale_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
                                     <Button Content="0.85x" Tag="0.85" Click="SetFontScale_Click"
                                             Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
@@ -2283,30 +2283,30 @@
                         <TextBlock Text="{DynamicResource ScreenTimeout}" Style="{StaticResource MacGroupLabelWarn}"/>
                         <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Set screen timeout before display turns off."
+                                <TextBlock Text="{DynamicResource ScreenTimeoutDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="ScreenTimeoutStatusText" Text="Tap «Read»"
+                                <TextBlock x:Name="ScreenTimeoutStatusText" Text="{DynamicResource TapReadHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
                                 <UniformGrid Columns="4">
-                                    <Button x:Name="BtnReadTimeout" Content="{StaticResource Read}"
+                                    <Button x:Name="BtnReadTimeout" Content="{DynamicResource Read}"
                                             Click="ReadScreenTimeout_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
                                     <Button Content="15s" Tag="15000" Click="SetScreenTimeout_Click"
                                             Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
                                     <Button Content="30s" Tag="30000" Click="SetScreenTimeout_Click"
                                             Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button Content="1 phút" Tag="60000" Click="SetScreenTimeout_Click"
+                                    <Button Content="{DynamicResource Timeout1Min}" Tag="60000" Click="SetScreenTimeout_Click"
                                             Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
                                 </UniformGrid>
                                 <UniformGrid Columns="4" Margin="0,4,0,0">
-                                    <Button Content="5 phút" Tag="300000" Click="SetScreenTimeout_Click"
+                                    <Button Content="{DynamicResource Timeout5Min}" Tag="300000" Click="SetScreenTimeout_Click"
                                             Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button Content="10 phút" Tag="600000" Click="SetScreenTimeout_Click"
+                                    <Button Content="{DynamicResource Timeout10Min}" Tag="600000" Click="SetScreenTimeout_Click"
                                             Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button Content="30 phút" Tag="1800000" Click="SetScreenTimeout_Click"
+                                    <Button Content="{DynamicResource Timeout30Min}" Tag="1800000" Click="SetScreenTimeout_Click"
                                             Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button Content="Vô hạn" Tag="2147483647" Click="SetScreenTimeout_Click"
+                                    <Button Content="{DynamicResource TimeoutInfinite}" Tag="2147483647" Click="SetScreenTimeout_Click"
                                             Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
                                 </UniformGrid>
                             </StackPanel>
@@ -2316,14 +2316,14 @@
                         <TextBlock Text="{DynamicResource DeveloperOptions}" Style="{StaticResource MacGroupLabelInfo}"/>
                         <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Quick toggles for Developer Options."
+                                <TextBlock Text="{DynamicResource DevOptionsDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
                                 <UniformGrid Columns="1" Margin="0,0,0,8">
-                                    <Button x:Name="BtnReadDev" Content="Read All"
+                                    <Button x:Name="BtnReadDev" Content="{DynamicResource ReadAll}"
                                             Click="ReadDevOptions_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="120"/>
                                 </UniformGrid>
-                                <TextBlock x:Name="DevOptionsStatusText" Text="Tap «Read All»"
+                                <TextBlock x:Name="DevOptionsStatusText" Text="{DynamicResource TapReadAllHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
                                 <CheckBox x:Name="StayAwakeToggle" Content="{DynamicResource StayAwake}"
@@ -2342,20 +2342,20 @@
                                 <TextBlock Text="{DynamicResource StatusBarDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="StatusBarStatusText" Text="Tap «Read»"
+                                <TextBlock x:Name="StatusBarStatusText" Text="{DynamicResource TapReadHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
                                 <UniformGrid Columns="2" Margin="0,0,0,8">
-                                    <Button x:Name="BtnReadStatusBar" Content="{StaticResource Read}"
+                                    <Button x:Name="BtnReadStatusBar" Content="{DynamicResource Read}"
                                             Click="ReadStatusBar_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button x:Name="BtnApplyStatusBar" Content="{StaticResource Apply}"
+                                    <Button x:Name="BtnApplyStatusBar" Content="{DynamicResource Apply}"
                                             Click="ApplyStatusBar_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
                                 </UniformGrid>
-                                <CheckBox x:Name="StatusBarClockToggle" Content="Show clock"
+                                <CheckBox x:Name="StatusBarClockToggle" Content="{DynamicResource ShowClock}"
                                           Margin="0,0,0,4"/>
-                                <CheckBox x:Name="StatusBarBatteryToggle" Content="Show battery"
+                                <CheckBox x:Name="StatusBarBatteryToggle" Content="{DynamicResource ShowBattery}"
                                           Margin="0,0,0,4"/>
-                                <CheckBox x:Name="StatusBarSignalToggle" Content="Show signal"
+                                <CheckBox x:Name="StatusBarSignalToggle" Content="{DynamicResource ShowSignal}"
                                           Margin="0,0,0,4"/>
                             </StackPanel>
                         </Border>
@@ -2364,18 +2364,18 @@
                         <TextBlock Text="{DynamicResource BatteryPercentage}" Style="{StaticResource MacGroupLabelWarn}"/>
                         <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,24" Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Show / hide battery percentage on status bar."
+                                <TextBlock Text="{DynamicResource BatteryPercentDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="BatteryPercentStatusText" Text="Tap «Read»"
+                                <TextBlock x:Name="BatteryPercentStatusText" Text="{DynamicResource TapReadHint}"
                                            FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
                                            Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
                                 <UniformGrid Columns="3">
-                                    <Button x:Name="BtnReadBattery" Content="{StaticResource Read}"
+                                    <Button x:Name="BtnReadBattery" Content="{DynamicResource Read}"
                                             Click="ReadBatteryPercent_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button Content="Show %" Tag="true" Click="SetBatteryPercent_Click"
+                                    <Button Content="{DynamicResource ShowPercent}" Tag="true" Click="SetBatteryPercent_Click"
                                             Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button Content="Hide %" Tag="false" Click="SetBatteryPercent_Click"
+                                    <Button Content="{DynamicResource HidePercent}" Tag="false" Click="SetBatteryPercent_Click"
                                             Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
                                 </UniformGrid>
                             </StackPanel>
@@ -2667,17 +2667,17 @@
                             <StackPanel>
                                 <Border Background="#2A2418" Padding="14,12" Style="{StaticResource MacPanelHeader}">
                                     <StackPanel>
-                                        <TextBlock Text="Fake flagship device" FontSize="15" FontWeight="SemiBold"/>
-                                        <TextBlock Text="Fake ro.product.* requires Magisk + resetprop (root). Unlock FPS only needs ADB — Shizuku helps when settings are blocked."
+                                        <TextBlock Text="{DynamicResource DeviceSpoofHeader}" FontSize="15" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{DynamicResource DeviceSpoofHeaderDesc}"
                                                    FontSize="10" Foreground="#E65100" TextWrapping="Wrap" Margin="0,4,0,0"/>
-                                        <TextBlock x:Name="DeviceSpoofCapText" Text="Checking capabilities..."
+                                        <TextBlock x:Name="DeviceSpoofCapText" Text="{DynamicResource CheckingCapabilities}"
                                                    FontSize="10" Foreground="{StaticResource MacSecondaryBrush}"
                                                    Margin="0,6,0,0"/>
                                     </StackPanel>
                                 </Border>
                                 <Border Padding="12,10">
                                     <StackPanel>
-                                        <TextBlock Text="Flagship profile" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                        <TextBlock Text="{DynamicResource FlagshipProfile}" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6"/>
                                         <ComboBox x:Name="DeviceSpoofPreset" Margin="0,0,0,6"
                                                   MaxDropDownHeight="320"
                                                   SelectionChanged="DeviceSpoofPreset_SelectionChanged"/>
@@ -2685,9 +2685,9 @@
                                                    Foreground="{StaticResource MacSecondaryBrush}"
                                                    TextWrapping="Wrap" Margin="0,0,0,10"/>
 
-                                        <CheckBox x:Name="DeviceSpoofApplyProps" Content="Fake thông tin thiết bị (ro.product.*)"
+                                        <CheckBox x:Name="DeviceSpoofApplyProps" Content="{DynamicResource FakeDeviceProps}"
                                                   IsChecked="True" Margin="0,0,0,4"/>
-                                        <CheckBox x:Name="DeviceSpoofApplyFps" Content="Unlock FPS / tần số quét"
+                                        <CheckBox x:Name="DeviceSpoofApplyFps" Content="{DynamicResource UnlockFpsHz}"
                                                   IsChecked="True" Margin="0,0,0,8"/>
 
                                         <Grid Margin="0,0,0,8">
@@ -2695,7 +2695,7 @@
                                                 <ColumnDefinition Width="100"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Target Hz" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{DynamicResource TargetHz}" VerticalAlignment="Center"/>
                                             <ComboBox x:Name="DeviceSpoofHzPreset" Grid.Column="1" SelectedIndex="2">
                                                 <ComboBoxItem Content="60 Hz"/>
                                                 <ComboBoxItem Content="90 Hz"/>
@@ -2703,14 +2703,14 @@
                                                 <ComboBoxItem Content="144 Hz"/>
                                             </ComboBox>
                                         </Grid>
-                                        <CheckBox x:Name="DeviceSpoofDisableBooster" Content="Disable game booster / Hz saving (MIUI)"
+                                        <CheckBox x:Name="DeviceSpoofDisableBooster" Content="{DynamicResource DisableGameBooster}"
                                                   IsChecked="True" Margin="0,0,0,10"/>
 
                                         <WrapPanel Margin="0,0,0,8">
                                             <Button x:Name="BtnCheckDeviceSpoofCap" Content="{DynamicResource CheckLocale}"
                                                     Click="CheckDeviceSpoofCap_Click"
                                                     Style="{StaticResource MacToolbarBtn}"/>
-                                            <Button x:Name="BtnReadDeviceSpoofInfo" Content="Read current device"
+                                            <Button x:Name="BtnReadDeviceSpoofInfo" Content="{DynamicResource ReadCurrentDevice}"
                                                     Click="ReadDeviceSpoofInfo_Click"
                                                     Style="{StaticResource MacToolbarBtn}"/>
                                             <Button x:Name="BtnApplyDeviceSpoof" Content="{StaticResource Apply}"

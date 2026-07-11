@@ -234,6 +234,67 @@
     <sys:String x:Key="FontSize">Kích thước font</sys:String>
     <sys:String x:Key="ScreenTimeout">Thời gian tắt màn hình</sys:String>
 
+    <!-- Tweaks extended (i18n) -->
+    <sys:String x:Key="SystemTweaksTitle">Tinh chỉnh hệ thống</sys:String>
+    <sys:String x:Key="SystemTweaksSubtitle">DPI, animation, điều hướng, OTA, âm thanh, Google Services</sys:String>
+    <sys:String x:Key="ScreenDpiTitle">DPI màn hình</sys:String>
+    <sys:String x:Key="DpiDesc">Mật độ điểm ảnh — DPI cao UI lớn hơn; DPI thấp UI nhỏ hơn.</sys:String>
+    <sys:String x:Key="TapReadHint">Nhấn Đọc</sys:String>
+    <sys:String x:Key="QuickSelect">Chọn nhanh:</sys:String>
+    <sys:String x:Key="OrCustom">Hoặc tùy chỉnh:</sys:String>
+    <sys:String x:Key="AnimationSpeedDesc">0.5x nhanh hơn, 1x mặc định, 10x chậm (xem hiệu ứng).</sys:String>
+    <sys:String x:Key="Speed">Tốc độ</sys:String>
+    <sys:String x:Key="AnimationOff">Tắt (0x)</sys:String>
+    <sys:String x:Key="AnimationDefault">1x (mặc định)</sys:String>
+    <sys:String x:Key="ReadAnimation">Đọc animation</sys:String>
+    <sys:String x:Key="NavigationImmersive">Điều hướng &amp; Immersive</sys:String>
+    <sys:String x:Key="NavigationModeDesc">Chuyển giữa cử chỉ / 3 nút. Immersive ẩn thanh điều hướng.</sys:String>
+    <sys:String x:Key="ImmersiveMode">Immersive mode (ẩn thanh điều hướng)</sys:String>
+    <sys:String x:Key="BlockOtaTitle">Chặn OTA</sys:String>
+    <sys:String x:Key="BlockOtaDesc">Tắt gói cập nhật hệ thống + Private DNS chặn domain OTA Xiaomi.</sys:String>
+    <sys:String x:Key="BlockOta">Chặn OTA</sys:String>
+    <sys:String x:Key="UnblockOta">Khôi phục OTA</sys:String>
+    <sys:String x:Key="TapCheckHint">Nhấn Kiểm tra</sys:String>
+    <sys:String x:Key="BluetoothAudio">Âm thanh Bluetooth</sys:String>
+    <sys:String x:Key="BluetoothAudioDesc">Chọn codec Bluetooth và absolute volume.</sys:String>
+    <sys:String x:Key="AbsoluteVolume">Absolute volume (đồng bộ âm lượng)</sys:String>
+    <sys:String x:Key="ReadAudio">Đọc audio</sys:String>
+    <sys:String x:Key="CodecDefaultAuto">Mặc định (auto)</sys:String>
+    <sys:String x:Key="GoogleServicesTitle">Google Services</sys:String>
+    <sys:String x:Key="GoogleServicesDesc">Kiểm tra và bật Google Services (GMS) trên ROM China.</sys:String>
+    <sys:String x:Key="EnableGoogle">Bật Google</sys:String>
+    <sys:String x:Key="FontSizeDesc">Đổi cỡ chữ hệ thống — nhỏ hơn hoặc lớn hơn.</sys:String>
+    <sys:String x:Key="ScreenTimeoutDesc">Thời gian chờ trước khi tắt màn hình.</sys:String>
+    <sys:String x:Key="Timeout1Min">1 phút</sys:String>
+    <sys:String x:Key="Timeout5Min">5 phút</sys:String>
+    <sys:String x:Key="Timeout10Min">10 phút</sys:String>
+    <sys:String x:Key="Timeout30Min">30 phút</sys:String>
+    <sys:String x:Key="TimeoutInfinite">Vô hạn</sys:String>
+    <sys:String x:Key="DevOptionsDesc">Bật/tắt nhanh Tùy chọn nhà phát triển.</sys:String>
+    <sys:String x:Key="ReadAll">Đọc tất cả</sys:String>
+    <sys:String x:Key="TapReadAllHint">Nhấn Đọc tất cả</sys:String>
+    <sys:String x:Key="ShowClock">Hiện đồng hồ</sys:String>
+    <sys:String x:Key="ShowBattery">Hiện pin</sys:String>
+    <sys:String x:Key="ShowSignal">Hiện sóng</sys:String>
+    <sys:String x:Key="BatteryPercentDesc">Hiện / ẩn phần trăm pin trên thanh trạng thái.</sys:String>
+    <sys:String x:Key="ShowPercent">Hiện %</sys:String>
+    <sys:String x:Key="HidePercent">Ẩn %</sys:String>
+    <sys:String x:Key="WifiOnOff">Wi‑Fi Bật/Tắt</sys:String>
+    <sys:String x:Key="BluetoothOnOff">Bluetooth Bật/Tắt</sys:String>
+    <sys:String x:Key="AirplaneOnOff">Chế độ máy bay Bật/Tắt</sys:String>
+    <sys:String x:Key="HotspotOnOff">Hotspot Bật/Tắt</sys:String>
+    <sys:String x:Key="ScanWifi">Quét</sys:String>
+    <sys:String x:Key="FakeDeviceProps">Fake thông tin thiết bị (ro.product.*)</sys:String>
+    <sys:String x:Key="UnlockFpsHz">Unlock FPS / tần số quét</sys:String>
+    <sys:String x:Key="TargetHz">Target Hz</sys:String>
+    <sys:String x:Key="DisableGameBooster">Tắt game booster / tiết kiệm Hz (MIUI)</sys:String>
+    <sys:String x:Key="ReadCurrentDevice">Đọc thiết bị hiện tại</sys:String>
+    <sys:String x:Key="DeviceSpoofHeader">Giả mạo máy flagship</sys:String>
+    <sys:String x:Key="DeviceSpoofHeaderDesc">Fake ro.product.* cần Magisk + resetprop (root). Unlock FPS chỉ cần ADB — Shizuku hỗ trợ khi settings bị chặn.</sys:String>
+    <sys:String x:Key="FlagshipProfile">Profile flagship</sys:String>
+    <sys:String x:Key="CheckingCapabilities">Đang kiểm tra khả năng…</sys:String>
+    <sys:String x:Key="ReadingStatus">Đang đọc…</sys:String>
+
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <!-- Advanced Tab -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
