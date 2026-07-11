@@ -5,7 +5,7 @@ param(
     [ValidateSet('portable', 'standalone', 'zip', 'installer')]
     [string]$Profile = 'standalone',
     [string]$Runtime = 'win-x64',
-    [string]$Version = '1.0.2'
+    [string]$Version = '1.0.3'
 )
 
 $ErrorActionPreference = 'Stop'

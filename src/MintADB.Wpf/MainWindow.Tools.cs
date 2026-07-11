@@ -1,7 +1,9 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Microsoft.Win32;
+using MintADB.Wpf.Helpers;
 using MintADB.Wpf.Models;
 using MintADB.Wpf.Services;
 
@@ -11,11 +13,25 @@ public partial class MainWindow
 {
     private AdbToolsService? _tools;
     private HardwareInfoService? _hardware;
-    private int _toolPage;
-    private int _systemPage;
+    private int _toolPage = -1;
+    private int _systemPage = -1;
+    private bool? _optimizePage;
+    private UIElement[]? _toolPages;
+    private UIElement[]? _systemPages;
 
     private AdbToolsService Tools => _tools ??= new AdbToolsService(_adb);
     private HardwareInfoService Hardware => _hardware ??= new HardwareInfoService(_adb);
+
+    private UIElement[] ToolPages => _toolPages ??=
+    [
+        ToolPageBasic, ToolPageApps, ToolPageScreen, ToolPageNetwork,
+        ToolPageSystem, ToolPageTweaks, ToolPagePro, ToolPageAdvanced, ToolPageFastboot,
+    ];
+
+    private UIElement[] SystemPages => _systemPages ??=
+    [
+        SysPageBattery, SysPageDisplay, SysPageDevice,
+    ];
 
     private void NavOptimize_Click(object sender, RoutedEventArgs e) => ShowPage(optimize: true);
 
@@ -23,49 +39,91 @@ public partial class MainWindow
 
     private void ShowPage(bool optimize)
     {
-        PanelOptimize.Visibility = optimize ? Visibility.Visible : Visibility.Collapsed;
-        PanelTools.Visibility = optimize ? Visibility.Collapsed : Visibility.Visible;
+        if (_optimizePage == optimize)
+        {
+            SetActiveTab(optimize ? 0 : 1, NavOptimize, NavTools);
+            return;
+        }
 
+        var from = _optimizePage is null
+            ? null
+            : _optimizePage.Value ? (UIElement)PanelOptimize : PanelTools;
+        var to = optimize ? (UIElement)PanelOptimize : PanelTools;
+        var other = optimize ? (UIElement)PanelTools : PanelOptimize;
+
+        if (_optimizePage is null)
+            TabTransitionHelper.ShowOnly(to, other);
+        else
+            TabTransitionHelper.Crossfade(from, to, [other]);
+
+        _optimizePage = optimize;
         SetActiveTab(optimize ? 0 : 1, NavOptimize, NavTools);
     }
 
     private void ShowToolPage(int page)
     {
+        if (page < 0 || page >= ToolPages.Length) return;
+
+        var pages = ToolPages;
+        var prev = _toolPage;
+        if (prev == page && pages[page].Visibility == Visibility.Visible)
+        {
+            SetActiveTab(page,
+                ToolNavBasic, ToolNavApps, ToolNavScreen, ToolNavNetwork,
+                ToolNavSystem, ToolNavTweaks, ToolNavPro, ToolNavAdvanced, ToolNavFastboot);
+            return;
+        }
+
+        var from = prev >= 0 && prev < pages.Length ? pages[prev] : null;
+        TabTransitionHelper.Crossfade(from, pages[page], pages);
         _toolPage = page;
-        ToolPageBasic.Visibility = page == 0 ? Visibility.Visible : Visibility.Collapsed;
-        ToolPageApps.Visibility = page == 1 ? Visibility.Visible : Visibility.Collapsed;
-        ToolPageScreen.Visibility = page == 2 ? Visibility.Visible : Visibility.Collapsed;
-        ToolPageNetwork.Visibility = page == 3 ? Visibility.Visible : Visibility.Collapsed;
-        ToolPageSystem.Visibility = page == 4 ? Visibility.Visible : Visibility.Collapsed;
-        ToolPageTweaks.Visibility = page == 5 ? Visibility.Visible : Visibility.Collapsed;
-        ToolPageAdvanced.Visibility = page == 6 ? Visibility.Visible : Visibility.Collapsed;
-        ToolPageFastboot.Visibility = page == 7 ? Visibility.Visible : Visibility.Collapsed;
 
         SetActiveTab(page,
             ToolNavBasic, ToolNavApps, ToolNavScreen, ToolNavNetwork,
-            ToolNavSystem, ToolNavTweaks, ToolNavAdvanced, ToolNavFastboot);
+            ToolNavSystem, ToolNavTweaks, ToolNavPro, ToolNavAdvanced, ToolNavFastboot);
 
-        if (page == 4)
-            ShowSystemSubPage(_systemPage);
-
-        if (page == 7)
-            _ = RefreshFastbootDevicesAsync();
+        // Defer heavy side-work so animation stays fluid
+        Dispatcher.BeginInvoke(() =>
+        {
+            if (_toolPage != page) return;
+            if (page == 4)
+                ShowSystemSubPage(_systemPage < 0 ? 0 : _systemPage);
+            if (page == 8)
+                _ = RefreshFastbootDevicesAsync();
+        }, DispatcherPriority.Background);
     }
 
     private void ShowSystemSubPage(int page)
     {
-        _systemPage = page;
-        SysPageBattery.Visibility = page == 0 ? Visibility.Visible : Visibility.Collapsed;
-        SysPageDisplay.Visibility = page == 1 ? Visibility.Visible : Visibility.Collapsed;
-        SysPageDevice.Visibility = page == 2 ? Visibility.Visible : Visibility.Collapsed;
+        if (page < 0 || page >= SystemPages.Length) return;
 
+        var pages = SystemPages;
+        var prev = _systemPage;
+        if (prev == page && pages[page].Visibility == Visibility.Visible)
+        {
+            SetActiveTab(page, SysNavBattery, SysNavDisplay, SysNavDevice);
+            return;
+        }
+
+        var from = prev >= 0 && prev < pages.Length ? pages[prev] : null;
+        TabTransitionHelper.Crossfade(from, pages[page], pages);
+        _systemPage = page;
         SetActiveTab(page, SysNavBattery, SysNavDisplay, SysNavDevice);
     }
 
     private static void SetActiveTab(int index, params Button[] tabs)
     {
         for (var i = 0; i < tabs.Length; i++)
-            tabs[i].Tag = i == index ? "active" : "";
+        {
+            var active = i == index;
+            var next = active ? "active" : "";
+            if (Equals(tabs[i].Tag, next)) continue;
+            tabs[i].Tag = next;
+
+            // Keep chip fully opaque (opacity anim on tabs caused black/blank content races)
+            tabs[i].BeginAnimation(UIElement.OpacityProperty, null);
+            tabs[i].Opacity = 1;
+        }
     }
 
     private static string GetBoxText(TextBox box)
@@ -151,9 +209,6 @@ public partial class MainWindow
             AppendLog(r.Ok ? "[OK] Cài APK thành công" : $"[FAIL] {r.Combined}");
         });
     }
-
-    private async void RemoveOrDisable_Click(object sender, RoutedEventArgs e)
-        => await RemovePackagesWithConfirm(GetSelectedPackages(), "Gỡ / tắt app đã chọn");
 
     private async void UninstallSystemShell_Click(object sender, RoutedEventArgs e)
     {

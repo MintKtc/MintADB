@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
@@ -82,6 +82,9 @@ public partial class MainWindow : Window
         InitHintBox(ShizukuPermCustomBox);
         InitHintBox(LocaleCustomBox);
         InitHintBox(FastbootImageBox);
+        InitHintBox(ProWirelessHostBox);
+        InitHintBox(ProWirelessCodeBox);
+        InitHintBox(ProPackageBox);
 
         ShowToolPage(0);
         ShowSystemSubPage(0);

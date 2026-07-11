@@ -5,12 +5,16 @@ public sealed class AdBlockService(AdbService adb, AdbToolsService tools)
     public static readonly (string Package, string Label)[] MiuiAdPackages =
     [
         ("com.miui.systemAdSolution", "MIUI System Ads"),
-        ("com.miui.msa.global", "MSA quảng cáo"),
+        ("com.miui.msa", "MSA CN"),
+        ("com.miui.msa.global", "MSA Global"),
         ("com.miui.android.fashiongallery", "Carousel màn hình khóa"),
         ("com.xiaomi.mipicks", "GetApps / Mi Picks"),
+        ("com.xiaomi.market", "GetApps market CN"),
         ("com.xiaomi.discover", "Xiaomi Discover"),
         ("com.miui.newhome", "MIUI New Home feed"),
         ("com.miui.analytics", "MIUI Analytics"),
+        ("com.miui.yellowpage", "Yellow pages CN"),
+        ("com.miui.personalassistant", "App vault / personal CN"),
     ];
 
     public static readonly (string Package, string Label)[] GoogleAdPackages =

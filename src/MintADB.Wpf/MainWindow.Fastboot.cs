@@ -43,7 +43,7 @@ public partial class MainWindow
         finally { SetActionButtonsEnabled(true); }
     }
 
-    private void ToolNavFastboot_Click(object sender, RoutedEventArgs e) => ShowToolPage(7);
+    private void ToolNavFastboot_Click(object sender, RoutedEventArgs e) => ShowToolPage(8);
 
     private void FastbootDeviceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {

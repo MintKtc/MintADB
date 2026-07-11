@@ -55,12 +55,28 @@ public partial class MainWindow
 
     private void ShowAppSubPage(int page)
     {
-        _appPage = page;
-        AppPageActive.Visibility = page == 0 ? Visibility.Visible : Visibility.Collapsed;
-        AppPageInactive.Visibility = page == 1 ? Visibility.Visible : Visibility.Collapsed;
-        AppActionActive.Visibility = page == 0 ? Visibility.Visible : Visibility.Collapsed;
-        AppActionInactive.Visibility = page == 1 ? Visibility.Visible : Visibility.Collapsed;
+        if (_appPage == page
+            && AppPageActive.Visibility == (page == 0 ? Visibility.Visible : Visibility.Collapsed))
+        {
+            SetActiveTab(page, AppNavActive, AppNavInactive);
+            return;
+        }
 
+        var prevPage = page == 0 ? AppPageInactive : AppPageActive;
+        var nextPage = page == 0 ? AppPageActive : AppPageInactive;
+        var prevAction = page == 0 ? AppActionInactive : AppActionActive;
+        var nextAction = page == 0 ? AppActionActive : AppActionInactive;
+
+        Helpers.TabTransitionHelper.Crossfade(prevPage, nextPage, [prevPage, nextPage]);
+        // Actions: instant show (avoid opacity stuck at 0)
+        prevAction.BeginAnimation(UIElement.OpacityProperty, null);
+        prevAction.Opacity = 1;
+        prevAction.Visibility = Visibility.Collapsed;
+        nextAction.BeginAnimation(UIElement.OpacityProperty, null);
+        nextAction.Opacity = 1;
+        nextAction.Visibility = Visibility.Visible;
+
+        _appPage = page;
         SetActiveTab(page, AppNavActive, AppNavInactive);
 
         if (page == 1 && _inactiveApps.Count == 0 && !_scanningInactive && _selectedSerial is not null)

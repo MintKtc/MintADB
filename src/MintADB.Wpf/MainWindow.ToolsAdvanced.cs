@@ -224,7 +224,7 @@ public partial class MainWindow
         finally { SetActionButtonsEnabled(true); }
     }
 
-    private void ToolNavAdvanced_Click(object sender, RoutedEventArgs e) => ShowToolPage(6);
+    private void ToolNavAdvanced_Click(object sender, RoutedEventArgs e) => ShowToolPage(7);
 
     private void BrowsePush_Click(object sender, RoutedEventArgs e)
     {

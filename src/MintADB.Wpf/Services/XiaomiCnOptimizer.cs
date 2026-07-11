@@ -111,7 +111,13 @@ public sealed class XiaomiCnOptimizer(AdbService adb)
         var miui = await adb.GetPropAsync(serial, "ro.miui.ui.version.name", ct);
 
         var blob = (region + locale + build).ToLowerInvariant();
-        var isChina = blob.Contains("cn") || blob.Contains("china") || build.EndsWith("CNXM", StringComparison.OrdinalIgnoreCase);
+        var isChina = region.Equals("CN", StringComparison.OrdinalIgnoreCase)
+                      || blob.Contains("cn")
+                      || blob.Contains("china")
+                      || build.Contains("CNXM", StringComparison.OrdinalIgnoreCase)
+                      || build.Contains("CNX", StringComparison.OrdinalIgnoreCase)
+                      || locale.StartsWith("zh-CN", StringComparison.OrdinalIgnoreCase)
+                      || locale.Equals("zh_CN", StringComparison.OrdinalIgnoreCase);
 
         return new RomInfo
         {
@@ -464,9 +470,14 @@ public sealed class XiaomiCnOptimizer(AdbService adb)
         {
             "com.miui.analytics",
             "com.xiaomi.mipicks",
+            "com.xiaomi.market",
             "com.xiaomi.joyose",
+            "com.miui.msa",
             "com.miui.msa.global",
             "com.miui.systemAdSolution",
+            "com.miui.newhome",
+            "com.miui.daemon",
+            "com.miui.yellowpage",
         };
 
         foreach (var pkg in analyticsPackages)

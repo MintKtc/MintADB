@@ -3,7 +3,7 @@
 ; Requires: dist\MintADB\ from publish.ps1 first
 
 #define AppName "MintADB"
-#define AppVersion "1.0.2"
+#define AppVersion "1.0.3"
 #define AppPublisher "MINT_HD"
 #define AppExe "MintADB.exe"
 #define PublishDir "..\dist\MintADB"

@@ -1,4 +1,4 @@
-<Window x:Class="MintADB.Wpf.MainWindow"
+﻿<Window x:Class="MintADB.Wpf.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MintADB"
@@ -549,62 +549,73 @@
                         </Border>
 
                         <StackPanel x:Name="AppActionActive">
+                        <!-- Safe Debloat (primary — top) -->
+                        <TextBlock Text="{DynamicResource SafeDebloat}" Style="{StaticResource MacGroupLabelSafe}"/>
+                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource SafeDebloatDesc}"
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <Button x:Name="BtnDebloatSafe" Content="{DynamicResource SafeDebloat}"
+                                        Click="DebloatSafe_Click"
+                                        Style="{StaticResource MacBtnPrimary}"
+                                        HorizontalAlignment="Stretch"
+                                        Padding="12,10"
+                                        ToolTip="Debloat Hyper — script mặc định nhúng trong app (pm uninstall / disable / clear)"/>
+                            </StackPanel>
+                        </Border>
+
                         <!-- Uninstall & Disable Apps -->
                         <TextBlock Text="{DynamicResource UninstallDisableApps}" Style="{StaticResource MacGroupLabelDanger}"/>
-                        <Border Style="{StaticResource MacGroupBoxDanger}" Margin="0,0,0,16" Padding="12">
+                        <Border Style="{StaticResource MacGroupBoxDanger}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource UninstallDisableAppsDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <WrapPanel>
-                                    <Button x:Name="BtnRemoveOrDisable" Content="{DynamicResource UninstallDisable}"
-                                            Click="RemoveOrDisable_Click"
-                                            Style="{StaticResource MacBtnDestructive}"/>
+                                <UniformGrid Columns="3">
                                     <Button x:Name="BtnUninstallSystemShell" Content="{DynamicResource UninstallSystemShell}"
                                             Click="UninstallSystemShell_Click"
-                                            Style="{StaticResource MacBtnDestructive}"
+                                            Style="{StaticResource MacBtnDestructive}" Margin="0,0,4,0"
                                             ToolTip="Remove system/ROM bloat via adb shell: pm uninstall --user 0 (no root needed)"/>
                                     <Button x:Name="BtnDisableApps" Content="{DynamicResource DisableApps}"
                                             Click="DisableApps_Click"
-                                            Style="{StaticResource MacBtnSecondary}"/>
+                                            Style="{StaticResource MacBtnSecondary}" Margin="0,0,4,0"/>
                                     <Button x:Name="BtnUninstallAllBloat" Content="{DynamicResource UninstallAllBloat}"
                                             Click="UninstallAllBloat_Click"
-                                            Style="{StaticResource MacBtnDestructive}"
-                                            Margin="0"/>
-                                </WrapPanel>
+                                            Style="{StaticResource MacBtnDestructive}" Margin="4,0,0,0"/>
+                                </UniformGrid>
                             </StackPanel>
                         </Border>
                         </StackPanel>
 
                         <StackPanel x:Name="AppActionInactive" Visibility="Collapsed">
                         <TextBlock Text="{DynamicResource RestoreApps}" Style="{StaticResource MacGroupLabelSafe}"/>
-                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,16" Padding="12">
+                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource RestoreAppsDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <WrapPanel>
+                                <UniformGrid Columns="2">
                                     <Button x:Name="BtnRestoreInactiveApps" Content="{DynamicResource RestoreSelected}"
                                             Click="RestoreInactiveApps_Click"
-                                            Style="{StaticResource MacBtnPrimary}"/>
+                                            Style="{StaticResource MacBtnPrimary}" Margin="0,0,4,0"/>
                                     <Button x:Name="BtnEnableApps" Content="{DynamicResource EnableSelected}"
                                             Click="EnableInactiveApps_Click"
-                                            Style="{StaticResource MacBtnSecondary}"
-                                            Margin="0"/>
-                                </WrapPanel>
+                                            Style="{StaticResource MacBtnSecondary}" Margin="4,0,0,0"/>
+                                </UniformGrid>
                             </StackPanel>
                         </Border>
                         </StackPanel>
 
-                        <!-- Action buttons -->
-                        <TextBlock Text="{DynamicResource QuickActions}" Style="{StaticResource MacGroupLabelSafe}"/>
-                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
+                        <!-- Quick actions -->
+                        <TextBlock Text="{DynamicResource QuickActions}" Style="{StaticResource MacGroupLabelInfo}"/>
+                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource QuickActionsDesc}"
                                            FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
 
-                                <!-- Row 1: Fix & Grant -->
+                                <!-- Row 1: Fix · Grant · Full -->
                                 <UniformGrid Columns="3" Margin="0,0,0,8">
                                     <Button x:Name="BtnFixNotif" Content="{DynamicResource FixNotifications}"
                                             Click="FixNotifications_Click"
@@ -620,20 +631,16 @@
                                             ToolTip="Fix notifications + grant permissions + disable battery optimization"/>
                                 </UniformGrid>
 
-                                <!-- Row 2: Backup & Restore -->
-                                <UniformGrid Columns="3" Margin="0,0,0,8">
+                                <!-- Row 2: Backup · Restore -->
+                                <UniformGrid Columns="2" Margin="0,0,0,8">
                                     <Button x:Name="BtnBackupApps" Content="{DynamicResource BackupAppList}"
                                             Click="BackupAppList_Click"
                                             Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"
                                             ToolTip="Save selected app list"/>
                                     <Button x:Name="BtnRestoreApps" Content="{DynamicResource RestoreFromBackup}"
                                             Click="RestoreAppList_Click"
-                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"
-                                            ToolTip="Restore app list from backup file"/>
-                                    <Button x:Name="BtnDebloatSafe" Content="{DynamicResource SafeDebloat}"
-                                            Click="DebloatSafe_Click"
                                             Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"
-                                            ToolTip="Debloat Hyper — script mặc định nhúng trong app (pm uninstall / disable / clear)"/>
+                                            ToolTip="Restore app list from backup file"/>
                                 </UniformGrid>
 
                                 <!-- Progress -->
@@ -707,6 +714,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                 <Button x:Name="ToolNavBasic" Grid.Column="0" Content="{DynamicResource Basic}"
                                         Click="ToolNavBasic_Click" Tag="active"
@@ -726,17 +734,24 @@
                                 <Button x:Name="ToolNavTweaks" Grid.Column="5" Content="{DynamicResource Tweaks}"
                                         Click="ToolNavTweaks_Click"
                                         Style="{StaticResource MacToolNavBtn}"/>
-                                <Button x:Name="ToolNavAdvanced" Grid.Column="6" Content="{DynamicResource Advanced}"
+                                <Button x:Name="ToolNavPro" Grid.Column="6" Content="{DynamicResource ProTab}"
+                                        Click="ToolNavPro_Click"
+                                        Style="{StaticResource MacToolNavBtn}"/>
+                                <Button x:Name="ToolNavAdvanced" Grid.Column="7" Content="{DynamicResource Advanced}"
                                         Click="ToolNavAdvanced_Click"
                                         Style="{StaticResource MacToolNavBtn}"/>
-                                <Button x:Name="ToolNavFastboot" Grid.Column="7" Content="{DynamicResource FastbootTab}"
+                                <Button x:Name="ToolNavFastboot" Grid.Column="8" Content="{DynamicResource FastbootTab}"
                                         Click="ToolNavFastboot_Click"
                                         Style="{StaticResource MacToolNavBtn}"/>
                             </Grid>
                         </Border>
 
-                        <Border Style="{StaticResource MacTabContent}" Padding="16,12" Margin="0,0,0,16">
-                        <Grid x:Name="ToolPageHost">
+                        <Border Style="{StaticResource MacTabContent}" Padding="16,12" Margin="0,0,0,16"
+                                ClipToBounds="True">
+                        <Grid x:Name="ToolPageHost"
+                              ClipToBounds="True"
+                              UseLayoutRounding="True"
+                              SnapsToDevicePixels="True">
 
                         <!-- ── Basic ── -->
                         <StackPanel x:Name="ToolPageBasic">
@@ -861,28 +876,8 @@
                                            Text="On device: /sdcard/Download/MintADB"/>
                                 <TextBlock FontSize="10" Margin="0,4,0,0" TextWrapping="Wrap"
                                            Foreground="{StaticResource MacSecondaryBrush}">
-                                    <Run Text="MIUI blocks? Enable «Install via USB» in Developer Options."/>
+                                    <Run Text="MIUI blocks? Enable ┬½Install via USB┬╗ in Developer Options."/>
                                 </TextBlock>
-                            </StackPanel>
-                        </Border>
-
-                        <TextBlock Text="{DynamicResource ToolsApps}" Style="{StaticResource MacGroupLabelWarn}"/>
-                        <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,12" Padding="12">
-                            <StackPanel>
-                                <TextBlock Text="Select app on the left, then perform action."
-                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
-                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
-                                <UniformGrid Columns="3" Margin="0,0,0,8">
-                                    <Button x:Name="BtnInstallApk" Content="{DynamicResource InstallAPK}" Click="InstallApk_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button x:Name="BtnBackupApk" Content="{DynamicResource BackupAPK}" Click="BackupApk_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button x:Name="BtnLaunchApp" Content="{DynamicResource OpenApp}" Click="LaunchApp_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
-                                </UniformGrid>
-                                <UniformGrid Columns="3">
-                                    <Button x:Name="BtnClearData" Content="{DynamicResource ClearData1App}" Click="ClearAppData_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button x:Name="BtnForceStop" Content="{DynamicResource ForceStop1App}" Click="ForceStopApps_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button x:Name="BtnBatchClearData" Content="{DynamicResource ClearDataMultiple}" Click="BatchClearData_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"
-                                            ToolTip="Select multiple apps in the list"/>
-                                </UniformGrid>
                             </StackPanel>
                         </Border>
 
@@ -2376,6 +2371,234 @@
                                     <Button Content="{DynamicResource ShowPercent}" Tag="true" Click="SetBatteryPercent_Click"
                                             Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
                                     <Button Content="{DynamicResource HidePercent}" Tag="false" Click="SetBatteryPercent_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        </StackPanel>
+
+                        <!-- ── Pro · real optimization hub ── -->
+                        <StackPanel x:Name="ToolPagePro" Visibility="Collapsed">
+
+                        <TextBlock Text="{DynamicResource ProTitle}" Style="{StaticResource MacPageTitle}"/>
+                        <TextBlock Text="{DynamicResource ProSubtitle}"
+                                   Style="{StaticResource MacPageSubtitle}" Margin="0,4,0,14"/>
+
+                        <!-- Score + Audit -->
+                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="14">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="{DynamicResource ProScoreLabel}" FontSize="11"
+                                               Foreground="{StaticResource MacSecondaryBrush}"/>
+                                    <TextBlock x:Name="ProScoreText" Text="—" FontSize="42" FontWeight="Bold"
+                                               Foreground="{StaticResource MacBlueBrush}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="/ 100" FontSize="11" HorizontalAlignment="Center"
+                                               Foreground="{StaticResource MacSecondaryBrush}"/>
+                                </StackPanel>
+                                <TextBlock x:Name="ProAuditText" Grid.Column="1"
+                                           Text="{DynamicResource ProAuditHint}"
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" TextWrapping="Wrap"
+                                           VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <Button Grid.Column="2" Content="{DynamicResource ProAudit}" Click="ProAudit_Click"
+                                        Style="{StaticResource MacBtnPrimary}" MinWidth="100" VerticalAlignment="Center"
+                                        Padding="12,10"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- FULL PRO OPTIMIZE -->
+                        <TextBlock Text="{DynamicResource ProFullTitle}" Style="{StaticResource MacGroupLabelSafe}"/>
+                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource ProFullDesc}"
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <RadioButton x:Name="ProBiasSmooth" Content="{DynamicResource ProBiasSmooth}"
+                                                 IsChecked="True" Margin="0,0,16,0" GroupName="ProBias"/>
+                                    <RadioButton x:Name="ProBiasBattery" Content="{DynamicResource ProBiasBattery}"
+                                                 GroupName="ProBias"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                    <CheckBox x:Name="ProFullMiuiOptCheck" Content="{DynamicResource ProOptMiui}"
+                                              IsChecked="True" Margin="0,0,12,0"/>
+                                    <CheckBox x:Name="ProFullAdsCheck" Content="{DynamicResource ProOptAds}"
+                                              IsChecked="True" Margin="0,0,12,0"/>
+                                    <CheckBox x:Name="ProFullDnsCheck" Content="{DynamicResource ProOptDns}"
+                                              IsChecked="True"/>
+                                </StackPanel>
+                                <Button Content="{DynamicResource ProFullRun}" Click="ProFullOptimize_Click"
+                                        Style="{StaticResource MacBtnPrimary}" HorizontalAlignment="Stretch"
+                                        Padding="14,12" FontSize="14" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- HyperOS services panel -->
+                        <TextBlock Text="{DynamicResource HyperSvcTitle}" Style="{StaticResource MacGroupLabelWarn}"/>
+                        <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource HyperSvcDesc}"
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <TextBlock x:Name="HyperServiceStatusText" Text="{DynamicResource HyperSvcHint}"
+                                           FontSize="11" Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,8"/>
+                                <UniformGrid Columns="3" Margin="0,0,0,8">
+                                    <Button Content="{DynamicResource HyperSvcScan}" Click="ProScanHyperServices_Click"
+                                            Style="{StaticResource MacBtnPrimary}" Margin="0,0,4,0"/>
+                                    <Button Content="{DynamicResource HyperSvcDisable}" Click="ProDisableHyperGroup_Click"
+                                            Style="{StaticResource MacBtnDestructive}" Margin="0,0,4,0"/>
+                                    <Button Content="{DynamicResource HyperSvcEnable}" Click="ProEnableHyperGroup_Click"
+                                            Style="{StaticResource MacBtnSecondary}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                                <ListBox x:Name="HyperServiceList" MaxHeight="220"
+                                         Background="Transparent" BorderThickness="0"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border CornerRadius="8" Padding="10,8" Margin="0,0,0,6"
+                                                    Background="#2C2C2E" BorderBrush="#3A3A3C" BorderThickness="1">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="12"/>
+                                                        <TextBlock Text="{Binding Description}" FontSize="10"
+                                                                   Foreground="{StaticResource MacSecondaryBrush}"
+                                                                   TextWrapping="Wrap" Margin="0,2,0,0"/>
+                                                        <TextBlock Text="{Binding Details}" FontSize="10"
+                                                                   Foreground="#8E8E93" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="1" Text="{Binding Status}"
+                                                               FontFamily="Cascadia Mono, Consolas, monospace"
+                                                               FontSize="10" Foreground="{StaticResource MacBlueBrush}"
+                                                               VerticalAlignment="Center" Margin="12,0,0,0"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+
+                                <TextBlock Text="{DynamicResource HyperDeviceLevelTitle}" FontSize="11" FontWeight="SemiBold"
+                                           Margin="0,10,0,6"/>
+                                <TextBlock x:Name="HyperDeviceLevelText" Text="—"
+                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
+                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,6"/>
+                                <UniformGrid Columns="2" Margin="0,0,0,8">
+                                    <Button Content="{DynamicResource HyperDeviceLevelRead}" Click="ProReadDeviceLevel_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="{DynamicResource HyperDeviceLevelApply}" Click="ProDeviceLevel_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+
+                                <TextBlock Text="{DynamicResource HyperDeepLinkTitle}" FontSize="11" FontWeight="SemiBold"
+                                           Margin="0,4,0,6"/>
+                                <UniformGrid Columns="3">
+                                    <Button Content="{DynamicResource HyperOpenAutostart}" Click="ProOpenAutostart_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="{DynamicResource HyperOpenBattery}" Click="ProOpenAppBattery_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="{DynamicResource HyperOpenSecurity}" Click="ProOpenSecurity_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Debloat: Safe vs Balanced -->
+                        <TextBlock Text="{DynamicResource ProDebloatTitle}" Style="{StaticResource MacGroupLabelDanger}"/>
+                        <Border Style="{StaticResource MacGroupBoxDanger}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource ProDebloatDesc}"
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
+                                <UniformGrid Columns="2">
+                                    <Button Content="{DynamicResource SafeDebloat}" Click="ProSafeDebloat_Click"
+                                            Style="{StaticResource MacBtnSecondary}" Margin="0,0,4,0" Padding="10,10"/>
+                                    <Button Content="{DynamicResource ProBalancedDebloat}" Click="ProBalancedDebloat_Click"
+                                            Style="{StaticResource MacBtnDestructive}" Margin="4,0,0,0" Padding="10,10"/>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Quick mode presets -->
+                        <TextBlock Text="{DynamicResource ProPresetsTitle}" Style="{StaticResource MacGroupLabelWarn}"/>
+                        <Border Style="{StaticResource MacGroupBoxWarn}" Margin="0,0,0,12" Padding="12">
+                            <UniformGrid Columns="2">
+                                <Button Content="{DynamicResource ProPerfPreset}" Click="ProPerfPreset_Click"
+                                        Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0" Padding="10,10"/>
+                                <Button Content="{DynamicResource ProBatteryPreset}" Click="ProBatteryPreset_Click"
+                                        Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0" Padding="10,10"/>
+                            </UniformGrid>
+                        </Border>
+
+                        <!-- Per-app + game mode -->
+                        <TextBlock Text="{DynamicResource ProAppPackTitle}" Style="{StaticResource MacGroupLabelSafe}"/>
+                        <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource ProAppPackDesc}"
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <TextBox x:Name="ProPackageBox" Tag="{DynamicResource ProPackageHint}" Margin="0,0,0,8"/>
+                                <UniformGrid Columns="2" Margin="0,0,0,8">
+                                    <Button Content="{DynamicResource ProNotifPack}" Click="ProNotifPack_Click"
+                                            Style="{StaticResource MacBtnPrimary}" Margin="0,0,4,0"/>
+                                    <Button Content="{DynamicResource ProUnrestrictedData}" Click="ProUnrestrictedData_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                </UniformGrid>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ComboBox x:Name="ProGameModeCombo" SelectedIndex="1" Margin="0,0,8,0">
+                                        <ComboBoxItem Content="{DynamicResource HyperGameStandard}" Tag="standard"/>
+                                        <ComboBoxItem Content="{DynamicResource HyperGamePerf}" Tag="performance"/>
+                                        <ComboBoxItem Content="{DynamicResource HyperGameBattery}" Tag="battery"/>
+                                    </ComboBox>
+                                    <Button Grid.Column="1" Content="{DynamicResource HyperGameModeApply}"
+                                            Click="ProGameMode_Click" Style="{StaticResource MacToolbarBtn}" MinWidth="120"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Wireless ADB (utility) -->
+                        <TextBlock Text="{DynamicResource ProWirelessTitle}" Style="{StaticResource MacGroupLabelInfo}"/>
+                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,24" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource ProWirelessDesc}"
+                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
+                                           TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="ProWirelessHostBox" Grid.Column="0" Tag="192.168.1.10:5555" Margin="0,0,6,0"/>
+                                    <TextBox x:Name="ProAdbPortBox" Grid.Column="1" Text="5555" Margin="0,0,6,0"/>
+                                    <Button Grid.Column="2" Content="{DynamicResource ProTcpip}" Click="ProTcpip_Click"
+                                            Style="{StaticResource MacToolbarBtn}"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="ProWirelessCodeBox" Grid.Column="0" Tag="{DynamicResource ProPairCodeHint}" Margin="0,0,6,0"/>
+                                    <Button Grid.Column="1" Content="{DynamicResource ProPair}" Click="ProPair_Click"
+                                            Style="{StaticResource MacToolbarBtn}"/>
+                                </Grid>
+                                <UniformGrid Columns="2">
+                                    <Button Content="{DynamicResource ProConnect}" Click="ProConnect_Click"
+                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
+                                    <Button Content="{DynamicResource ProDisconnect}" Click="ProDisconnect_Click"
                                             Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
                                 </UniformGrid>
                             </StackPanel>
