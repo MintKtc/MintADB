@@ -6,21 +6,9 @@ namespace MintADB.Wpf.Services;
 public sealed class SystemTweaksService(AdbService adb)
 {
     private AdbToolsService? _tools;
-    private DisplayPerformanceService? _display;
     private AdbToolsService Tools => _tools ??= new AdbToolsService(adb);
-    private DisplayPerformanceService Display => _display ??= new DisplayPerformanceService(adb);
 
     // ===== DPI =====
-    public async Task<int> GetCurrentDensityAsync(string serial, CancellationToken ct = default)
-    {
-        var r = await adb.ShellAsync("wm density", serial, ct);
-        var m = Regex.Match(r.Output, @"Physical density:\s*(\d+)");
-        if (m.Success && int.TryParse(m.Groups[1].Value, out var dpi))
-            return dpi;
-        var m2 = Regex.Match(r.Output, @"\d+");
-        return m2.Success && int.TryParse(m2.Value, out var dpi2) ? dpi2 : 0;
-    }
-
     public async Task<string> GetDensityStatusAsync(string serial, CancellationToken ct = default)
     {
         var r = await adb.ShellAsync("wm density", serial, ct);
@@ -62,9 +50,6 @@ public sealed class SystemTweaksService(AdbService adb)
         }
         return await adb.ApplySettingsBatchAsync(serial, commands, log, ct);
     }
-
-    public Task<ProcessResult> ToggleAnimationsAsync(string serial, bool on, CancellationToken ct = default)
-        => adb.SettingsPutAsync(serial, "global", "disable_animations", on ? "0" : "1", ct);
 
     // ===== Navigation Mode =====
     public async Task<string> GetNavigationStatusAsync(string serial, CancellationToken ct = default)
@@ -235,12 +220,6 @@ public sealed class SystemTweaksService(AdbService adb)
         => await adb.SettingsPutAsync(serial, "global", "bluetooth_absolute_volume_enabled",
             enable ? "1" : "0", ct);
 
-    public async Task<ProcessResult> ToggleA2dpOffloadAsync(
-        string serial, bool disable, CancellationToken ct = default)
-        => await adb.ShellAsync(
-            $"settings put global bluetooth_a2dp_offload_capability_supported {(disable ? "false" : "true")}",
-            serial, ct);
-
     // ===== Google Services Fix =====
     public static readonly string[] GoogleServicesPackages =
     [
@@ -297,7 +276,7 @@ public sealed class SystemTweaksService(AdbService adb)
         return (ok, fail);
     }
 
-    public async Task GrantGooglePermissionsAsync(string serial, string pkg, CancellationToken ct = default)
+    private async Task GrantGooglePermissionsAsync(string serial, string pkg, CancellationToken ct)
     {
         var perms = new[]
         {
@@ -306,31 +285,7 @@ public sealed class SystemTweaksService(AdbService adb)
             "android.permission.RECEIVE_BOOT_COMPLETED",
         };
         foreach (var perm in perms)
-        {
-            await adb.ShellAsync($"pm grant {pkg} {perm}", serial, ct);
-        }
-    }
-
-    // ===== Screen Refresh Rate (Hz) — source of truth: DisplayPerformanceService =====
-    public Task<string> GetRefreshRateStatusAsync(string serial, CancellationToken ct = default)
-        => Display.ReadHzStatusAsync(serial, ct);
-
-    /// <summary>Khóa Hz đầy đủ (min=max=peak + MIUI tweaks). UI Tweaks và Lock Hz dùng chung.</summary>
-    public async Task<ProcessResult> SetRefreshRateAsync(string serial, int hz, CancellationToken ct = default)
-    {
-        var (ok, fail) = await Display.ApplyLockHzAsync(serial, hz, miuiTweaks: true, log: null, ct);
-        return new ProcessResult(
-            fail == 0 ? 0 : 1,
-            fail == 0 ? $"Hz locked → {hz}" : $"ok={ok} fail={fail}",
-            fail == 0 ? "" : $"ok={ok} fail={fail}");
-    }
-
-    public async Task<ProcessResult> SetRefreshRateRangeAsync(string serial, int minHz, int maxHz, CancellationToken ct = default)
-    {
-        // Range ≠ full lock: chỉ set min/peak system + user (không adaptive lock)
-        await adb.SettingsPutAsync(serial, "system", "min_refresh_rate", minHz.ToString(CultureInfo.InvariantCulture), ct);
-        await adb.SettingsPutAsync(serial, "system", "peak_refresh_rate", maxHz.ToString(CultureInfo.InvariantCulture), ct);
-        return await adb.SettingsPutAsync(serial, "system", "user_refresh_rate", maxHz.ToString(CultureInfo.InvariantCulture), ct);
+            await adb.PmGrantAsync(serial, pkg, perm, ct);
     }
 
     // ===== Font Scale =====
@@ -437,14 +392,4 @@ public sealed class SystemTweaksService(AdbService adb)
 
     public Task<ProcessResult> SetScreenTimeoutAsync(string serial, int milliseconds, CancellationToken ct = default)
         => adb.SettingsPutAsync(serial, "system", "screen_off_timeout", milliseconds.ToString(), ct);
-
-    // ===== Volume Panel Style (MIUI) =====
-    public async Task<string> GetVolumePanelStyleAsync(string serial, CancellationToken ct = default)
-    {
-        var style = await adb.SettingsGetAsync(serial, "system", "volume_panel_style", ct);
-        return $"volume_panel_style={(style ?? "?")}";
-    }
-
-    public Task<ProcessResult> SetVolumePanelStyleAsync(string serial, string style, CancellationToken ct = default)
-        => adb.SettingsPutAsync(serial, "system", "volume_panel_style", style, ct);
 }

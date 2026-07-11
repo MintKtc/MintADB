@@ -67,13 +67,6 @@ public sealed class FastbootService
     public Task<ProcessResult> OemLockAsync(string serial, CancellationToken ct = default)
         => RunAsync(["oem", "lock"], serial, ct);
 
-    // ── Xiaomi unlock ──
-    public Task<ProcessResult> OemUnlockGoAsync(string serial, CancellationToken ct = default)
-        => RunAsync(["oem", "unlock-go"], serial, ct);
-
-    public Task<ProcessResult> OemLockGoAsync(string serial, CancellationToken ct = default)
-        => RunAsync(["oem", "lock-go"], serial, ct);
-
     // ── Factory reset ──
     public Task<ProcessResult> WipeAsync(string serial, CancellationToken ct = default)
         => RunAsync(["-w"], serial, ct);

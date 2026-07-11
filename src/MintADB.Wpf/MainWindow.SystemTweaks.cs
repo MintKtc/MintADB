@@ -363,47 +363,6 @@ public partial class MainWindow
         });
     }
 
-    // ── Refresh Rate ──
-
-    private async void ReadRefreshRate_Click(object sender, RoutedEventArgs e)
-    {
-        var serial = RequireDevice();
-        if (serial is null) return;
-
-        RefreshRateStatusText.Text = "Đang đọc...";
-        try
-        {
-            var status = await SystemTweaks.GetRefreshRateStatusAsync(serial);
-            RefreshRateStatusText.Text = status;
-            AppendLog("--- Hz ---");
-            AppendLog(status);
-        }
-        catch (Exception ex)
-        {
-            RefreshRateStatusText.Text = $"Lỗi: {ex.Message}";
-        }
-    }
-
-    private async void SetRefreshRate_Click(object sender, RoutedEventArgs e)
-    {
-        var serial = RequireDevice();
-        if (serial is null) return;
-
-        if (sender is Button { Tag: string hzStr } && int.TryParse(hzStr, out var hz))
-        {
-            if (MessageBox.Show($"Đặt tần số quét → {hz}Hz?",
-                    "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
-                return;
-
-            await RunToolAsync($"Hz → {hz}", async () =>
-            {
-                var r = await SystemTweaks.SetRefreshRateAsync(serial, hz);
-                AppendLog(r.Ok ? $"[OK] Hz → {hz}" : $"[FAIL] {r.Combined}");
-                RefreshRateStatusText.Text = await SystemTweaks.GetRefreshRateStatusAsync(serial);
-            });
-        }
-    }
-
     // ── Font Scale ──
 
     private async void ReadFontScale_Click(object sender, RoutedEventArgs e)

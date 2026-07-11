@@ -1548,7 +1548,7 @@
                                     <Button x:Name="BtnDisconnectWifi" Content="{DynamicResource DisconnectWiFi}"
                                             Click="DisconnectWifi_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
                                     <Button x:Name="BtnCheckWifiStatus" Content="{DynamicResource CheckWiFi}"
-                                            Click="CheckNetworkStatus_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
+                                            Click="ReadNetworkStatus_Click" Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
                                 </UniformGrid>
                             </StackPanel>
                         </Border>
@@ -2252,30 +2252,7 @@
                             </StackPanel>
                         </Border>
 
-                        <!-- Refresh Rate -->
-                        <TextBlock Text="{DynamicResource LockHz}" Style="{StaticResource MacGroupLabelInfo}"/>
-                        <Border Style="{StaticResource MacGroupBoxInfo}" Margin="0,0,0,12" Padding="12">
-                            <StackPanel>
-                                <TextBlock Text="Lock screen refresh rate — 60Hz saves battery, 120Hz is smoother."
-                                           FontSize="11" Foreground="{StaticResource MacSecondaryBrush}"
-                                           TextWrapping="Wrap" Margin="0,0,0,10"/>
-                                <TextBlock x:Name="RefreshRateStatusText" Text="Tap «Read»"
-                                           FontFamily="Cascadia Mono, Consolas, monospace" FontSize="11"
-                                           Foreground="{StaticResource MacBlueBrush}" Margin="0,0,0,10"/>
-                                <UniformGrid Columns="4">
-                                    <Button x:Name="BtnReadHz" Content="{StaticResource Read}"
-                                            Click="ReadRefreshRate_Click" Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button Content="60Hz" Tag="60" Click="SetRefreshRate_Click"
-                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button Content="90Hz" Tag="90" Click="SetRefreshRate_Click"
-                                            Style="{StaticResource MacToolbarBtn}" Margin="0,0,4,0"/>
-                                    <Button Content="120Hz" Tag="120" Click="SetRefreshRate_Click"
-                                            Style="{StaticResource MacToolbarBtn}" Margin="4,0,0,0"/>
-                                </UniformGrid>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Font Scale -->
+                        <!-- Font Scale (Hz lock: System Info → Display) -->
                         <TextBlock Text="{DynamicResource FontSize}" Style="{StaticResource MacGroupLabelSafe}"/>
                         <Border Style="{StaticResource MacGroupBoxSafe}" Margin="0,0,0,12" Padding="12">
                             <StackPanel>

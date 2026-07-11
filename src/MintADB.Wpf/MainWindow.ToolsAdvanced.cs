@@ -477,25 +477,6 @@ public partial class MainWindow
 
     // ── WiFi ──
 
-    private async void CheckNetworkStatus_Click(object sender, RoutedEventArgs e)
-    {
-        var serial = RequireDevice();
-        if (serial is null) return;
-
-        NetworkStatusText.Text = "Đang đọc...";
-        try
-        {
-            var status = await Network.GetFullNetworkStatusAsync(serial);
-            NetworkStatusText.Text = status;
-            AppendLog("--- Trạng thái mạng ---");
-            AppendLog(status);
-        }
-        catch (Exception ex)
-        {
-            NetworkStatusText.Text = $"Lỗi: {ex.Message}";
-        }
-    }
-
     private async void ToggleWifi_Click(object sender, RoutedEventArgs e)
     {
         var serial = RequireDevice();
@@ -618,12 +599,8 @@ public partial class MainWindow
         NetworkStatusText.Text = "Đang đọc...";
         try
         {
-            var wifi = await Network.GetWifiStatusAsync(serial);
-            var bt = await Network.GetBluetoothStatusAsync(serial);
-            var airplane = await Network.GetAirplaneModeStatusAsync(serial);
-            var hotspot = await Network.GetHotspotStatusAsync(serial);
-
-            var status = $"{wifi}\n{bt}\n{airplane}\n{hotspot}";
+            // Full status (WiFi + BT + airplane + hotspot + mobile + IP)
+            var status = await Network.GetFullNetworkStatusAsync(serial);
             NetworkStatusText.Text = status;
             AppendLog("--- Trạng thái mạng ---");
             AppendLog(status);

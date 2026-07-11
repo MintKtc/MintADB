@@ -11,16 +11,7 @@ public sealed class AdbToolsService(AdbService adb)
     public static string MintAdbDir => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "MintADB");
 
-    // ── Server / device ──
-    public Task<ProcessResult> KillServerAsync(CancellationToken ct = default)
-        => adb.KillServerAsync(ct);
-
-    public Task<ProcessResult> StartServerAsync(CancellationToken ct = default)
-        => adb.StartServerAsync(ct);
-
-    public Task<ProcessResult> WaitForDeviceAsync(string? serial = null, CancellationToken ct = default)
-        => adb.RunAsync(["wait-for-device"], serial, ct);
-
+    // ── Device ──
     public Task<ProcessResult> RebootAsync(string serial, RebootMode mode, CancellationToken ct = default)
         => adb.ShellAsync(mode.AdbArg(), serial, ct);
 
@@ -67,12 +58,6 @@ public sealed class AdbToolsService(AdbService adb)
         var detail = string.IsNullOrWhiteSpace(result.Combined) ? streamedError : result.Combined;
         return new ProcessResult(result.ExitCode, result.Output, $"{detail}\n{hint}");
     }
-
-    public Task<ProcessResult> InstallSplitApkAsync(string serial, IEnumerable<string> apkPaths, CancellationToken ct = default)
-        => adb.RunAsync(["install-multiple", "-r", .. apkPaths], serial, ct);
-
-    public Task<ProcessResult> SideloadApkAsync(string apkPath, CancellationToken ct = default)
-        => adb.RunGlobalAsync(["sideload", apkPath], ct);
 
     public async Task<PackageRemoveResult> UninstallAsync(
         string serial, string package, bool keepData = false, CancellationToken ct = default)
@@ -215,18 +200,13 @@ public sealed class AdbToolsService(AdbService adb)
     public Task<ProcessResult> EnablePackageAsync(string serial, string package, CancellationToken ct = default)
         => adb.ShellAsync($"pm enable {package}", serial, ct);
 
-    public Task<ProcessResult> UnhidePackageAsync(string serial, string package, CancellationToken ct = default)
-        => adb.ShellAsync($"pm unhide --user 0 {package}", serial, ct);
-
-    public Task<ProcessResult> ReinstallPackageAsync(string serial, string package, CancellationToken ct = default)
-        => adb.ShellAsync($"pm install-existing --user 0 {package}", serial, ct);
-
     public async Task<ProcessResult> RestoreInactivePackageAsync(
         string serial, string package, InactiveAppState state, CancellationToken ct = default)
     {
         return state switch
         {
-            InactiveAppState.Uninstalled => await ReinstallPackageAsync(serial, package, ct),
+            InactiveAppState.Uninstalled =>
+                await adb.ShellAsync($"pm install-existing --user 0 {package}", serial, ct),
             InactiveAppState.Hidden => await RestoreHiddenPackageAsync(serial, package, ct),
             _ => await EnablePackageAsync(serial, package, ct),
         };
@@ -247,18 +227,6 @@ public sealed class AdbToolsService(AdbService adb)
 
     public Task<ProcessResult> LaunchAppAsync(string serial, string package, CancellationToken ct = default)
         => adb.ShellAsync($"monkey -p {package} -c android.intent.category.LAUNCHER 1", serial, ct);
-
-    public Task<ProcessResult> GrantPermissionAsync(string serial, string package, string permission, CancellationToken ct = default)
-        => adb.PmGrantAsync(serial, package, permission, ct);
-
-    public Task<ProcessResult> RevokePermissionAsync(string serial, string package, string permission, CancellationToken ct = default)
-        => adb.PmRevokeAsync(serial, package, permission, ct);
-
-    public Task<ProcessResult> SetAppOpsAsync(string serial, string package, string op, string mode, CancellationToken ct = default)
-        => adb.AppOpsSetAsync(serial, package, op, mode, ct);
-
-    public Task<ProcessResult> DumpPackageAsync(string serial, string package, CancellationToken ct = default)
-        => adb.ShellAsync($"dumpsys package {package}", serial, ct);
 
     public async Task<string?> BackupApkAsync(string serial, string package, string? saveDir = null, CancellationToken ct = default)
     {
@@ -335,45 +303,7 @@ public sealed class AdbToolsService(AdbService adb)
         return pull;
     }
 
-    public Task<ProcessResult> SetSizeAsync(string serial, int w, int h, CancellationToken ct = default)
-        => adb.ShellAsync($"wm size {w}x{h}", serial, ct);
-
-    public Task<ProcessResult> ResetSizeAsync(string serial, CancellationToken ct = default)
-        => adb.ShellAsync("wm size reset", serial, ct);
-
-    public Task<ProcessResult> OpenUrlAsync(string serial, string url, CancellationToken ct = default)
-        => adb.ShellAsync($"am start -a android.intent.action.VIEW -d \"{url}\"", serial, ct);
-
-    public Task<byte[]?> CaptureScreenshotBytesAsync(string serial, CancellationToken ct = default)
-        => adb.ExecOutAsync(["exec-out", "screencap", "-p"], serial, ct);
-
-    public Task<byte[]?> CaptureScreenshotRawAsync(string serial, CancellationToken ct = default)
-        => adb.ExecOutAsync(["exec-out", "screencap"], serial, ct);
-
-    // ── Network ──
-    public Task<ProcessResult> TcpipAsync(string serial, int port = 5555, CancellationToken ct = default)
-        => adb.RunAsync(["tcpip", port.ToString()], serial, ct);
-
-    public Task<ProcessResult> ConnectAsync(string hostPort, CancellationToken ct = default)
-        => adb.RunGlobalAsync(["connect", hostPort], ct);
-
-    public Task<ProcessResult> PairAsync(string hostPort, string code, CancellationToken ct = default)
-        => adb.RunGlobalAsync(["pair", hostPort, code], ct);
-
-    public Task<ProcessResult> DisconnectAsync(string? hostPort = null, CancellationToken ct = default)
-        => hostPort is null
-            ? adb.RunGlobalAsync(["disconnect"], ct)
-            : adb.RunGlobalAsync(["disconnect", hostPort], ct);
-
-    public Task<ProcessResult> ForwardAsync(string spec, string? serial = null, CancellationToken ct = default)
-        => adb.RunAsync(["forward", spec], serial, ct);
-
-    public Task<ProcessResult> ForwardListAsync(string? serial = null, CancellationToken ct = default)
-        => adb.RunAsync(["forward", "--list"], serial, ct);
-
-    public Task<ProcessResult> ForwardRemoveAsync(string spec, string? serial = null, CancellationToken ct = default)
-        => adb.RunAsync(["forward", "--remove", spec], serial, ct);
-
+    // ── Network / locale ──
     public async Task<ProcessResult> SetPrivateDnsAsync(string serial, string hostname, CancellationToken ct = default)
     {
         hostname = hostname.Trim();
@@ -561,73 +491,6 @@ public sealed class AdbToolsService(AdbService adb)
         return true;
     }
 
-    public Task<ProcessResult> ReverseAsync(string spec, string? serial = null, CancellationToken ct = default)
-        => adb.RunAsync(["reverse", spec], serial, ct);
-
-    // ── Input ──
-    public Task<ProcessResult> InputTextAsync(string serial, string text, CancellationToken ct = default)
-        => adb.ShellAsync($"input text {AdbService.ShellSingleQuote(text.Replace(" ", "%s"))}", serial, ct);
-
-    public Task<ProcessResult> InputKeyeventAsync(string serial, int keyCode, CancellationToken ct = default)
-        => adb.ShellAsync($"input keyevent {keyCode}", serial, ct);
-
-    public Task<ProcessResult> InputTapAsync(string serial, int x, int y, CancellationToken ct = default)
-        => adb.ShellAsync($"input tap {x} {y}", serial, ct);
-
-    public Task<ProcessResult> InputSwipeAsync(string serial, int x1, int y1, int x2, int y2, int ms, CancellationToken ct = default)
-        => adb.ShellAsync($"input swipe {x1} {y1} {x2} {y2} {ms}", serial, ct);
-
-    // ── System / dumpsys ──
-    public Task<ProcessResult> GetLogcatAsync(string serial, int lines = 200, CancellationToken ct = default)
-        => adb.ShellAsync($"logcat -d -t {lines}", serial, ct);
-
-    public Task<ProcessResult> ClearLogcatAsync(string serial, CancellationToken ct = default)
-        => adb.ShellAsync("logcat -c", serial, ct);
-
-    public Task<ProcessResult> DumpsysAsync(string serial, string service, CancellationToken ct = default)
-        => adb.ShellAsync($"dumpsys {service}", serial, ct);
-
-    public Task<ProcessResult> GetCurrentActivityAsync(string serial, CancellationToken ct = default)
-        => adb.ShellAsync("dumpsys activity activities | grep mResumedActivity", serial, ct);
-
-    public Task<ProcessResult> RootCheckAsync(string serial, CancellationToken ct = default)
-        => adb.ShellAsync("su -c id", serial, ct);
-
-    public Task<ProcessResult> RemountAsync(string serial, CancellationToken ct = default)
-        => adb.RunAsync(["remount"], serial, ct);
-
-    public Task<ProcessResult> TrimCachesAsync(string serial, CancellationToken ct = default)
-        => adb.ShellAsync("pm trim-caches 999G", serial, ct);
-
-    public Task<ProcessResult> ListUsersAsync(string serial, CancellationToken ct = default)
-        => adb.ShellAsync("pm list users", serial, ct);
-
-    public async Task<ProcessResult> SettingsGetAsync(string serial, string ns, string key, CancellationToken ct = default)
-    {
-        var val = await adb.SettingsGetAsync(serial, ns, key, ct);
-        return new ProcessResult(0, val, "");
-    }
-
-    public Task<ProcessResult> SettingsPutAsync(string serial, string ns, string key, string value, CancellationToken ct = default)
-        => adb.SettingsPutAsync(serial, ns, key, value, ct);
-
-    public Task<ProcessResult> SetHiddenApiPolicyAsync(string serial, int policy, CancellationToken ct = default)
-        => adb.ShellAsync($"settings put global hidden_api_policy {policy}", serial, ct);
-
-    public async Task<string?> SaveBugreportAsync(string serial, string? saveDir = null, CancellationToken ct = default)
-    {
-        saveDir ??= Path.Combine(MintAdbDir, "Bugreports");
-        Directory.CreateDirectory(saveDir);
-        var local = Path.Combine(saveDir, $"bugreport_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
-        var r = await adb.ShellAsync("bugreport", serial, ct);
-        if (!string.IsNullOrWhiteSpace(r.Combined))
-            await File.WriteAllTextAsync(local, r.Combined, ct);
-        return File.Exists(local) ? local : null;
-    }
-
-    public Task<ProcessResult> RunShellAsync(string serial, string command, CancellationToken ct = default)
-        => adb.ShellAsync(command, serial, ct);
-
     public bool TryLaunchScrcpy(string serial, int maxSize, bool stayAwake, out string message)
     {
         ScrcpyLocator.ClearCache();
@@ -678,9 +541,6 @@ public sealed class AdbToolsService(AdbService adb)
         }
     }
 
-    public bool TryLaunchScrcpy(string serial, out string message)
-        => TryLaunchScrcpy(serial, 1080, stayAwake: true, out message);
-
     // ── ADB Version ──
     public async Task<string> GetAdbVersionAsync(CancellationToken ct = default)
     {
@@ -721,24 +581,13 @@ public sealed class AdbToolsService(AdbService adb)
         }
     }
 
-    // ── Batch Operations ──
+    // ── Batch ──
     public async Task<ProcessResult> ClearAppDataBatchAsync(string serial, IEnumerable<string> packages, CancellationToken ct = default)
     {
         var results = new List<string>();
         foreach (var pkg in packages)
         {
             var r = await ClearAppDataAsync(serial, pkg, ct);
-            results.Add($"{pkg}: {(r.Ok ? "OK" : "FAIL")}");
-        }
-        return new ProcessResult(0, string.Join("\n", results), "");
-    }
-
-    public async Task<ProcessResult> ForceStopBatchAsync(string serial, IEnumerable<string> packages, CancellationToken ct = default)
-    {
-        var results = new List<string>();
-        foreach (var pkg in packages)
-        {
-            var r = await ForceStopAsync(serial, pkg, ct);
             results.Add($"{pkg}: {(r.Ok ? "OK" : "FAIL")}");
         }
         return new ProcessResult(0, string.Join("\n", results), "");
